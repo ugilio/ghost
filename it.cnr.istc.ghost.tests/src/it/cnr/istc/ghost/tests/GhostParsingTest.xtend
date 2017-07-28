@@ -8,9 +8,11 @@ import it.cnr.istc.ghost.ghost.Ghost
 import org.eclipse.xtext.junit4.InjectWith
 import org.eclipse.xtext.junit4.XtextRunner
 import org.eclipse.xtext.junit4.util.ParseHelper
-import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+
+import static org.junit.Assert.*
+import static org.hamcrest.CoreMatchers.*
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -19,12 +21,793 @@ class GhostParsingTest{
 	@Inject
 	ParseHelper<Ghost> parseHelper
 
-	@Test 
-	def void loadModel() {
+
+	@Test
+	def void test00() {
 		val result = parseHelper.parse('''
-			Hello Xtext!
+domain TrafficLightDomain;
+
+type TrafficLight = sv(Red, Green, Yellow);
 		''')
-		Assert.assertNotNull(result)
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
 	}
 
+	@Test
+	def void test01() {
+		val result = parseHelper.parse('''
+domain TrafficLightDomain;
+
+type TrafficLight = sv
+(
+  Red -> Green;
+  Green -> Yellow;
+  Yellow -> Red;
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test02() {
+		val result = parseHelper.parse('''
+type TrafficLight = sv
+(
+  Red -> Green;
+  Green -> (Yellow, Red);
+  Yellow -> Red;
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test03() {
+		val result = parseHelper.parse('''
+type TrafficLight = sv
+(
+  Red [0,+INF] -> Green;
+  Green [0,+INF] -> Yellow;
+  Yellow [0,+INF] -> Red;
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test04() {
+		val result = parseHelper.parse('''
+type TrafficLight = sv
+(
+  Red 30 -> Green;
+  Green 20 -> Yellow;
+  Yellow 10 -> Red;
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test05() {
+		val result = parseHelper.parse('''
+comp TL1 : TrafficLight;
+comp TL2 : TrafficLight;
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test06() {
+		val result = parseHelper.parse('''
+type TrafficLight = sv
+(
+  Red -> Green;
+  Green -> (Yellow, Red);
+  Yellow -> Red;
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test07() {
+		val result = parseHelper.parse('''
+type angle = int [-360, 360];
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test08() {
+		val result = parseHelper.parse('''
+type speed = enum(Slow, Moderate, Fast);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test09() {
+		val result = parseHelper.parse('''
+type bag = resource(10); //a renewable resource type
+type tank = resource(0,100); //a consumable resource type
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test10() {
+		val result = parseHelper.parse('''
+type aType = sv(
+  A -> B;
+  B -> (A, C);
+  C
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test11() {
+		val result = parseHelper.parse('''
+type aType = sv(
+  A(angle, speed) -> B;
+  B(speed theSpeed) -> (A(_,theSpeed), C);
+  C
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test12() {
+		val result = parseHelper.parse('''
+type ComplexType = sv
+(
+  A(atype x) -> (
+    var y = x+10;
+    B(y,x)
+  );
+  B(atype x,atype y)
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test13() {
+		val result = parseHelper.parse('''
+type SomeType = sv (
+  A(atype x) -> (x > 10, B),
+  B
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test14() {
+		val result = parseHelper.parse('''
+type aType = sv (
+  A -> B, B -> A
+synchronize:
+  A -> meets aComponent.SomeValue
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test15() {
+		val result = parseHelper.parse('''
+type RobotBaseType = sv (
+  GoingTo(coord x, coord y) [10, 30] -> At(x, y);
+  At(coord x, coord y) -> GoingTo;
+synchronize:
+  GoingTo -> during Platine.PointingAt(0,0);
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test16() {
+		val result = parseHelper.parse('''
+type CameraType = sv (
+  CamIdle -> TakingPicture;
+  TakingPicture(file_id, coord, coord, angle, angle) 10 -> CamIdle;
+synchronize:
+  TakingPicture(_, x, y, pan, tilt) -> (
+    during RobotBase.At(x, y);
+    during Platine.PointingAt(pan, tilt);
+  );
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test17() {
+		val result = parseHelper.parse('''
+type MissionTimelineType = sv (
+  Idle -> (TakingPicture, Communicating, At);
+  TakingPicture(file_id, coord, coord, angle, angle) 10 -> Idle;
+  Communicating(file_id) [10, 20] -> Idle;
+  At(coord, coord) -> Idle;
+synchronize:
+  TakingPicture(file_id, x, y, pan, tilt) -> (
+    var val1 = Camera.TakingPicture(file_id, x, y, pan, tilt);
+    var val2 = Communication.Communicating(file_id);
+    meets MissionTimeline.Idle;
+    contains val1;
+    contains(_,0) val2;
+    val1 before val2;
+  );
+  At(x, y) -> equals RobotBase.At(x, y);
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test18() {
+		val result = parseHelper.parse('''
+type aType = sv (
+  Load -> Unload, Unload -> Load
+synchronize:
+  Load -> require SpaceAvailable(10);
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test19() {
+		val result = parseHelper.parse('''
+type aResource = resource(10,
+synchronize:
+  require(x) -> x <= 5;
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test20() {
+		val result = parseHelper.parse('''
+domain TrafficLightDomain;
+
+type TrafficLight = sv (
+	Red 30 -> Green;
+	Green 20 -> Yellow;
+	Yellow 10 -> Red;
+synchronize:
+	Green -> starts other.Red;
+variable:
+	other : TrafficLight;
+);
+
+comp TL1 : TrafficLight[TL2];
+comp TL2 : TrafficLight[TL1];
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test21() {
+		val result = parseHelper.parse('''
+comp TL1 : TrafficLight[other = TL2];
+comp TL2 : TrafficLight[other = TL1];
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test22() {
+		val result = parseHelper.parse('''
+type parent = sv (A -> B, B -> A);
+type child = sv parent (
+  A -> (B,C);
+  C -> A;
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test23() {
+		val result = parseHelper.parse('''
+type child = sv (
+  A -> (B,C);
+  B -> A;
+  C -> A;
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test24() {
+		val result = parseHelper.parse('''
+type parent = sv (A -> B, B -> A);
+type child = sv parent (
+  A -> (inherited,C);
+  C -> A;
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test25() {
+		val result = parseHelper.parse('''
+external type parent = sv (A -> B, B -> A);
+planned type child = sv parent;
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test26() {
+		val result = parseHelper.parse('''
+type parent = sv (
+  uncontr A -> B,
+  B -> A
+);
+type child = sv parent(
+  contr A -> inherited
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test27() {
+		val result = parseHelper.parse('''
+type bag = resource (10,
+synchronize:
+  require(x) -> x <= 5;
+);
+type bigBag = resource bag(20);
+type smallBag = resource bag(6);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test28() {
+		val result = parseHelper.parse('''
+type bag = resource (_,
+synchronize:
+  require(x) -> x <= 5;
+);
+type bigBag = resource bag(20);
+type smallBag = resource bag(6);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test29() {
+		val result = parseHelper.parse('''
+type bag = resource (10);
+type slowBag = resource bag(
+synchronize:
+  require(x) -> x <= 5;
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test30() {
+		val result = parseHelper.parse('''
+type tank = resource (0,10);
+type bigTank = resource tank(_,15);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test31() {
+		val result = parseHelper.parse('''
+comp PointingMode : sv (
+	Earth [1, +INF] -> (Slewing, Comm, Maintenance);
+	Slewing 30 -> (Earth, Science);
+	Science [36, 58] -> Slewing;
+	uncontr Comm [30, 50] -> (Earth, Maintenance);
+synchronize:
+	Science -> before PointingMode.Comm;
+	Comm -> during GroundStationVisibility.Visible;
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test32() {
+		val result = parseHelper.parse('''
+comp aResource : resource(10,
+synchronize:
+  require(x) -> x <= 5;
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test33() {
+		val result = parseHelper.parse('''
+type parent = sv (A -> B, B -> A);
+
+comp firstChild : parent(C, A -> (B,C) );
+external comp secondChild : parent;
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test34() {
+		val result = parseHelper.parse('''
+type TrafficLight = sv (
+	Red 30 -> Green;
+	Green 20 -> Yellow;
+	Yellow 10 -> Red;
+synchronize:
+	Green -> starts other.Red;
+variable:
+	other : TrafficLight;
+);
+
+comp TL1 : TrafficLight[TL2];
+comp SwissTL : TrafficLight[other = TL1](
+  Red 20 -> YellowRed;
+  YellowRed 10 -> Green;
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test35() {
+		val result = parseHelper.parse('''
+type bag = resource (_,
+synchronize:
+  require(x) -> x <= 5;
+);
+comp bigBag : bag(20);
+comp smallBag : bag(6);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test36() {
+		val result = parseHelper.parse('''
+type aType = resource(_,_,
+synchronize:
+  consume(x) -> (x > 5; meets alarm.BigBurst(x)) or (x <= 5);
+variable:
+  alarm : AlarmType;
+);
+
+comp anAlarm : AlarmType;
+comp normalResource : aType[anAlarm](0,15);
+
+comp paranoidResource : aType[anAlarm](0,20,
+synchronize:
+  produce(x) -> (x > 5; meets alarm.BigBurst(x)) or (x <= 5);
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test37() {
+		val result = parseHelper.parse('''
+init fact ActivityLed.Off at 0;
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test38() {
+		val result = parseHelper.parse('''
+init (
+	fact PointingMode.Earth at start=0 end=[1, +INF];
+	fact GroundStationVisibility.Visible at 0 _ [1, +INF];
+	
+	goal PointingMode.Communicating at start=[10, +INF];
+)
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test39() {
+		val result = parseHelper.parse('''
+const MAX = 100;
+type halfTank = resource(0,MAX/2);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test40() {
+		val result = parseHelper.parse('''
+type halfTank = resource(0,50);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test41() {
+		val result = parseHelper.parse('''
+comp aComp : sv(
+  Start(fuel) -> Stop, Stop -> Start;
+synchronize:
+  Start(amnt) -> (consume tank1(amnt/2), consume tank2(amnt/2))
+)
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test42() {
+		val result = parseHelper.parse('''
+comp aComp : sv(
+  Start(fuel) -> Stop, Stop -> Start;
+synchronize:
+  Start(amnt) -> (
+    var y = _; //unbound variable
+    amnt = 2*y; //constraint
+    consume tank1(y);
+    consume tank2(y);
+  )
+)
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test45() {
+		val result = parseHelper.parse('''
+@trex_internal_dispatch_asap
+comp PointingMode : PointingModeType;
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test46() {
+		val result = parseHelper.parse('''
+type aType = sv(
+  @(c) A -> B,
+  B
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test47() {
+		val result = parseHelper.parse('''
+@(!) before PointingMode.Comm;
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test48() {
+		val result = parseHelper.parse('''
+$unit ms     1
+$unit sec 1000 ms
+$unit min   60 sec
+$unit hrs   60 min
+$unit days  24 hrs
+
+$unit s 1 sec
+$unit m 1 min
+$unit h 1 hrs
+$unit hours 1 hrs
+$unit d 1 days
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void test49() {
+		val result = parseHelper.parse('''
+$unit sec 1
+$unit ms
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void testgoac() {
+		val result = parseHelper.parse('''
+domain GOAC_Domain2;
+
+type coordinate = int [-1000, +1000];
+type angle = int [-360, 360];
+type file_id = int [0, 100];
+
+@trex_external
+comp RobotBase : sv (
+  GoingTo(coordinate x, coordinate y) [10, 30] -> At(x, y);
+  At(coordinate x, coordinate y) [1, +INF] -> GoingTo;
+  StuckAt(coordinate x, coordinate y) [1, +INF] -> GoingTo;
+synchronize:
+  GoingTo -> during Platine.PointingAt(0,0);
+);
+
+@trex_external
+comp Platine : sv (
+  MovingTo(angle pan, angle tilt) [1, +INF] -> PointingAt(pan, tilt);
+  PointingAt(angle pan, angle tilt) [10, 20] -> MovingTo;
+);
+
+@trex_external
+comp Camera : sv (
+  CamIdle [1, +INF] -> TakingPicture;
+  TakingPicture(file_id, coordinate, coordinate, angle pan, angle tilt) 10 -> CamIdle;
+synchronize:
+  TakingPicture(_, x, y, pan, tilt) -> (
+    during RobotBase.At(x, y);
+    during Platine.PointingAt(pan, tilt);
+  );
+);
+
+@trex_external
+comp Communication : sv (
+  CommIdle [1, +INF] -> Communicating;
+  Communicating(file_id) [10, 20] -> CommIdle;
+synchronize:
+  Communicating -> (
+    during RobotBase.At;
+    @(?) during CommunicationVW.Visible;
+  );
+);
+
+external comp CommunicationVW : sv(None -> Visible, Visible -> None);
+
+@trex_internal, dispatch_asap
+comp MissionTimeline : sv (
+  Idle [1, +INF] -> (TakingPicture, Communicating, At);
+  TakingPicture(file_id, coordinate, coordinate, angle, angle) 10 -> Idle;
+  Communicating(file_id) [10, 20] -> Idle;
+  At(coordinate, coordinate) [1, +INF] -> Idle;
+synchronize:	
+  TakingPicture(file_id, x, y, pan, tilt) -> (
+    @(!) var cd1 = Camera.TakingPicture(file_id, x, y, pan, tilt);
+    @(!) var cd5 = Communication.Communicating(file_id);
+    @(!) meets MissionTimeline.Idle;
+    contains cd1;
+    contains(_,0) cd5;
+    cd1 < cd5;
+  );
+  At(x, y) -> equals RobotBase.At(x, y);
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void testsatellite() {
+		val result = parseHelper.parse('''
+domain SATELLITE;
+	
+type EnergyConsumptionTraceType = resource(10);
+	
+comp PointingMode : sv (
+  Earth [1, +INF] -> (Slewing, Comm, Maintenance);
+  Slewing 30 -> (Earth, Science);
+  Science [36, 58] -> Slewing;
+  uncontr Comm [30, 50] -> (Earth, Maintenance);
+  Maintenance;
+synchronize:
+  Science -> (
+    require EnergyTrace(3);
+    before PointingMode.Comm;
+  );
+  Comm -> (
+    require EnergyTrace(6);
+    during GroundStationVisibility.Visible;
+  );
+  Slewing -> require EnergyTrace(1);
+);
+	
+external comp GroundStationVisibility : sv (
+	Visible [60, 100] -> NotVisible;
+	NotVisible [1, 100] -> Visible;
+);
+
+comp EnergyTrace : EnergyConsumptionTraceType;
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+
+	@Test
+	def void testtrafficlights() {
+		val result = parseHelper.parse('''
+domain TrafficLightDomain;
+
+//Component types
+type TrafficLightType = sv (
+	Red 30 -> Green;
+	Green 20 -> Yellow;
+	Yellow 10 -> Red;
+synchronize:
+	Green -> meets other.Red;
+variable:
+	other : TrafficLightType;
+);
+
+// Components
+comp TL1 : TrafficLightType[TL2];
+comp TL2 : TrafficLightType[TL1];
+
+//Facts, goals and temporal parameters
+init (
+  var horizon = 200;
+  var resolution = 300;
+  
+  fact TL1.Green at 0;
+  fact TL2.Red at 0;
+	
+  goal TL2.Yellow;
+)
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
 }
