@@ -1,0 +1,170 @@
+grammar it.cnr.istc.ghost.Ghost hidden(WS, ML_COMMENT, SL_COMMENT,
+	SL_ANNOTATION, BR_ANNOTATION, DIRECTIVE)
+
+generate ghost "http://pst.istc.cnr.it/ghost/Ghost"
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+Ghost: {Ghost}
+	((domain=DomainDecl | problem=ProblemDecl) SEP+)?
+	(imports+=ImportDecl SEP+)*
+	(decls+=TopLevelDeclaration (SEP+ decls+=TopLevelDeclaration)* SEP*)?;
+	
+DomainDecl: 'domain' name=ID;
+ProblemDecl: 'problem' name=ID;
+ImportDecl: 'import' name=ID;
+
+TopLevelDeclaration: TypeDecl | CompDecl | ConstDecl | InitSection;
+
+TypeDecl: SimpleType | ComponentType;
+
+SimpleType: IntDecl | EnumDecl;
+ComponentType : SvDecl | ResourceDecl;
+IntDecl :  (externality=Externality)? 'type'name=ID '=' 'int' value=Interval;
+EnumDecl : (externality=Externality)? 'type'name=ID '=' 'enum' '(' (values+=EnumLiteral (SEP values+=EnumLiteral)*)? ')';
+SvDecl :  (externality=Externality)? 'type'name=ID '=' 'sv' (parent=[SvDecl])? body=SvBody;
+ResourceDecl :  (externality=Externality)? 'type'name=ID '=' 'resource' (parent=[ResourceDecl])? body=ResourceBody;
+
+SvBody : ('('
+	transitions+=UnnamedTransitionSection
+	(transitions+=TransitionSection |
+		synchronizations+=SynchronizeSection |
+		variables+=VariableSection
+	)*
+')')?;
+
+TransitionSection: 'transition:' (values+=TransConstraint (SEP+ values+=TransConstraint)* SEP*)?;
+SynchronizeSection: 'synchronize:' (values+=Synchronization (SEP+ values+=Synchronization)* SEP*)?;
+VariableSection: 'variable:' (values+=ObjVarDecl (SEP+ values+=ObjVarDecl)* SEP*)?;
+UnnamedTransitionSection: (values+=TransConstraint (SEP+ values+=TransConstraint)* SEP*)?;
+
+TransConstraint : (controllability=Controllability)? head=ValueDecl
+	(interval=IntvOrDflt)? ('->' body=TransConstrBody)?
+;
+ValueDecl : name=ID parlist=FormalParList?;
+SimpleInstVal: name=ID arglist=ArgList?;
+QualifInstVal: name=QUALID arglist=ArgList?;
+InstVal: 'this' | QualifInstVal | ResConstr;
+
+TransConstrBody: (=>values+=SingleTransConstr) | ('('
+	(values+=SingleTransConstr (SEP+ values+=SingleTransConstr)* SEP*)? ')');
+SingleTransConstr: 'inherited' | LocVarDecl | GenericExpression;
+
+Synchronization : trigger=TriggerType '->' bodies+=SyncBody ('or' bodies+=SyncBody)*;
+SyncBody: (=>values+=SingleSyncConstr) | ('('
+	(values+=SingleSyncConstr (SEP+ values+=SingleSyncConstr)* SEP*)? ')');
+SingleSyncConstr:  (=>TemporalExp) | LocVarDecl | GenericExpression;
+
+TriggerType : ResSimpleInstVal | SimpleInstVal;
+
+ResConstr: type=ResourceAction res=QualifInstVal;
+
+ObjVarDecl : name=ID ':' type=[ComponentType];
+
+
+ResourceBody : ('('(val1=ConstExpr (SEP+ val2=ConstExpr)? SEP*)?
+	(synchronizations+=SynchronizeSection |
+		variables+=VariableSection
+	)*
+')')?;
+
+ResSimpleInstVal: type=ResourceAction '(' arg=ID_ ')';
+
+
+
+FormalParList: '(' (types+=[SimpleType] (names+=ID_)? (SEP+ types+=[SimpleType] (names+=ID_)? )* SEP* )? ')';
+ArgList: '(' (values+=GenericExpression (SEP+ values+=GenericExpression)* SEP* )? ')';
+BindList: '['(varNames+=ID '=')? values+=[CompDecl] (SEP+ (varNames+=ID '=')? values+=[CompDecl] )* SEP* ']';
+
+LocVarDecl: 'var' name=ID '=' value=RValue;
+RValue: (=>TemporalExp) | GenericExpression;
+
+
+BasicExp returns Expression: '(' EqExp {Expression.left=current}')' | '_' | TimePointOp | InstVal | NumAndUnit;
+Term returns Expression: BasicExp {Expression.left=current} (ops+=('*' | '/' | '%') right+=BasicExp)*;
+SumExp returns Expression: Term {Expression.left=current} (ops+=('+' | '-' ) right+=Term)*;
+CompExp returns Expression: SumExp {Expression.left=current} (ops+=('<' | '<=' | '>' | '>=' ) right+=SumExp)?;
+EqExp returns Expression: CompExp {Expression.left=current} (ops+=('=' | '!=') right+=CompExp)?;
+
+TemporalExp : (left=SumExp)? op=TemporalRelation right=SumExp;
+
+TemporalRelation: 
+	'=' | '!=' | 'equals' | '|=' | 'meets' | '<' | '>' | 'starts' | 'finishes' |
+	(('before' | 'after') (=>'(' l=IntvOrDflt? ')')? ) |
+	( ('contains'|'during') (=>'(' (l=IntvOrDflt (SEP r=IntvOrDflt)?)? ')')? ) 
+;
+
+GenericExpression: EqExp;
+
+
+
+CBasicExp returns CExpr: '(' CSumExp {CExpr.left=current}')' | placeholder?='_' | literal=[ConstLiteral] | ((=>num=NumAndUnit) | (intv=Interval));
+CTerm returns CExpr: CBasicExp {CExpr.left=current} (ops+=('*' | '/' | '%') right+=CBasicExp)*;
+CSumExp returns CExpr: CTerm {CExpr.left=current} (ops+=('+' | '-' ) right+=CTerm)*;
+
+ConstExpr : CSumExp;
+
+enum Externality : PLANNED='planned' | EXTERNAL='external';
+enum Controllability: CONTROLLABLE='contr' | UNCONTROLLABLE='uncontr';
+enum ResourceAction: REQUIRE='require' | PRODUCE='produce' | CONSUME='consume';
+
+CompDecl : NamedCompDecl | AnonSVDecl | AnonResDecl;
+NamedCompDecl : (externality=Externality)? 'comp' name=ID ':' type=[ComponentType] body=CompBody;
+AnonSVDecl : (externality=Externality)? 'comp' name=ID ':' 'sv' body=CompSVBody;
+AnonResDecl : (externality=Externality)? 'comp' name=ID ':' 'resource' body=CompResBody;
+
+CompBody : (=> CompResBody) | CompSVBody;
+
+CompSVBody : (bindings=BindList)?('('
+	transitions+=UnnamedTransitionSection
+	(transitions+=TransitionSection |
+		synchronizations+=SynchronizeSection
+	)*
+')')?;
+
+CompResBody : (bindings=BindList)?('(' (val1=ConstExpr (SEP+ val2=ConstExpr)? SEP*)?
+	(synchronizations+=SynchronizeSection)*
+')')?;
+
+
+InitSection: 'init' ((values+=InitConstr) | (->'('
+	(values+=InitConstr (SEP+ values+=InitConstr)* SEP*)? ')'));
+	
+InitConstr: LocVarDecl | FactGoal;
+
+FactGoal: ('fact'|'goal') value=InstVal ('at' params=AtParams)?;
+
+ConstDecl returns ConstLiteral: 'const' name=ID '=' value=ConstExpr;
+
+AtParams: AtParamsNamed | (=> AtParamsPos);
+AtParamsNamed returns AtParams:  ('start' '=' start=IntvOrDflt)? & ('duration' '=' duration=IntvOrDflt)? & ('end' '=' end=IntvOrDflt)?;
+AtParamsPos returns AtParams: (start=IntvOrDflt (duration=IntvOrDflt (end=IntvOrDflt)?)?)?;
+
+TimePointOp: ( ('start'|'end') '(' value=GenericExpression ')');
+
+EnumLiteral returns ConstLiteral: name=ID;
+IntvOrDflt : ('_' | Interval);
+Interval : ( '[' lb=NumAndUnit SEP ub=NumAndUnit']') | lbub=NumAndUnit;
+
+NumAndUnit: (Number (ID)?);
+//Number_		: '_' | Number;
+Number		: PosNumber | NegNumber;
+PosNumber returns ecore::EInt: ('+')? (INT |'INF');
+NegNumber returns ecore::EInt: '-' (INT |'INF');
+
+QUALID : ID('.'ID)*;
+ID_ : '_' | ID;
+
+terminal SL_ANNOTATION : '@' !('\n'|'\r')* ('\r'? '\n')?;
+terminal BR_ANNOTATION : '@(' -> ')';
+terminal DIRECTIVE : '$' !('\n'|'\r')* ('\r'? '\n')?;
+
+terminal SEP : (',' | ';');
+terminal ID  		: ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
+terminal INT returns ecore::EInt: ('0'..'9') ('0'..'9'|'_')*;
+terminal ML_COMMENT	: '/*' -> '*/';
+terminal SL_COMMENT 	: '//' !('\n'|'\r')* ('\r'? '\n')?;
+
+terminal WS			: (' '|'\t'|'\r'|'\n')+;
+
+terminal ANY_OTHER: .;

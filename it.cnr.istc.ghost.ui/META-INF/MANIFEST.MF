@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: it.cnr.istc.ghost.ui
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: it.cnr.istc.ghost.ui; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: it.cnr.istc.ghost,
+ it.cnr.istc.ghost.ide,
+ org.eclipse.xtext.ui,
+ org.eclipse.xtext.ui.shared,
+ org.eclipse.xtext.ui.codetemplates.ui,
+ org.eclipse.ui.editors;bundle-version="3.5.0",
+ org.eclipse.ui.ide;bundle-version="3.5.0",
+ org.eclipse.ui,
+ org.eclipse.compare,
+ org.eclipse.xtext.builder,
+ org.eclipse.xtend.lib;resolution:=optional,
+ org.eclipse.xtext.xbase.lib
+Import-Package: org.apache.log4j
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: it.cnr.istc.ghost.ui.contentassist,
+ it.cnr.istc.ghost.ui.quickfix,
+ it.cnr.istc.ghost.ui.internal
+Bundle-Activator: it.cnr.istc.ghost.ui.internal.GhostActivator
