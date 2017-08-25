@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <relativePath>../it.cnr.istc.ghost.releng/pom.xml</relativePath>
+    <groupId>it.cnr.istc.ghost</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>it.cnr.istc.ghost.sdk</artifactId>
+  <packaging>eclipse-feature</packaging>
+
+  <name>Ghost Feature</name>
+</project>

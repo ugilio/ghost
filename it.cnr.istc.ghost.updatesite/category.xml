@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+	<feature url="features/it.cnr.istc.ghost.sdk_0.0.0.jar" id="it.cnr.istc.ghost.sdk" version="0.0.0">
+		<category name="it.cnr.istc.ghost"/>
+	</feature>
+	<category-def name="it.cnr.istc.ghost" label="Ghost"/>
+</site>
