@@ -22,8 +22,8 @@ SimpleType: IntDecl | EnumDecl;
 ComponentType : SvDecl | ResourceDecl;
 IntDecl :  (externality=Externality)? 'type'name=ID '=' 'int' value=Interval;
 EnumDecl : (externality=Externality)? 'type'name=ID '=' 'enum' '(' (values+=EnumLiteral (SEP values+=EnumLiteral)*)? ')';
-SvDecl :  (externality=Externality)? 'type'name=ID '=' 'sv' (parent=[SvDecl])? body=SvBody;
-ResourceDecl :  (externality=Externality)? 'type'name=ID '=' 'resource' (parent=[ResourceDecl])? body=ResourceBody;
+SvDecl :  (externality=Externality)? 'type'name=ID '=' 'sv' (parent=[SvDecl|QUALID])? body=SvBody;
+ResourceDecl :  (externality=Externality)? 'type'name=ID '=' 'resource' (parent=[ResourceDecl|QUALID])? body=ResourceBody;
 
 SvBody : ('('
 	transitions+=UnnamedTransitionSection
@@ -59,7 +59,7 @@ TriggerType : ResSimpleInstVal | SimpleInstVal;
 
 ResConstr: type=ResourceAction res=QualifInstVal;
 
-ObjVarDecl : name=ID ':' type=[ComponentType];
+ObjVarDecl : name=ID ':' type=[ComponentType|QUALID];
 
 
 ResourceBody : ('('(val1=ConstExpr (SEP+ val2=ConstExpr)? SEP*)?
@@ -72,9 +72,9 @@ ResSimpleInstVal: type=ResourceAction '(' arg=ID_ ')';
 
 
 
-FormalParList: '(' (types+=[SimpleType] (names+=ID_)? (SEP+ types+=[SimpleType] (names+=ID_)? )* SEP* )? ')';
+FormalParList: '(' (types+=[SimpleType|QUALID] (names+=ID_)? (SEP+ types+=[SimpleType|QUALID] (names+=ID_)? )* SEP* )? ')';
 ArgList: '(' (values+=GenericExpression (SEP+ values+=GenericExpression)* SEP* )? ')';
-BindList: '['(varNames+=ID '=')? values+=[CompDecl] (SEP+ (varNames+=ID '=')? values+=[CompDecl] )* SEP* ']';
+BindList: '['(varNames+=ID '=')? values+=[CompDecl|QUALID] (SEP+ (varNames+=ID '=')? values+=[CompDecl|QUALID] )* SEP* ']';
 
 LocVarDecl: 'var' name=ID '=' value=RValue;
 RValue: (=>TemporalExp) | GenericExpression;
@@ -109,7 +109,7 @@ enum Controllability: CONTROLLABLE='contr' | UNCONTROLLABLE='uncontr';
 enum ResourceAction: REQUIRE='require' | PRODUCE='produce' | CONSUME='consume';
 
 CompDecl : NamedCompDecl | AnonSVDecl | AnonResDecl;
-NamedCompDecl : (externality=Externality)? 'comp' name=ID ':' type=[ComponentType] body=CompBody;
+NamedCompDecl : (externality=Externality)? 'comp' name=ID ':' type=[ComponentType|QUALID] body=CompBody;
 AnonSVDecl : (externality=Externality)? 'comp' name=ID ':' 'sv' body=CompSVBody;
 AnonResDecl : (externality=Externality)? 'comp' name=ID ':' 'resource' body=CompResBody;
 
