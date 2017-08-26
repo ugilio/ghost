@@ -12,7 +12,7 @@ Ghost: {Ghost}
 	
 DomainDecl: 'domain' name=ID;
 ProblemDecl: 'problem' name=ID;
-ImportDecl: 'import' name=ID;
+ImportDecl: 'import' importedNamespace=ID;
 
 TopLevelDeclaration: TypeDecl | CompDecl | ConstDecl | InitSection;
 
