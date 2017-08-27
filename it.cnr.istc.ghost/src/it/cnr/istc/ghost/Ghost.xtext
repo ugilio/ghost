@@ -149,8 +149,8 @@ Interval : ( '[' lb=NumAndUnit SEP ub=NumAndUnit']') | lbub=NumAndUnit;
 NumAndUnit: (Number (ID)?);
 //Number_		: '_' | Number;
 Number		: PosNumber | NegNumber;
-PosNumber returns ecore::EInt: ('+')? (INT |'INF');
-NegNumber returns ecore::EInt: '-' (INT |'INF');
+PosNumber returns ecore::ELong: ('+')? (INT |'INF');
+NegNumber returns ecore::ELong: '-' (INT |'INF');
 
 QUALID : ID('.'ID)*;
 ID_ : '_' | ID;
@@ -161,7 +161,7 @@ terminal DIRECTIVE : '$' !('\n'|'\r')* ('\r'? '\n')?;
 
 terminal SEP : (',' | ';');
 terminal ID  		: ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
-terminal INT returns ecore::EInt: ('0'..'9') ('0'..'9'|'_')*;
+terminal INT returns ecore::ELong: ('0'..'9') ('0'..'9'|'_')*;
 terminal ML_COMMENT	: '/*' -> '*/';
 terminal SL_COMMENT 	: '//' !('\n'|'\r')* ('\r'? '\n')?;
 
