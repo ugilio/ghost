@@ -3,6 +3,13 @@
  */
 package it.cnr.istc.ghost.validation
 
+import org.eclipse.xtext.validation.Check
+import it.cnr.istc.ghost.ghost.SvDecl
+import it.cnr.istc.ghost.ghost.GhostPackage
+import java.util.HashSet
+import it.cnr.istc.ghost.ghost.ResourceDecl
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EReference
 
 /**
  * This class contains custom validation rules. 
@@ -11,15 +18,45 @@ package it.cnr.istc.ghost.validation
  */
 class GhostValidator extends AbstractGhostValidator {
 	
-//	public static val INVALID_NAME = 'invalidName'
-//
-//	@Check
-//	def checkGreetingStartsWithCapital(Greeting greeting) {
-//		if (!Character.isUpperCase(greeting.name.charAt(0))) {
-//			warning('Name should start with a capital', 
-//					GhostPackage.Literals.GREETING__NAME,
-//					INVALID_NAME)
-//		}
-//	}
+	public static val CYCLIC_HIERARCHY = 'cyclicHierarchy'
+
+	// Checks for type hierarchy
+
+	private def dispatch EObject getParent(SvDecl decl) {
+		return decl.parent;
+	}
+
+	private def dispatch EObject getParent(ResourceDecl decl) {
+		return decl.parent;
+	}
 	
+	private def dispatch EObject getParent(Object o) {
+		return null;
+	}
+	
+	protected def checkHierarcyCycles(EObject decl, EReference feature) {
+		val visited = new HashSet<EObject>();
+		var tmp = decl;
+		visited.add(tmp);
+		while (getParent(tmp)!=null) {
+			tmp = getParent(tmp);
+			if (visited.contains(tmp)) {
+				error('Cyclic dependency in type hierarchy', 
+						feature,
+						it.cnr.istc.ghost.validation.GhostValidator.CYCLIC_HIERARCHY)
+				return;
+			}
+			visited.add(tmp);
+		}
+	}
+		
+	@Check
+	def checkSVHierarcyCycles(SvDecl decl) {
+		checkHierarcyCycles(decl,GhostPackage.Literals.SV_DECL__PARENT);
+	}
+	
+	@Check
+	def checkResHierarcyCycles(ResourceDecl decl) {
+		checkHierarcyCycles(decl,GhostPackage.Literals.RESOURCE_DECL__PARENT);
+	}
 }
