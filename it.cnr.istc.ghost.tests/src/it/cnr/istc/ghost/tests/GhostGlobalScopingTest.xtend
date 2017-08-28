@@ -227,5 +227,71 @@ import dom;
 		assertNotNull(impDom);
 		assertThat(impDom,is(dom.domain));
 	}
+
+	@Test
+	def void testIndirectImport1() {
+		val dom1 = parseHelper.parse('''
+domain dom1;
+type t1 = sv;
+		''')
+		val dom2 = parseHelper.parse('''
+domain dom2;
+import dom1;
+type t2 = sv t1;
+		''', dom1.eResource.resourceSet);
+		val result = parseHelper.parse('''
+import dom2;
+comp c : t1;
+		''', dom2.eResource.resourceSet);
 		
+		EcoreUtil2.resolveAll(result);
+		val type = EcoreUtil2.eAllOfType(result,NamedCompDecl).head?.type;
+		assertNotNull(type);
+		assertThat(type.eIsProxy,is(true));
+	}
+	
+	@Test
+	def void testIndirectImport2() {
+		val dom1 = parseHelper.parse('''
+domain dom1;
+type t1 = sv;
+		''')
+		val dom2 = parseHelper.parse('''
+domain dom2;
+import dom1;
+type t2 = sv t1;
+		''', dom1.eResource.resourceSet);
+		val result = parseHelper.parse('''
+import dom2;
+comp c : t2;
+		''', dom2.eResource.resourceSet);
+		
+		EcoreUtil2.resolveAll(result);
+		val type = EcoreUtil2.eAllOfType(result,NamedCompDecl).head?.type;
+		assertNotNull(type);
+		assertThat(type.eIsProxy,is(false));
+	}
+	
+	@Test
+	def void testIndirectImport3() {
+		val dom1 = parseHelper.parse('''
+domain dom1;
+type t1 = sv;
+		''')
+		val dom2 = parseHelper.parse('''
+domain dom2;
+import dom1;
+type t2 = sv t1;
+		''', dom1.eResource.resourceSet);
+		val result = parseHelper.parse('''
+import dom1;
+import dom2;
+comp c : t1;
+		''', dom2.eResource.resourceSet);
+		
+		EcoreUtil2.resolveAll(result);
+		val type = EcoreUtil2.eAllOfType(result,NamedCompDecl).head?.type;
+		assertNotNull(type);
+		assertThat(type.eIsProxy,is(false));
+	}
 }
