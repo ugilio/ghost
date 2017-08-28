@@ -33,152 +33,152 @@ class GhostConverterTest{
 	@Test
 	def void testToValueNoSign() {
 		val result = parseHelper.parse('''
-type test = int [0, 100];
+type test = int 100;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__UB).head;
-		val value = converter.toValue(intv.ub,node);
+		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
+		val value = converter.toValue(intv.lbub,node);
 		assertThat(value,is(100L));
 	}
 	
 	@Test
 	def void testToValuePositive() {
 		val result = parseHelper.parse('''
-type test = int [0, +100];
+type test = int +100;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__UB).head;
-		val value = converter.toValue(intv.ub,node);
+		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
+		val value = converter.toValue(intv.lbub,node);
 		assertThat(value,is(100L));
 	}
 	
 	@Test
 	def void testToValueNegative() {
 		val result = parseHelper.parse('''
-type test = int [0, -100];
+type test = int -100;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__UB).head;
-		val value = converter.toValue(intv.ub,node);
+		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
+		val value = converter.toValue(intv.lbub,node);
 		assertThat(value,is(-100L));
 	}
 	
 	@Test
 	def void testToValueZero() {
 		val result = parseHelper.parse('''
-type test = int [0, 0];
+type test = int 0;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__UB).head;
-		val value = converter.toValue(intv.ub,node);
+		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
+		val value = converter.toValue(intv.lbub,node);
 		assertThat(value,is(0L));
 	}
 	
 	@Test
 	def void testToValuePositiveZero() {
 		val result = parseHelper.parse('''
-type test = int [0, +0];
+type test = int +0;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__UB).head;
-		val value = converter.toValue(intv.ub,node);
+		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
+		val value = converter.toValue(intv.lbub,node);
 		assertThat(value,is(0L));
 	}
 	
 	@Test
 	def void testToValueNegativeZero() {
 		val result = parseHelper.parse('''
-type test = int [0, -0];
+type test = int -0;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__UB).head;
-		val value = converter.toValue(intv.ub,node);
+		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
+		val value = converter.toValue(intv.lbub,node);
 		assertThat(value,is(0L));
 	}
 	
 	@Test
 	def void testToValueInfinity() {
 		val result = parseHelper.parse('''
-type test = int [0, INF];
+type test = int INF;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__UB).head;
-		val value = converter.toValue(intv.ub,node);
+		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
+		val value = converter.toValue(intv.lbub,node);
 		assertThat(value,is(Long.MAX_VALUE));
 	}
 	
 	@Test
 	def void testToValuePositiveInfinity() {
 		val result = parseHelper.parse('''
-type test = int [0, +INF];
+type test = int +INF;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__UB).head;
-		val value = converter.toValue(intv.ub,node);
+		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
+		val value = converter.toValue(intv.lbub,node);
 		assertThat(value,is(Long.MAX_VALUE));
 	}
 	
 	@Test
 	def void testToValueNegativeInfinity() {
 		val result = parseHelper.parse('''
-type test = int [0, -INF];
+type test = int -INF;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__UB).head;
-		val value = converter.toValue(intv.ub,node);
+		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
+		val value = converter.toValue(intv.lbub,node);
 		assertThat(value,is(Long.MIN_VALUE));
 	}
 	
 	@Test
 	def void testToValueSpaceSign() {
 		val result = parseHelper.parse('''
-type test = int [0, - 100];
+type test = int - 100;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__UB).head;
-		val value = converter.toValue(intv.ub,node);
+		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
+		val value = converter.toValue(intv.lbub,node);
 		assertThat(value,is(-100L));
 	}
 	
 	@Test
 	def void testToValuePositiveInfinitySpace() {
 		val result = parseHelper.parse('''
-type test = int [0, + INF];
+type test = int + INF;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__UB).head;
-		val value = converter.toValue(intv.ub,node);
+		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
+		val value = converter.toValue(intv.lbub,node);
 		assertThat(value,is(Long.MAX_VALUE));
 	}
 	
 	@Test
 	def void testToValueNegativeInfinitySpace() {
 		val result = parseHelper.parse('''
-type test = int [0, - INF];
+type test = int - INF;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__UB).head;
-		val value = converter.toValue(intv.ub,node);
+		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
+		val value = converter.toValue(intv.lbub,node);
 		assertThat(value,is(Long.MIN_VALUE));
 	}
 	
 	@Test(expected = ValueConverterException)
 	def void testToValueEmpty() {
 		val result = parseHelper.parse('''
-type test = int [0, 100];
+type test = int 100;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__UB).head;
+		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
 		converter.toValue("",node);
 	}
 	
 	@Test(expected = ValueConverterException)
 	def void testToValueInvalid() {
 		val result = parseHelper.parse('''
-type test = int [0, 100];
+type test = int 100;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__UB).head;
+		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
 		converter.toValue("onehundred",node);
 	}
 	
