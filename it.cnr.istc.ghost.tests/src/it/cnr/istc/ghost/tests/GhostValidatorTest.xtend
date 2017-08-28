@@ -84,5 +84,87 @@ type t3 = resource t2(30);
 			GhostValidator.CYCLIC_HIERARCHY);
 	}
 	
+	//Empty enum tests
+	
+	@Test
+	def void testEmptyEnum() {
+		val model = '''
+type en = enum();
+		'''.parse;
+		model.assertError(GhostPackage.Literals.ENUM_DECL,
+			GhostValidator.EMPTY_ENUM);
+	}
+	
+	//Duplicate identifiers test
+
+	@Test
+	def void testDupl1() {
+		val model = '''
+type t1 = sv;
+type t1 = sv;
+		'''.parse;
+		model.assertError(GhostPackage.Literals.GHOST, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDupl2() {
+		val model = '''
+type t1 = sv;
+comp t1 : sv;
+		'''.parse;
+		model.assertError(GhostPackage.Literals.GHOST, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDupl3() {
+		val model = '''
+type t1 = int;
+const t1 = 10;
+		'''.parse;
+		model.assertError(GhostPackage.Literals.GHOST, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDupl4() {
+		val model = '''
+comp t1 : sv;
+const t1 = 10;
+		'''.parse;
+		model.assertError(GhostPackage.Literals.GHOST, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDuplImport1() {
+		val model = '''
+import dom;
+import dom;
+		'''.parse;
+		model.assertError(GhostPackage.Literals.GHOST, GhostValidator.DUPLICATE_IMPORT);
+	}
+	
+	@Test
+	def void testDuplImport2() {
+		val dom = '''
+domain dom;
+		'''.parse;
+		val model = '''
+import dom;
+import dom;
+		'''.parse(dom.eResource.resourceSet);
+		model.assertError(GhostPackage.Literals.GHOST, GhostValidator.DUPLICATE_IMPORT);
+	}
+	
+	@Test
+	def void testNoDuplDeclImport() {
+		val dom = '''
+domain dom;
+		'''.parse;
+		val model = '''
+import dom;
+type dom = sv;
+		'''.parse(dom.eResource.resourceSet);
+		model.assertNoErrors;
+	}
+	
 	
 }
