@@ -183,6 +183,17 @@ type test = int 100;
 	}
 	
 	@Test
+	def void testToValueSeparator() {
+		val result = parseHelper.parse('''
+type test = int 100_000;
+		''')
+		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
+		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
+		val value = converter.toValue(intv.lbub,node);
+		assertThat(value,is(100000L));
+	}
+	
+	@Test
 	def void testToStringPositive() {
 		val value = converter.toString(100L);
 		assertThat(value,is(equalTo("100")));

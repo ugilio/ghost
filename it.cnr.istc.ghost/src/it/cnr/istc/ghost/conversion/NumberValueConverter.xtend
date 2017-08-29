@@ -15,7 +15,7 @@ class NumberValueConverter extends AbstractValueConverter<Long> implements IValu
 	override toValue(String string, INode node) throws ValueConverterException {
 		if (Strings.isEmpty(string))
 			throw new ValueConverterException("Couldn't convert empty string to a long value.", node, null);
-		val clean = string.replace(" ","");
+		val clean = string.replace(" ","").replace("_","");
 		if ("INF".equals(clean))
 			return MAX_VALUE
 		else if ("+INF".equals(clean))
