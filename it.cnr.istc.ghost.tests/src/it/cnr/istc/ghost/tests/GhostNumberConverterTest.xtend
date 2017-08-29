@@ -22,7 +22,7 @@ import org.eclipse.xtext.conversion.ValueConverterException
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
-class GhostConverterTest{
+class GhostNumberConverterTest{
 
 	@Inject
 	ParseHelper<Ghost> parseHelper
