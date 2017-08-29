@@ -5,7 +5,6 @@ package it.cnr.istc.ghost.tests
 
 import com.google.inject.Inject
 import it.cnr.istc.ghost.ghost.Ghost
-import it.cnr.istc.ghost.conversion.NumberValueConverter
 import org.eclipse.xtext.junit4.InjectWith
 import org.eclipse.xtext.junit4.XtextRunner
 import org.eclipse.xtext.junit4.util.ParseHelper
@@ -16,9 +15,6 @@ import static org.junit.Assert.*
 import static org.hamcrest.CoreMatchers.*
 import org.eclipse.xtext.EcoreUtil2
 import it.cnr.istc.ghost.ghost.Interval
-import org.eclipse.xtext.nodemodel.util.NodeModelUtils
-import it.cnr.istc.ghost.ghost.GhostPackage
-import org.eclipse.xtext.conversion.ValueConverterException
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -27,17 +23,13 @@ class GhostNumberConverterTest{
 	@Inject
 	ParseHelper<Ghost> parseHelper
 	
-	@Inject
-	NumberValueConverter converter;
-
 	@Test
 	def void testToValueNoSign() {
 		val result = parseHelper.parse('''
 type test = int 100;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(100L));
 	}
 	
@@ -47,8 +39,7 @@ type test = int 100;
 type test = int +100;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(100L));
 	}
 	
@@ -58,8 +49,7 @@ type test = int +100;
 type test = int -100;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(-100L));
 	}
 	
@@ -69,8 +59,7 @@ type test = int -100;
 type test = int 0;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(0L));
 	}
 	
@@ -80,8 +69,7 @@ type test = int 0;
 type test = int +0;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(0L));
 	}
 	
@@ -91,8 +79,7 @@ type test = int +0;
 type test = int -0;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(0L));
 	}
 	
@@ -102,8 +89,7 @@ type test = int -0;
 type test = int INF;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(Long.MAX_VALUE));
 	}
 	
@@ -113,8 +99,7 @@ type test = int INF;
 type test = int +INF;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(Long.MAX_VALUE));
 	}
 	
@@ -124,8 +109,7 @@ type test = int +INF;
 type test = int -INF;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(Long.MIN_VALUE));
 	}
 	
@@ -135,8 +119,7 @@ type test = int -INF;
 type test = int - 100;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(-100L));
 	}
 	
@@ -146,8 +129,7 @@ type test = int - 100;
 type test = int + INF;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(Long.MAX_VALUE));
 	}
 	
@@ -157,64 +139,17 @@ type test = int + INF;
 type test = int - INF;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(Long.MIN_VALUE));
 	}
-	
-	@Test(expected = ValueConverterException)
-	def void testToValueEmpty() {
-		val result = parseHelper.parse('''
-type test = int 100;
-		''')
-		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		converter.toValue("",node);
-	}
-	
-	@Test(expected = ValueConverterException)
-	def void testToValueInvalid() {
-		val result = parseHelper.parse('''
-type test = int 100;
-		''')
-		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		converter.toValue("onehundred",node);
-	}
-	
+
 	@Test
 	def void testToValueSeparator() {
 		val result = parseHelper.parse('''
 type test = int 100_000;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(100000L));
 	}
-	
-	@Test
-	def void testToStringPositive() {
-		val value = converter.toString(100L);
-		assertThat(value,is(equalTo("100")));
-	}
-	
-	@Test
-	def void testToStringNegative() {
-		val value = converter.toString(-100L);
-		assertThat(value,is(equalTo("-100")));
-	}
-	
-	@Test
-	def void testToStringPositiveInfinity() {
-		val value = converter.toString(Long.MAX_VALUE);
-		assertThat(value,is(equalTo("+INF")));
-	}
-	
-	@Test
-	def void testToStringNegativeInfinity() {
-		val value = converter.toString(Long.MIN_VALUE);
-		assertThat(value,is(equalTo("-INF")));
-	}
-	
 }

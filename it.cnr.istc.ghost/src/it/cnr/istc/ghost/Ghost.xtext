@@ -146,7 +146,7 @@ EnumLiteral returns ConstLiteral: name=ID;
 IntvOrDflt : ('_' | Interval);
 Interval : ( '[' lb=NumAndUnit SEP ub=NumAndUnit']') | lbub=NumAndUnit;
 
-NumAndUnit: (Number (ID)?);
+NumAndUnit returns ecore::ELong: (Number (ID)?);
 //Number_		: '_' | Number;
 Number		: PosNumber | NegNumber;
 PosNumber returns ecore::ELong: ('+')? (INT |'INF');

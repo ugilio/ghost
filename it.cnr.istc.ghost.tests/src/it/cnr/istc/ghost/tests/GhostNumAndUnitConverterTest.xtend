@@ -15,9 +15,6 @@ import static org.junit.Assert.*
 import static org.hamcrest.CoreMatchers.*
 import org.eclipse.xtext.EcoreUtil2
 import it.cnr.istc.ghost.ghost.Interval
-import org.eclipse.xtext.nodemodel.util.NodeModelUtils
-import it.cnr.istc.ghost.ghost.GhostPackage
-import org.eclipse.xtext.conversion.ValueConverterException
 import it.cnr.istc.ghost.conversion.NumAndUnitValueConverter
 
 @RunWith(XtextRunner)
@@ -29,15 +26,14 @@ class GhostNumAndUnitConverterTest{
 	
 	@Inject
 	NumAndUnitValueConverter converter;
-
+	
 	@Test
 	def void testToValue1() {
 		val result = parseHelper.parse('''
 type test = int 100 ms;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(100L));
 	}
 	
@@ -47,8 +43,7 @@ type test = int 100 ms;
 type test = int 100 s;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(100_000L));
 	}
 	
@@ -58,8 +53,7 @@ type test = int 100 s;
 type test = int INF s;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(equalTo(Long.MAX_VALUE)));
 	}
 	
@@ -69,19 +63,18 @@ type test = int INF s;
 type test = int -INF s;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		val value = converter.toValue(intv.lbub,node);
+		val value = intv.lbub;
 		assertThat(value,is(equalTo(Long.MIN_VALUE)));
 	}
 	
-	@Test(expected = ValueConverterException)
+	@Test()
 	def void testInvalidUnit() {
 		val result = parseHelper.parse('''
 type test = int 10 bananas;
 		''')
-		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val node = NodeModelUtils.findNodesForFeature(intv,GhostPackage.Literals.INTERVAL__LBUB).head;
-		converter.toValue(intv.lbub,node);
+		val err = result.eResource.errors;
+		assertThat(err.size,is(1));
+		assertThat(err.get(0).message,is(equalTo("Undefined unit: 'bananas'")));
 	}
 	
 	@Test
