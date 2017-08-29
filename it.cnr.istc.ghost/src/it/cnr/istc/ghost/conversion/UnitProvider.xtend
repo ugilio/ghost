@@ -104,10 +104,22 @@ class UnitProvider {
 			units.add(pos, element);
 		}
 
+		private def isUnary(String s) {
+			"+".equals(s) || '-'.equals(s);
+		}
+		
+		private def boolean hasUnit(String[] segs) {
+			if (segs.length <= 1)
+				return false;
+			if (segs.length == 2 && isUnary(segs.get(0)))
+				return false;
+			return true;
+		}
+
 		private def Long expand(String string, int offset, Set<String> processing) {
-			val segs = string.split("\\s");
+			var segs = string.split("\\s");
 			try {
-			if (segs.length > 1) {
+			if (hasUnit(segs)) {
 				val unit = segs.get(segs.length-1);
 				if (processing.contains(unit))
 					throw new UnitProviderException(String.format("Recursive unit definition: '%s'", unit));
