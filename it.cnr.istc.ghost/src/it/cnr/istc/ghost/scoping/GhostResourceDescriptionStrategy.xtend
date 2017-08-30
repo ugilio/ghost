@@ -13,7 +13,7 @@ import it.cnr.istc.ghost.ghost.Ghost
 class GhostResourceDescriptionStrategy extends DefaultResourceDescriptionStrategy {
 	
 	private def isInDomain(EObject obj) {
-		return EcoreUtil2.getContainerOfType(obj,Ghost)?.domain != null;
+		return EcoreUtil2.getContainerOfType(obj,Ghost)?.domain !== null;
 	}
 	
 	override createEObjectDescriptions(EObject eObject, IAcceptor<IEObjectDescription> acceptor) {

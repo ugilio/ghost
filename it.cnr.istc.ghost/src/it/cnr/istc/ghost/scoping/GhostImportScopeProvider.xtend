@@ -26,7 +26,7 @@ class GhostImportScopeProvider extends ImportedNamespaceAwareLocalScopeProvider 
 	//Allow importedNamespace from non-string features
 	override getImportedNamespace(EObject object){
 		val feature = object.eClass().getEStructuralFeature("importedNamespace");
-		if (feature != null) {
+		if (feature !== null) {
 			if (String.equals(feature.EType.instanceClass))
 				return object.eGet(feature) as String;
 			//FIXME: this is hackish. Get value of the feature from the text node...

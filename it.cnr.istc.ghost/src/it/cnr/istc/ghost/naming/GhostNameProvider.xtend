@@ -20,7 +20,7 @@ class GhostNameProvider {
 	
 	protected def static dispatch doGetObjName(EObject obj) {
 		val feature = obj.eClass().getEStructuralFeature("name");
-		if (feature != null && String.equals(feature.getEType().getInstanceClass()))
+		if (feature !== null && String.equals(feature.getEType().getInstanceClass()))
 			return obj.eGet(feature) as String;
 		return null;
 	}

@@ -47,7 +47,7 @@ class GhostValidator extends AbstractGhostValidator {
 		val visited = new HashSet<EObject>();
 		var tmp = decl;
 		visited.add(tmp);
-		while (getParent(tmp)!=null) {
+		while (getParent(tmp)!==null) {
 			tmp = getParent(tmp);
 			if (visited.contains(tmp)) {
 				error('Cyclic dependency in type hierarchy', 
@@ -83,7 +83,7 @@ class GhostValidator extends AbstractGhostValidator {
 	}
 
 	private def getByName(Object name, List<EObject> list) {
-		if (name!=null)
+		if (name!==null)
 			for (o : list)
 				if (name.equals(getObjName(o)))
 					return o;
@@ -95,7 +95,7 @@ class GhostValidator extends AbstractGhostValidator {
 		val list = cont.eGet(feat) as List<EObject>;
 		for (o : list) {
 			val name = getObjName(o)
-			if (name!=null && getByName(name,list) != o)
+			if (name!==null && getByName(name,list) != o)
 				error(String.format(msg,name),feat,list.indexOf(o),id);
 		}
 	}

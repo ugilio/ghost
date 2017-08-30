@@ -19,23 +19,23 @@ class GhostQualifiedNameProvider extends DefaultDeclarativeQualifiedNameProvider
 
 	private def getNamespaceRoot(EObject obj) {
 		val root = EcoreUtil2.getContainerOfType(obj,Ghost);
-		if (root.domain != null)
+		if (root.domain !== null)
 			return QualifiedName.create(root.domain.name);
-		if (root.problem != null)
+		if (root.problem !== null)
 			return QualifiedName.create(root.problem.name);
 		return null;
 	}
 	
 	private def isLocal(EObject obj) {
-		return EcoreUtil2.getContainerOfType(obj,TransConstrBody) != null
-			|| EcoreUtil2.getContainerOfType(obj,SyncBody) != null
-			|| EcoreUtil2.getContainerOfType(obj,InitSection) != null
+		return EcoreUtil2.getContainerOfType(obj,TransConstrBody) !== null
+			|| EcoreUtil2.getContainerOfType(obj,SyncBody) !== null
+			|| EcoreUtil2.getContainerOfType(obj,InitSection) !== null
 	}
 	
 	private def isInArgList(EObject obj) {
-		return EcoreUtil2.getContainerOfType(obj,ArgList) != null
-			|| EcoreUtil2.getContainerOfType(obj,FormalParList) != null
-			|| EcoreUtil2.getContainerOfType(obj,BindList) != null
+		return EcoreUtil2.getContainerOfType(obj,ArgList) !== null
+			|| EcoreUtil2.getContainerOfType(obj,FormalParList) !== null
+			|| EcoreUtil2.getContainerOfType(obj,BindList) !== null
 	}
 	
 	override QualifiedName getFullyQualifiedName(EObject obj) {
