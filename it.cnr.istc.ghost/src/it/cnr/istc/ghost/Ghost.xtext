@@ -127,7 +127,7 @@ CompResBody : (bindings=BindList)?('(' (val1=ConstExpr (SEP+ val2=ConstExpr)? SE
 ')')?;
 
 
-InitSection: 'init' ((values+=InitConstr) | (->'('
+InitSection: {InitSection} 'init' ((values+=InitConstr) | (->'('
 	(values+=InitConstr (SEP+ values+=InitConstr)* SEP*)? ')'));
 	
 InitConstr: LocVarDecl | FactGoal;

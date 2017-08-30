@@ -166,5 +166,12 @@ type dom = sv;
 		model.assertNoErrors;
 	}
 	
+	@Test
+	def void testNoDuplInit() {
+		val model = '''
+init();
+		'''.parse;
+		model.assertNoErrors;
+	}
 	
 }
