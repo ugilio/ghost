@@ -97,12 +97,18 @@ TemporalRelation:
 GenericExpression: EqExp;
 
 
+ComputedConst returns ecore::EJavaObject: ID;
+BaseConstExpr: (ConstExpr) computed=ComputedConst;
 
-CBasicExp returns CExpr: '(' CSumExp {CExpr.left=current}')' | placeholder?='_' | literal=[ConstLiteral] | ((=>num=NumAndUnit) | (intv=Interval));
-CTerm returns CExpr: CBasicExp {CExpr.left=current} (ops+=('*' | '/' | '%') right+=CBasicExp)*;
-CSumExp returns CExpr: CTerm {CExpr.left=current} (ops+=('+' | '-' ) right+=CTerm)*;
+ConstFactor: {ConstSubExp} '(' value=ConstSumExp ')'
+	| {ConstLiteralUsage} value=[ConstLiteral]
+	| {ConstNumber}value=NumAndUnit
+	| {ConstIntv}(value=StrictInterval);
+ConstTerm: {ConstTerm} left=ConstFactor (ops+=('*' | '/' | '%') right+=ConstFactor)*;
+ConstSumExp: {ConstSumExp} left=ConstTerm (ops+=('+' | '-' ) right+=ConstTerm)*;
+PlaceHolder: {PlaceHolder} '_';
 
-ConstExpr : CSumExp;
+ConstExpr : ConstSumExp | PlaceHolder;
 
 enum Externality : PLANNED='planned' | EXTERNAL='external';
 enum Controllability: CONTROLLABLE='contr' | UNCONTROLLABLE='uncontr';
@@ -134,7 +140,7 @@ InitConstr: LocVarDecl | FactGoal;
 
 FactGoal: ('fact'|'goal') value=InstVal ('at' params=AtParams)?;
 
-ConstDecl returns ConstLiteral: 'const' name=ID '=' value=ConstExpr;
+ConstDecl: 'const' name=ID '=' value=ConstExpr;
 
 AtParams: AtParamsNamed | (=> AtParamsPos);
 AtParamsNamed returns AtParams:  ('start' '=' start=IntvOrDflt)? & ('duration' '=' duration=IntvOrDflt)? & ('end' '=' end=IntvOrDflt)?;
@@ -142,9 +148,11 @@ AtParamsPos returns AtParams: (start=IntvOrDflt (duration=IntvOrDflt (end=IntvOr
 
 TimePointOp: ( ('start'|'end') '(' value=GenericExpression ')');
 
-EnumLiteral returns ConstLiteral: name=ID;
+EnumLiteral: name=ID;
+ConstLiteral: (ConstDecl | EnumLiteral);
 IntvOrDflt : ('_' | Interval);
 Interval : ( '[' lb=NumAndUnit SEP ub=NumAndUnit']') | lbub=NumAndUnit;
+StrictInterval returns Interval: '[' lb=NumAndUnit SEP ub=NumAndUnit']';
 
 NumAndUnit returns ecore::ELong: (Number (ID)?);
 //Number_		: '_' | Number;

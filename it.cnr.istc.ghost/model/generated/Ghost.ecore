@@ -33,7 +33,7 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="EnumDecl" eSuperTypes="#//SimpleType">
     <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"
-        eType="#//ConstLiteral" containment="true"/>
+        eType="#//EnumLiteral" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="SvDecl" eSuperTypes="#//ComponentType">
     <eStructuralFeatures xsi:type="ecore:EReference" name="parent" eType="#//SvDecl"/>
@@ -179,20 +179,28 @@
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GenericExpression" eSuperTypes="#//SingleTransConstr #//SingleSyncConstr #//RValue"/>
-  <eClassifiers xsi:type="ecore:EClass" name="CExpr" eSuperTypes="#//ConstExpr">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="left" eType="#//CExpr"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="placeholder" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="literal" eType="#//ConstLiteral"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="num" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="intv" eType="#//Interval"
+  <eClassifiers xsi:type="ecore:EClass" name="BaseConstExpr"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ConstFactor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ConstTerm">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="left" eType="#//ConstFactor"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="ops" unique="false" upperBound="-1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="right" upperBound="-1"
-        eType="#//CExpr" containment="true"/>
+        eType="#//ConstFactor" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ConstExpr"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ConstSumExp" eSuperTypes="#//ConstExpr">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="left" eType="#//ConstTerm"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="ops" unique="false" upperBound="-1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="right" upperBound="-1"
+        eType="#//ConstTerm" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PlaceHolder" eSuperTypes="#//ConstExpr"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ConstExpr" eSuperTypes="#//BaseConstExpr">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="computed" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="Externality">
     <eLiterals name="PLANNED" literal="planned"/>
     <eLiterals name="EXTERNAL" value="1" literal="external"/>
@@ -250,8 +258,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="params" eType="#//AtParams"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ConstLiteral" eSuperTypes="#//TopLevelDeclaration">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ConstDecl" eSuperTypes="#//TopLevelDeclaration #//ConstLiteral">
     <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//ConstExpr"
         containment="true"/>
   </eClassifiers>
@@ -267,10 +274,28 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//GenericExpression"
         containment="true"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EnumLiteral" eSuperTypes="#//ConstLiteral"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ConstLiteral">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IntvOrDflt"/>
   <eClassifiers xsi:type="ecore:EClass" name="Interval" eSuperTypes="#//IntvOrDflt">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="lb" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="ub" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="lbub" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConstSubExp" eSuperTypes="#//ConstFactor">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//ConstSumExp"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConstLiteralUsage" eSuperTypes="#//ConstFactor">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//ConstLiteral"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConstNumber" eSuperTypes="#//ConstFactor">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConstIntv" eSuperTypes="#//ConstFactor">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//Interval"
+        containment="true"/>
   </eClassifiers>
 </ecore:EPackage>

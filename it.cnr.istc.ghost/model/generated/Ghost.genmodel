@@ -153,16 +153,22 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//TemporalRelation/r"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//GenericExpression"/>
-    <genClasses ecoreClass="Ghost.ecore#//CExpr">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//CExpr/left"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//CExpr/placeholder"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//CExpr/literal"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//CExpr/num"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//CExpr/intv"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//CExpr/ops"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//CExpr/right"/>
+    <genClasses ecoreClass="Ghost.ecore#//BaseConstExpr"/>
+    <genClasses ecoreClass="Ghost.ecore#//ConstFactor"/>
+    <genClasses ecoreClass="Ghost.ecore#//ConstTerm">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//ConstTerm/left"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//ConstTerm/ops"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//ConstTerm/right"/>
     </genClasses>
-    <genClasses ecoreClass="Ghost.ecore#//ConstExpr"/>
+    <genClasses ecoreClass="Ghost.ecore#//ConstSumExp">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//ConstSumExp/left"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//ConstSumExp/ops"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//ConstSumExp/right"/>
+    </genClasses>
+    <genClasses ecoreClass="Ghost.ecore#//PlaceHolder"/>
+    <genClasses ecoreClass="Ghost.ecore#//ConstExpr">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//ConstExpr/computed"/>
+    </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//CompDecl">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//CompDecl/externality"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//CompDecl/name"/>
@@ -196,9 +202,8 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//FactGoal/value"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//FactGoal/params"/>
     </genClasses>
-    <genClasses ecoreClass="Ghost.ecore#//ConstLiteral">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//ConstLiteral/name"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//ConstLiteral/value"/>
+    <genClasses ecoreClass="Ghost.ecore#//ConstDecl">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//ConstDecl/value"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//AtParams">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//AtParams/start"/>
@@ -208,11 +213,27 @@
     <genClasses ecoreClass="Ghost.ecore#//TimePointOp">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//TimePointOp/value"/>
     </genClasses>
+    <genClasses ecoreClass="Ghost.ecore#//EnumLiteral"/>
+    <genClasses ecoreClass="Ghost.ecore#//ConstLiteral">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//ConstLiteral/name"/>
+    </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//IntvOrDflt"/>
     <genClasses ecoreClass="Ghost.ecore#//Interval">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//Interval/lb"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//Interval/ub"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//Interval/lbub"/>
+    </genClasses>
+    <genClasses ecoreClass="Ghost.ecore#//ConstSubExp">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//ConstSubExp/value"/>
+    </genClasses>
+    <genClasses ecoreClass="Ghost.ecore#//ConstLiteralUsage">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//ConstLiteralUsage/value"/>
+    </genClasses>
+    <genClasses ecoreClass="Ghost.ecore#//ConstNumber">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//ConstNumber/value"/>
+    </genClasses>
+    <genClasses ecoreClass="Ghost.ecore#//ConstIntv">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//ConstIntv/value"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>
