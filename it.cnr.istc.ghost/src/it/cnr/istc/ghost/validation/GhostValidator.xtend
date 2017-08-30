@@ -95,7 +95,7 @@ class GhostValidator extends AbstractGhostValidator {
 		val list = cont.eGet(feat) as List<EObject>;
 		for (o : list) {
 			val name = getObjName(o)
-			if (getByName(name,list) != o)
+			if (name!=null && getByName(name,list) != o)
 				error(String.format(msg,name),feat,list.indexOf(o),id);
 		}
 	}
