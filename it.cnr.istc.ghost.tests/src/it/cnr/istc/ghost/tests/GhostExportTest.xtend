@@ -92,9 +92,9 @@ init (fact AComponent.StateA at start=0;);
 TheDomain
 TheDomain.ANumType
 TheDomain.AEnumType
-TheDomain.AEnumType.en1
-TheDomain.AEnumType.en2
-TheDomain.AEnumType.en3
+TheDomain.en1
+TheDomain.en2
+TheDomain.en3
 TheDomain.ASVType
 TheDomain.ASVType.StateA
 TheDomain.ASVType.StateB

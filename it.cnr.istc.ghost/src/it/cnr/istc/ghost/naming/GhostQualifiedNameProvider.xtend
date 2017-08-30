@@ -13,6 +13,7 @@ import it.cnr.istc.ghost.ghost.ArgList
 import it.cnr.istc.ghost.ghost.FormalParList
 import it.cnr.istc.ghost.ghost.BindList
 import it.cnr.istc.ghost.ghost.ProblemDecl
+import it.cnr.istc.ghost.ghost.EnumLiteral
 
 class GhostQualifiedNameProvider extends DefaultDeclarativeQualifiedNameProvider {
 
@@ -55,7 +56,17 @@ class GhostQualifiedNameProvider extends DefaultDeclarativeQualifiedNameProvider
 	def protected QualifiedName qualifiedName(ProblemDecl decl) {
 		return QualifiedName.create(decl.name);
 	}
-
+	
+	//Enum literals names are at the resource scope
+	def protected QualifiedName qualifiedName(EnumLiteral literal) {
+		val root = getNamespaceRoot(literal);
+		return
+			if (root!==null)
+				root.append(literal.name)
+			else
+				QualifiedName.create(literal.name);
+	}
+	
 	override QualifiedName qualifiedName(Object ele) {
 		return null;
 	}
