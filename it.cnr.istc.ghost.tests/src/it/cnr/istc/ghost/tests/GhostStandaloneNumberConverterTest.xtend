@@ -6,8 +6,8 @@ package it.cnr.istc.ghost.tests
 import com.google.inject.Inject
 import it.cnr.istc.ghost.conversion.NumberValueConverter
 import org.eclipse.xtext.conversion.ValueConverterException
-import org.eclipse.xtext.junit4.InjectWith
-import org.eclipse.xtext.junit4.XtextRunner
+import org.eclipse.xtext.testing.InjectWith
+import org.eclipse.xtext.testing.XtextRunner
 import org.junit.Test
 import org.junit.runner.RunWith
 

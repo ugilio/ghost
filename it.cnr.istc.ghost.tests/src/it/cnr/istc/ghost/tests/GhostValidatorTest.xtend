@@ -5,13 +5,13 @@ package it.cnr.istc.ghost.tests
 
 import com.google.inject.Inject
 import it.cnr.istc.ghost.ghost.Ghost
-import org.eclipse.xtext.junit4.InjectWith
-import org.eclipse.xtext.junit4.XtextRunner
-import org.eclipse.xtext.junit4.util.ParseHelper
+import org.eclipse.xtext.testing.InjectWith
+import org.eclipse.xtext.testing.XtextRunner
+import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import org.eclipse.xtext.junit4.validation.ValidationTestHelper
+import org.eclipse.xtext.testing.validation.ValidationTestHelper
 import it.cnr.istc.ghost.ghost.GhostPackage
 import it.cnr.istc.ghost.validation.GhostValidator
 

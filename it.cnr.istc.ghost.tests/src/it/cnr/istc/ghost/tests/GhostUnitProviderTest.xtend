@@ -4,8 +4,8 @@
 package it.cnr.istc.ghost.tests
 
 import it.cnr.istc.ghost.conversion.UnitProvider.ResourceSpecificProvider
-import org.eclipse.xtext.junit4.InjectWith
-import org.eclipse.xtext.junit4.XtextRunner
+import org.eclipse.xtext.testing.InjectWith
+import org.eclipse.xtext.testing.XtextRunner
 import org.junit.Test
 import org.junit.runner.RunWith
 
