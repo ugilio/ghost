@@ -69,9 +69,6 @@
     <genClasses ecoreClass="Ghost.ecore#//VariableSection">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//VariableSection/values"/>
     </genClasses>
-    <genClasses ecoreClass="Ghost.ecore#//UnnamedTransitionSection">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//UnnamedTransitionSection/values"/>
-    </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//TransConstraint">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//TransConstraint/controllability"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//TransConstraint/head"/>

@@ -47,7 +47,7 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="SvBody">
     <eStructuralFeatures xsi:type="ecore:EReference" name="transitions" upperBound="-1"
-        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject" containment="true"/>
+        eType="#//TransitionSection" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="synchronizations" upperBound="-1"
         eType="#//SynchronizeSection" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="variables" upperBound="-1"
@@ -64,10 +64,6 @@
   <eClassifiers xsi:type="ecore:EClass" name="VariableSection">
     <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"
         eType="#//ObjVarDecl" containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="UnnamedTransitionSection">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"
-        eType="#//TransConstraint" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TransConstraint">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="controllability" eType="#//Controllability"/>
@@ -239,7 +235,7 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="CompSVBody" eSuperTypes="#//CompBody">
     <eStructuralFeatures xsi:type="ecore:EReference" name="transitions" upperBound="-1"
-        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject" containment="true"/>
+        eType="#//TransitionSection" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="CompResBody" eSuperTypes="#//CompBody">
     <eStructuralFeatures xsi:type="ecore:EReference" name="val1" eType="#//ConstExpr"

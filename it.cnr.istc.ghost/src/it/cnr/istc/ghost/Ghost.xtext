@@ -36,7 +36,7 @@ SvBody : ('('
 TransitionSection: 'transition:' (values+=TransConstraint (SEP+ values+=TransConstraint)* SEP*)?;
 SynchronizeSection: 'synchronize:' (values+=Synchronization (SEP+ values+=Synchronization)* SEP*)?;
 VariableSection: 'variable:' (values+=ObjVarDecl (SEP+ values+=ObjVarDecl)* SEP*)?;
-UnnamedTransitionSection: (values+=TransConstraint (SEP+ values+=TransConstraint)* SEP*)?;
+UnnamedTransitionSection returns TransitionSection: (values+=TransConstraint (SEP+ values+=TransConstraint)* SEP*)?;
 
 TransConstraint : (controllability=Controllability)? head=ValueDecl
 	(interval=IntvOrDflt)? ('->' body=TransConstrBody)?
