@@ -7,7 +7,8 @@ import org.eclipse.xtext.conversion.IValueConverter
 import org.eclipse.xtext.AbstractRule
 import com.google.inject.Inject
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
-import it.cnr.istc.ghost.conversion.UnitProvider.UnitProviderException
+import it.cnr.istc.ghost.preprocessor.UnitProvider
+import it.cnr.istc.ghost.preprocessor.UnitProvider.UnitProviderException
 
 class NumAndUnitValueConverter extends AbstractValueConverter<Long> implements IValueConverter.RuleSpecific {
 	

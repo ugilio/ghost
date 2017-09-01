@@ -1,11 +1,7 @@
-package it.cnr.istc.ghost.conversion
+package it.cnr.istc.ghost.preprocessor
 
 import static it.cnr.istc.ghost.utils.ArithUtils.*;
 
-import org.eclipse.xtext.util.Tuples
-import org.eclipse.xtext.util.Triple
-import java.util.List
-import java.util.ArrayList
 import org.eclipse.xtext.util.Strings
 import java.util.Set
 import java.util.HashSet
@@ -15,6 +11,10 @@ import org.eclipse.emf.ecore.resource.Resource
 import com.google.inject.Provider
 import com.google.inject.Singleton
 import org.eclipse.xtext.conversion.ValueConverterException
+import it.cnr.istc.ghost.preprocessor.DefinitionList
+import it.cnr.istc.ghost.preprocessor.DefinitionList.DefinitionListException
+import it.cnr.istc.ghost.preprocessor.DefinitionList.KeyNotFoundException
+import it.cnr.istc.ghost.conversion.NumberValueConverter
 
 @Singleton
 class UnitProvider {
@@ -41,16 +41,14 @@ class UnitProvider {
 		getResourceSpecific(res).addUnit(unit,value,offset);
 	}	
 	
-	public static class ResourceSpecificProvider {
-		
-		private List<Triple<Integer, String, String>> units;
+	public static class ResourceSpecificProvider extends DefinitionList {
 		
 		NumberValueConverter numConv;
 
 		@Inject
 		new(NumberValueConverter numConv) {
+			super();
 			this.numConv = numConv;
-			units = new ArrayList(256);
 
 			addUnit("ms", "1");
 			addUnit("sec", "1000 ms");
@@ -83,25 +81,16 @@ class UnitProvider {
 		}
 
 		def addUnit(String aUnit, String aValue, int offset) {
-			val unit = aUnit?.trim;
-			val value = aValue?.trim;
-			if (Strings.isEmpty(unit))
+			if (Strings.isEmpty(aUnit?.trim))
 				throw new UnitProviderException("Unit cannot be empty");
-			if (offset < 0)
-				throw new UnitProviderException("Negative offset: " + offset);
-			val element = Tuples.create(offset, unit, value);
-			// Typical case when parsing top to bottom: always add at the end 
-			if (units.size == 0 || units.last.first <= offset) {
-				units.add(element);
-				return;
+			try
+			{
+				add(aUnit,aValue,offset);
 			}
-			var pos = indexOf(offset, unit);
-			if (pos >= 0) {
-				units.set(pos, element);
-				return;
+			catch (DefinitionListException e)
+			{
+				throw new UnitProviderException(e.message);
 			}
-			pos = -pos - 1;
-			units.add(pos, element);
 		}
 
 		private def isUnary(String s) {
@@ -135,51 +124,9 @@ class UnitProvider {
 				throw new UnitProviderException(String.format(
 				"Invalid number while expanding unit definition '%s'",string));
 			}
-		}
-
-		private def String internalGetValue(String unit, int offset) {
-			if (units.size>0) {
-				var pos = indexOf(offset, unit);
-				if (pos < 0)
-					pos = -pos - 1 - 1;
-				while (pos >= 0) {
-					if (unit.equals(units.get(pos).second)) {
-						val value = units.get(pos).third;
-						if (Strings.isEmpty(value))
-							//explicitly undefined 
-							throw new UnitProviderException(String.format("Undefined unit: '%s'", unit));
-						return value;
-					}
-					pos--;
-				}
+			catch (KeyNotFoundException e) {
+				throw new UnitProviderException(String.format("Undefined unit: '%s'", e.key));
 			}
-			throw new UnitProviderException(String.format("Undefined unit: '%s'", unit));
-		}
-
-		private def int indexOf(int offset, String unit) {
-			var l = 0;
-			var r = units.size;
-			while (l < r) {
-				var m = (l + r) / 2;
-				val mOfs = units.get(m).first;
-				if (mOfs < offset)
-					l = m + 1
-				else if (mOfs > offset)
-					r = m
-				else {
-					while (m > 0 && units.get(m - 1).first == offset)
-						m--;
-					while (m < units.size && units.get(m).first == offset) {
-						if (unit.equals(units.get(m).second))
-							return m;
-						m++;
-					}
-					// else insert here
-					return -m - 1;
-				}
-			}
-			// insert here
-			return -l - 1;
 		}
 	}
 	

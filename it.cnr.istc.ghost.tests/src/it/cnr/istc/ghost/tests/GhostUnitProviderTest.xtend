@@ -3,7 +3,7 @@
  */
 package it.cnr.istc.ghost.tests
 
-import it.cnr.istc.ghost.conversion.UnitProvider.ResourceSpecificProvider
+import it.cnr.istc.ghost.preprocessor.UnitProvider.ResourceSpecificProvider
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.XtextRunner
 import org.junit.Test
@@ -11,7 +11,7 @@ import org.junit.runner.RunWith
 
 import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.*
-import it.cnr.istc.ghost.conversion.UnitProvider.UnitProviderException
+import it.cnr.istc.ghost.preprocessor.UnitProvider.UnitProviderException
 import org.junit.Before
 import com.google.inject.Inject
 
