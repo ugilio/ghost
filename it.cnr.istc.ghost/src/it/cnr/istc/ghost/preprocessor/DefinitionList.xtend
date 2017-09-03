@@ -1,24 +1,21 @@
 package it.cnr.istc.ghost.preprocessor
 
-import com.google.inject.Singleton
 import java.util.ArrayList
 import java.util.List
 import org.eclipse.xtext.util.Strings
 import org.eclipse.xtext.util.Triple
 import org.eclipse.xtext.util.Tuples
 
-@Singleton
-class DefinitionList {
+class DefinitionList<T> {
 	
-	private List<Triple<Integer, String, String>> data;
+	private List<Triple<Integer, String, T>> data;
 
 	new() {
 		data = new ArrayList(256);
 	}
 	
-	protected def add(String aKey, String aValue, int offset) {
+	protected def add(String aKey, T value, int offset) {
 		val key = aKey?.trim;
-		val value = aValue?.trim;
 		if (Strings.isEmpty(key))
 			throw new DefinitionListException("Key cannot be empty");
 		if (offset < 0)
@@ -38,7 +35,7 @@ class DefinitionList {
 		data.add(pos, element);
 	}
 
-	protected def String internalGetValue(String key, int offset) {
+	protected def T internalGetValue(String key, int offset) {
 		if (data.size > 0) {
 			var pos = indexOf(offset, key);
 			if (pos < 0)
@@ -46,7 +43,7 @@ class DefinitionList {
 			while (pos >= 0) {
 				if (key.equals(data.get(pos).second)) {
 					val value = data.get(pos).third;
-					if (Strings.isEmpty(value))
+					if (value === null)
 						// explicitly undefined 
 						throw new KeyNotFoundException(String.format("Undefined key: '%s'", key),key);
 					return value;

@@ -41,7 +41,7 @@ class UnitProvider {
 		getResourceSpecific(res).addUnit(unit,value,offset);
 	}	
 	
-	public static class ResourceSpecificProvider extends DefinitionList {
+	public static class ResourceSpecificProvider extends DefinitionList<String> {
 		
 		NumberValueConverter numConv;
 
@@ -85,7 +85,9 @@ class UnitProvider {
 				throw new UnitProviderException("Unit cannot be empty");
 			try
 			{
-				add(aUnit,aValue,offset);
+				var value = aValue?.trim;
+				if (Strings.isEmpty(value)) value = null;
+				add(aUnit,value,offset);
 			}
 			catch (DefinitionListException e)
 			{
