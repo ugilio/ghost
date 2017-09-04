@@ -27,7 +27,7 @@ class Preprocessor {
 		{
 			defProvider.addDefinition(res,key,value,node.offset);
 		}
-		catch (UnitProviderException e) {
+		catch (DefaultsProviderException e) {
 			throw new PreprocessorException(e.message);
 		}
 	}
