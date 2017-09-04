@@ -21,6 +21,8 @@ import org.eclipse.xtext.diagnostics.Severity
 import org.eclipse.xtext.conversion.ValueConverterException
 import org.eclipse.xtext.util.Strings
 import it.cnr.istc.ghost.conversion.NumAndUnitHelper
+import org.eclipse.xtext.util.concurrent.IUnitOfWork
+import org.eclipse.emf.ecore.resource.Resource
 
 class GhostLinker extends LazyLinker {
 	
@@ -40,9 +42,12 @@ class GhostLinker extends LazyLinker {
 	override protected afterModelLinked(EObject model, IDiagnosticConsumer diagnosticsConsumer) {
 		super.afterModelLinked(model, diagnosticsConsumer);
 		val p = new LinkingDiagnosticProducer(diagnosticsConsumer);
-		runPreprocessor(model,p);
-		resolveAllNumbers(model,p);
-		resolveAllConstants(model,p);
+		cache.execWithoutCacheClear(model.eResource,new IUnitOfWork.Void<Resource>(){
+			override process(Resource state) throws Exception {
+				runPreprocessor(model,p);
+				resolveAllNumbers(model,p);
+				resolveAllConstants(model,p);
+		}});
 	}
 	
 	private def runPreprocessor(EObject model, IDiagnosticProducer p) {
