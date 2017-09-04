@@ -15,6 +15,8 @@ import static org.junit.Assert.*
 import static org.hamcrest.CoreMatchers.*
 import org.eclipse.xtext.EcoreUtil2
 import it.cnr.istc.ghost.ghost.Interval
+import it.cnr.istc.ghost.utils.NumAndUnitHelper
+import it.cnr.istc.ghost.utils.IntervalHelper
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -23,13 +25,15 @@ class GhostNumberConverterTest{
 	@Inject
 	ParseHelper<Ghost> parseHelper
 	
+	@Inject extension IntervalHelper intvHelper;
+	
 	@Test
 	def void testToValueNoSign() {
 		val result = parseHelper.parse('''
 type test = int 100;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(100L));
 	}
 	
@@ -39,7 +43,7 @@ type test = int 100;
 type test = int +100;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(100L));
 	}
 	
@@ -49,7 +53,7 @@ type test = int +100;
 type test = int -100;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(-100L));
 	}
 	
@@ -59,7 +63,7 @@ type test = int -100;
 type test = int 0;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(0L));
 	}
 	
@@ -69,7 +73,7 @@ type test = int 0;
 type test = int +0;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(0L));
 	}
 	
@@ -79,7 +83,7 @@ type test = int +0;
 type test = int -0;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(0L));
 	}
 	
@@ -89,7 +93,7 @@ type test = int -0;
 type test = int INF;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(Long.MAX_VALUE));
 	}
 	
@@ -99,7 +103,7 @@ type test = int INF;
 type test = int +INF;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(Long.MAX_VALUE));
 	}
 	
@@ -109,7 +113,7 @@ type test = int +INF;
 type test = int -INF;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(Long.MIN_VALUE));
 	}
 	
@@ -119,7 +123,7 @@ type test = int -INF;
 type test = int - 100;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(-100L));
 	}
 	
@@ -129,7 +133,7 @@ type test = int - 100;
 type test = int + INF;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(Long.MAX_VALUE));
 	}
 	
@@ -139,7 +143,7 @@ type test = int + INF;
 type test = int - INF;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(Long.MIN_VALUE));
 	}
 
@@ -149,7 +153,7 @@ type test = int - INF;
 type test = int 100_000;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(100000L));
 	}
 }

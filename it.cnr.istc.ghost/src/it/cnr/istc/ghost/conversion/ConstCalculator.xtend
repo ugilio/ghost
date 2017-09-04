@@ -16,10 +16,13 @@ import it.cnr.istc.ghost.ghost.ConstDecl
 import it.cnr.istc.ghost.ghost.ConstNumber
 import it.cnr.istc.ghost.ghost.Interval
 import it.cnr.istc.ghost.utils.ArithUtils
-import it.cnr.istc.ghost.ghost.GhostFactory
+import com.google.inject.Inject
 
 @Singleton
 class ConstCalculator {
+	
+	@Inject extension IntervalHelper intvHelper;
+	@Inject extension NumAndUnitHelper numHelper;
 	
 	private Set<String> constInProgress = new HashSet<String>();
 	
@@ -89,7 +92,7 @@ class ConstCalculator {
 	}
 	
 	private def dispatch calcFactor(ConstNumber factor) {
-		return factor.value;
+		return factor.value.get();
 	}
 	
 	private def dispatch calcFactor(ConstIntv factor) {
@@ -117,9 +120,10 @@ class ConstCalculator {
 			constInProgress.remove(literal.name);
 		}
 	}
-	
+//The linker already signals this	
 	private def dispatch getValueOf(ConstLiteral literal) {
-		throw new ConstCalculatorException("Unknown ConstLiteral type: "+literal.class);
+//		throw new ConstCalculatorException("Unknown ConstLiteral type: "+literal.class);
+		throw new ConstCalculatorException("");
 	}	
 	
 	private def String getTypeName(Object o) {
@@ -172,9 +176,9 @@ class ConstCalculator {
 	}
 	
 	private def dispatch add(long left, Interval right) {
-		val result = GhostFactory.eINSTANCE.createInterval;
-		result.lb=ArithUtils.add(left,right.lb);
-		result.ub=ArithUtils.add(left,right.ub);
+		val result = intvHelper.create(0,0);
+		result.lb=ArithUtils.add(left,right.lb());
+		result.ub=ArithUtils.add(left,right.ub());
 		return result;
 	}
 	
@@ -183,9 +187,9 @@ class ConstCalculator {
 	}
 	
 	private def dispatch add(Interval left, Interval right) {
-		val result = GhostFactory.eINSTANCE.createInterval;
-		result.lb=ArithUtils.add(left.lb,right.lb);
-		result.ub=ArithUtils.add(left.ub,right.ub);
+		val result = intvHelper.create(0,0);
+		result.lb=ArithUtils.add(left.lb(),right.lb());
+		result.ub=ArithUtils.add(left.ub(),right.ub());
 		return result;
 	}
 	
@@ -194,23 +198,23 @@ class ConstCalculator {
 	}
 	
 	private def dispatch sub(long left, Interval right) {
-		val result = GhostFactory.eINSTANCE.createInterval;
-		result.lb=ArithUtils.sub(left,right.lb);
-		result.ub=ArithUtils.sub(left,right.ub);
+		val result = intvHelper.create(0,0);
+		result.lb=ArithUtils.sub(left,right.lb());
+		result.ub=ArithUtils.sub(left,right.ub());
 		return result;
 	}
 	
 	private def dispatch sub(Interval left, long right) {
-		val result = GhostFactory.eINSTANCE.createInterval;
-		result.lb=ArithUtils.sub(left.lb,right);
-		result.ub=ArithUtils.sub(left.ub,right);
+		val result = intvHelper.create(0,0);
+		result.lb=ArithUtils.sub(left.lb(),right);
+		result.ub=ArithUtils.sub(left.ub(),right);
 		return result;
 	}
 	
 	private def dispatch sub(Interval left, Interval right) {
-		val result = GhostFactory.eINSTANCE.createInterval;
-		result.lb=ArithUtils.sub(left.lb,right.lb);
-		result.ub=ArithUtils.sub(left.ub,right.ub);
+		val result = intvHelper.create(0,0);
+		result.lb=ArithUtils.sub(left.lb(),right.lb());
+		result.ub=ArithUtils.sub(left.ub(),right.ub());
 		return result;
 	}
 
@@ -219,9 +223,9 @@ class ConstCalculator {
 	}
 	
 	private def dispatch mul(long left, Interval right) {
-		val result = GhostFactory.eINSTANCE.createInterval;
-		result.lb=ArithUtils.mul(left,right.lb);
-		result.ub=ArithUtils.mul(left,right.ub);
+		val result = intvHelper.create(0,0);
+		result.lb=ArithUtils.mul(left,right.lb());
+		result.ub=ArithUtils.mul(left,right.ub());
 		return result;
 	}
 	
@@ -230,9 +234,9 @@ class ConstCalculator {
 	}
 	
 	private def dispatch mul(Interval left, Interval right) {
-		val result = GhostFactory.eINSTANCE.createInterval;
-		result.lb=ArithUtils.mul(left.lb,right.lb);
-		result.ub=ArithUtils.mul(left.ub,right.ub);
+		val result = intvHelper.create(0,0);
+		result.lb=ArithUtils.mul(left.lb(),right.lb());
+		result.ub=ArithUtils.mul(left.ub(),right.ub());
 		return result;
 	}
 	
@@ -241,23 +245,23 @@ class ConstCalculator {
 	}
 	
 	private def dispatch div(long left, Interval right) {
-		val result = GhostFactory.eINSTANCE.createInterval;
-		result.lb=ArithUtils.div(left,right.lb);
-		result.ub=ArithUtils.div(left,right.ub);
+		val result = intvHelper.create(0,0);
+		result.lb=ArithUtils.div(left,right.lb());
+		result.ub=ArithUtils.div(left,right.ub());
 		return result;
 	}
 	
 	private def dispatch Object div(Interval left, long right) {
-		val result = GhostFactory.eINSTANCE.createInterval;
-		result.lb=ArithUtils.div(left.lb,right);
-		result.ub=ArithUtils.div(left.ub,right);
+		val result = intvHelper.create(0,0);
+		result.lb=ArithUtils.div(left.lb(),right);
+		result.ub=ArithUtils.div(left.ub(),right);
 		return result;
 	}
 	
 	private def dispatch div(Interval left, Interval right) {
-		val result = GhostFactory.eINSTANCE.createInterval;
-		result.lb=ArithUtils.div(left.lb,right.lb);
-		result.ub=ArithUtils.div(left.ub,right.ub);
+		val result = intvHelper.create(0,0);
+		result.lb=ArithUtils.div(left.lb(),right.lb());
+		result.ub=ArithUtils.div(left.ub(),right.ub());
 		return result;
 	}
 	
@@ -266,23 +270,23 @@ class ConstCalculator {
 	}
 	
 	private def dispatch mod(long left, Interval right) {
-		val result = GhostFactory.eINSTANCE.createInterval;
-		result.lb=ArithUtils.mod(left,right.lb);
-		result.ub=ArithUtils.mod(left,right.ub);
+		val result = intvHelper.create(0l,0l);
+		result.lb=ArithUtils.mod(left,right.lb());
+		result.ub=ArithUtils.mod(left,right.ub());
 		return result;
 	}
 	
 	private def dispatch Object mod(Interval left, long right) {
-		val result = GhostFactory.eINSTANCE.createInterval;
-		result.lb=ArithUtils.mod(left.lb,right);
-		result.ub=ArithUtils.mod(left.ub,right);
+		val result = intvHelper.create(0,0);
+		result.lb=ArithUtils.mod(left.lb(),right);
+		result.ub=ArithUtils.mod(left.ub(),right);
 		return result;
 	}
 	
 	private def dispatch mod(Interval left, Interval right) {
-		val result = GhostFactory.eINSTANCE.createInterval;
-		result.lb=ArithUtils.mod(left.lb,right.lb);
-		result.ub=ArithUtils.mod(left.ub,right.ub);
+		val result = intvHelper.create(0,0);
+		result.lb=ArithUtils.mod(left.lb(),right.lb());
+		result.ub=ArithUtils.mod(left.ub(),right.ub());
 		return result;
 	}
 	

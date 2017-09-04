@@ -154,7 +154,10 @@ IntvOrDflt : ('_' | Interval);
 Interval : ( '[' lb=NumAndUnit SEP ub=NumAndUnit']') | lbub=NumAndUnit;
 StrictInterval returns Interval: '[' lb=NumAndUnit SEP ub=NumAndUnit']';
 
-NumAndUnit returns ecore::ELong: (Number (ID)?);
+ComputedNumAndUnit returns ecore::ELongObject: ID;
+BaseNumAndUnit: (NumAndUnit) value=ComputedNumAndUnit;
+
+NumAndUnit: (num=Number (unit=ID)?);
 //Number_		: '_' | Number;
 Number		: PosNumber | NegNumber;
 PosNumber returns ecore::ELong: ('+')? (INT |'INF');

@@ -12,6 +12,7 @@ import it.cnr.istc.ghost.scoping.GhostImportScopeProvider
 import it.cnr.istc.ghost.scoping.GhostResourceDescriptionStrategy
 import org.eclipse.xtext.resource.IDefaultResourceDescriptionStrategy
 import it.cnr.istc.ghost.conversion.GhostValueConverter
+import it.cnr.istc.ghost.linking.GhostLinker
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
@@ -32,5 +33,9 @@ class GhostRuntimeModule extends AbstractGhostRuntimeModule {
 
 	override bindIValueConverterService() {
 		return GhostValueConverter;
+	}
+	
+	override bindILinker() {
+		return GhostLinker;
 	}
 }

@@ -276,9 +276,18 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IntvOrDflt"/>
   <eClassifiers xsi:type="ecore:EClass" name="Interval" eSuperTypes="#//IntvOrDflt">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lb" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="ub" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lbub" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="lb" eType="#//NumAndUnit"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ub" eType="#//NumAndUnit"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="lbub" eType="#//NumAndUnit"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BaseNumAndUnit"/>
+  <eClassifiers xsi:type="ecore:EClass" name="NumAndUnit" eSuperTypes="#//Expression #//BaseNumAndUnit">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELongObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="num" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="unit" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ConstSubExp" eSuperTypes="#//ConstFactor">
     <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//ConstSumExp"
@@ -288,7 +297,8 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//ConstLiteral"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ConstNumber" eSuperTypes="#//ConstFactor">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//NumAndUnit"
+        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ConstIntv" eSuperTypes="#//ConstFactor">
     <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//Interval"

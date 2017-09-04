@@ -6,6 +6,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 import it.cnr.istc.ghost.ghost.Interval;
+import it.cnr.istc.ghost.ghost.NumAndUnit;
 
 public class IntervalMatcher extends TypeSafeDiagnosingMatcher<Interval> {
 
@@ -20,25 +21,37 @@ public class IntervalMatcher extends TypeSafeDiagnosingMatcher<Interval> {
     	description.appendText("equal to: " +toString(expected));
     }
 	
+    private boolean numEquals(NumAndUnit left, NumAndUnit right) {
+		if (left == right)
+			return true;
+		if (left == null || right == null)
+			return false;
+		if (left.getValue() == right.getValue())
+			return true;
+		if (left.getValue() == null || right.getValue() == null)
+			return false;
+		return left.getValue().longValue() == right.getValue().longValue();
+    }
+    
 	private boolean intvEquals(Interval left, Interval right) {
 		if (left == right)
 			return true;
 		if (left == null || right == null)
 			return false;
-		return left.getLb() == right.getLb() &&
-				left.getUb() == right.getUb() &&
-				left.getLbub() == right.getLbub();
+		return numEquals(left.getLb(),right.getLb()) &&
+				numEquals(left.getUb(),right.getUb()) &&
+				numEquals(left.getLbub(),right.getLbub());
 	}
 	
 	private String toString(Interval intv) {
 		if (intv == null)
 			return "null";
-		long lb = intv.getLb();
-		long ub = intv.getUb();
-		long lbub = intv.getLbub();
-		if (lb == ub && lb == 0L)
-			return "["+lbub+"]";
-		return "["+lb+","+ub+"]";
+		NumAndUnit lb = intv.getLb();
+		NumAndUnit ub = intv.getUb();
+		NumAndUnit lbub = intv.getLbub();
+		if (lb == null && ub == null)
+			return "["+lbub.getValue()+","+lbub.getValue()+"]";
+		return "["+lb.getValue()+","+ub.getValue()+"]";
 	}
 	
 	@Override

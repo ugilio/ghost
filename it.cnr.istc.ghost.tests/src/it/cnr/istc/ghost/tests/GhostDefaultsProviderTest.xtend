@@ -21,6 +21,7 @@ import org.eclipse.xtext.testing.util.ParseHelper
 import it.cnr.istc.ghost.ghost.Ghost
 import it.cnr.istc.ghost.preprocessor.DefaultsProvider.DefaultsProviderException
 import it.cnr.istc.ghost.ghost.Controllability
+import it.cnr.istc.ghost.utils.IntervalHelper
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -34,6 +35,9 @@ class GhostDefaultsProviderTest{
 	
 	@Inject
 	NumAndUnitValueConverter conv;
+	
+	@Inject
+	IntervalHelper intvHelper;
 
 	@Before
 	def void setUp() {
@@ -43,16 +47,11 @@ class GhostDefaultsProviderTest{
 	}
 	
 	private def intv(long l, long r) {
-		val res = GhostFactory.eINSTANCE.createInterval;
-		res.lb=l;
-		res.ub=r;
-		return res;
+		return intvHelper.create(l,r);
 	}
 
 	private def intv(long v) {
-		val res = GhostFactory.eINSTANCE.createInterval;
-		res.lbub=v;
-		return res;
+		return intvHelper.create(v);
 	}
 
 	@Test

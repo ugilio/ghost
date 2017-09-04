@@ -16,6 +16,7 @@ import static org.hamcrest.CoreMatchers.*
 import org.eclipse.xtext.EcoreUtil2
 import it.cnr.istc.ghost.ghost.Interval
 import it.cnr.istc.ghost.conversion.NumAndUnitValueConverter
+import it.cnr.istc.ghost.utils.IntervalHelper
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -27,13 +28,15 @@ class GhostNumAndUnitConverterTest{
 	@Inject
 	NumAndUnitValueConverter converter;
 	
+	@Inject extension IntervalHelper intvHelper;
+	
 	@Test
 	def void testToValue1() {
 		val result = parseHelper.parse('''
 type test = int 100 ms;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(100L));
 	}
 	
@@ -43,7 +46,7 @@ type test = int 100 ms;
 type test = int 100 s;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(100_000L));
 	}
 	
@@ -53,7 +56,7 @@ type test = int 100 s;
 type test = int INF s;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(equalTo(Long.MAX_VALUE)));
 	}
 	
@@ -63,7 +66,7 @@ type test = int INF s;
 type test = int -INF s;
 		''')
 		val intv = EcoreUtil2.eAllOfType(result,Interval).head;
-		val value = intv.lbub;
+		val value = intv.lbub();
 		assertThat(value,is(equalTo(Long.MIN_VALUE)));
 	}
 	

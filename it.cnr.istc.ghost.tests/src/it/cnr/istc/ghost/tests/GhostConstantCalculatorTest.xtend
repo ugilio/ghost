@@ -17,12 +17,12 @@ import static org.hamcrest.CoreMatchers.*
 import org.eclipse.xtext.EcoreUtil2
 import it.cnr.istc.ghost.conversion.ConstCalculator
 import it.cnr.istc.ghost.ghost.ConstExpr
-import it.cnr.istc.ghost.ghost.GhostFactory
 import it.cnr.istc.ghost.ghost.Interval
 import it.cnr.istc.ghost.ghost.PlaceHolder
 import it.cnr.istc.ghost.ghost.EnumLiteral
 import it.cnr.istc.ghost.ghost.ConstDecl
 import it.cnr.istc.ghost.conversion.ConstCalculator.ConstCalculatorException
+import it.cnr.istc.ghost.utils.IntervalHelper
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -34,11 +34,10 @@ class GhostConstantCalculatorTest{
 	@Inject
 	ConstCalculator calc;
 	
+	@Inject extension IntervalHelper intvHelper;
+	
 	private def intv(long l, long r) {
-		val res = GhostFactory.eINSTANCE.createInterval;
-		res.lb=l;
-		res.ub=r;
-		return res;
+		return intvHelper.create(l,r);
 	}
 	
 //	private def eq(Interval l, Interval r) {

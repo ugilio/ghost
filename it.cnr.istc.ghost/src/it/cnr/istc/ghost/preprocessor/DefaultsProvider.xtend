@@ -141,7 +141,8 @@ class DefaultsProvider {
 				//try single number first
 				val numVal = numConv.toValue(str,node);
 				val intv = GhostFactory.eINSTANCE.createInterval();
-				intv.lbub = numVal;
+				intv.lbub=GhostFactory.eINSTANCE.createNumAndUnit();
+				intv.lbub.value = numVal;
 				return intv;
 			}
 			catch (ValueConverterException e) {}
@@ -159,8 +160,10 @@ class DefaultsProvider {
 				expected(']',""+str.charAt(str.length-1));
 			
 				val intv = GhostFactory.eINSTANCE.createInterval();
-				intv.lb = lb;
-				intv.ub = ub;
+				intv.lb=GhostFactory.eINSTANCE.createNumAndUnit();
+				intv.ub=GhostFactory.eINSTANCE.createNumAndUnit();
+				intv.lb.value = lb;
+				intv.ub.value = ub;
 				return intv;
 			}
 			catch (ValueConverterException e) {
