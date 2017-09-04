@@ -16,7 +16,7 @@ import static org.hamcrest.CoreMatchers.*
 import org.eclipse.xtext.EcoreUtil2
 import it.cnr.istc.ghost.ghost.Interval
 import it.cnr.istc.ghost.conversion.NumAndUnitValueConverter
-import it.cnr.istc.ghost.utils.IntervalHelper
+import it.cnr.istc.ghost.conversion.IntervalHelper
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)

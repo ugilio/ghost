@@ -3,25 +3,24 @@
  */
 package it.cnr.istc.ghost.tests
 
+import com.google.inject.Inject
+import it.cnr.istc.ghost.conversion.IntervalHelper
+import it.cnr.istc.ghost.conversion.NumAndUnitValueConverter
+import it.cnr.istc.ghost.ghost.Controllability
+import it.cnr.istc.ghost.ghost.Ghost
+import it.cnr.istc.ghost.preprocessor.DefaultsProvider.DefaultsProviderException
 import it.cnr.istc.ghost.preprocessor.DefaultsProvider.ResourceSpecificProvider
+import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.XtextRunner
+import org.eclipse.xtext.testing.util.ParseHelper
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import static it.cnr.istc.ghost.tests.utils.IntervalMatcher.*
 import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.*
-import org.junit.Before
-import com.google.inject.Inject
-import it.cnr.istc.ghost.ghost.GhostFactory
-import org.eclipse.emf.ecore.resource.Resource
-import it.cnr.istc.ghost.conversion.NumAndUnitValueConverter
-import org.eclipse.xtext.testing.util.ParseHelper
-import it.cnr.istc.ghost.ghost.Ghost
-import it.cnr.istc.ghost.preprocessor.DefaultsProvider.DefaultsProviderException
-import it.cnr.istc.ghost.ghost.Controllability
-import it.cnr.istc.ghost.utils.IntervalHelper
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)

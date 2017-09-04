@@ -22,7 +22,7 @@ import it.cnr.istc.ghost.ghost.PlaceHolder
 import it.cnr.istc.ghost.ghost.EnumLiteral
 import it.cnr.istc.ghost.ghost.ConstDecl
 import it.cnr.istc.ghost.conversion.ConstCalculator.ConstCalculatorException
-import it.cnr.istc.ghost.utils.IntervalHelper
+import it.cnr.istc.ghost.conversion.IntervalHelper
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
