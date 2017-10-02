@@ -42,7 +42,7 @@ TransConstraint : (controllability=Controllability)? head=ValueDecl
 	(interval=IntvOrDflt)? ('->' body=TransConstrBody)?
 ;
 ValueDecl : name=ID parlist=FormalParList?;
-SimpleInstVal: name=ID arglist=ArgList?;
+SimpleInstVal: name=[ValueDecl|ID] arglist=ArgList?;
 QualifInstVal: name=QUALID arglist=ArgList?;
 InstVal: 'this' | QualifInstVal | ResConstr;
 

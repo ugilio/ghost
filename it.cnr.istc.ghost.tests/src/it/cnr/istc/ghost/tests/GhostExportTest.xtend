@@ -98,14 +98,12 @@ TheDomain.en3
 TheDomain.ASVType
 TheDomain.ASVType.StateA
 TheDomain.ASVType.StateB
-TheDomain.ASVType.StateB
 TheDomain.ASVType.avar
 TheDomain.AResourceType
 TheDomain.ADescendantResource
 TheDomain.AComponent
 TheDomain.AResource
 TheDomain.ASVWithAnonymousType
-TheDomain.ASVWithAnonymousType.A
 TheDomain.ASVWithAnonymousType.A
 TheDomain.ASVWithAnonymousType.C
 TheDomain.MAX

@@ -80,7 +80,7 @@
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="SimpleInstVal" eSuperTypes="#//TriggerType">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="name" eType="#//ValueDecl"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="arglist" eType="#//ArgList"
         containment="true"/>
   </eClassifiers>
