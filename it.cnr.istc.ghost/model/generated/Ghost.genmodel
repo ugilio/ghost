@@ -119,9 +119,12 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//ResSimpleInstVal/type"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//ResSimpleInstVal/arg"/>
     </genClasses>
+    <genClasses ecoreClass="Ghost.ecore#//FormalPar">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//FormalPar/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//FormalPar/name"/>
+    </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//FormalParList">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//FormalParList/types"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//FormalParList/names"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//FormalParList/values"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//ArgList">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//ArgList/values"/>

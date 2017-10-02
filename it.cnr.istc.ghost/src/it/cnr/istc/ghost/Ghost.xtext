@@ -71,8 +71,8 @@ ResourceBody : ('('(val1=ConstExpr (SEP+ val2=ConstExpr)? SEP*)?
 ResSimpleInstVal: type=ResourceAction '(' arg=ID_ ')';
 
 
-
-FormalParList: '(' (types+=[SimpleType|QUALID] (names+=ID_)? (SEP+ types+=[SimpleType|QUALID] (names+=ID_)? )* SEP* )? ')';
+FormalPar: type=[SimpleType|QUALID] (name=ID_)?;
+FormalParList: '(' (values+=FormalPar (SEP+ values+=FormalPar )* SEP* )? ')';
 ArgList: '(' (values+=GenericExpression (SEP+ values+=GenericExpression)* SEP* )? ')';
 BindList: '['(varNames+=ID '=')? values+=[CompDecl|QUALID] (SEP+ (varNames+=ID '=')? values+=[CompDecl|QUALID] )* SEP* ']';
 

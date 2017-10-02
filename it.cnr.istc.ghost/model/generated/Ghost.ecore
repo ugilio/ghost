@@ -130,11 +130,13 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//ResourceAction"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="arg" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FormalPar">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="#//SimpleType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="FormalParList">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="types" unique="false" upperBound="-1"
-        eType="#//SimpleType"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="names" unique="false" upperBound="-1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"
+        eType="#//FormalPar" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ArgList">
     <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"
