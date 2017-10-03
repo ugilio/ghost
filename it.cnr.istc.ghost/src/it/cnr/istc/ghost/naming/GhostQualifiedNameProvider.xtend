@@ -14,6 +14,7 @@ import it.cnr.istc.ghost.ghost.FormalParList
 import it.cnr.istc.ghost.ghost.BindList
 import it.cnr.istc.ghost.ghost.ProblemDecl
 import it.cnr.istc.ghost.ghost.EnumLiteral
+import it.cnr.istc.ghost.ghost.NameOnlyParList
 
 class GhostQualifiedNameProvider extends DefaultDeclarativeQualifiedNameProvider {
 
@@ -35,6 +36,7 @@ class GhostQualifiedNameProvider extends DefaultDeclarativeQualifiedNameProvider
 	
 	private def isInArgList(EObject obj) {
 		return EcoreUtil2.getContainerOfType(obj,ArgList) !== null
+			|| EcoreUtil2.getContainerOfType(obj,NameOnlyParList) !== null
 			|| EcoreUtil2.getContainerOfType(obj,FormalParList) !== null
 			|| EcoreUtil2.getContainerOfType(obj,BindList) !== null
 	}
