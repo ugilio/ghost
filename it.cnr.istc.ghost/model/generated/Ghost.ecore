@@ -81,7 +81,7 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="SimpleInstVal" eSuperTypes="#//TriggerType">
     <eStructuralFeatures xsi:type="ecore:EReference" name="name" eType="#//ValueDecl"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="arglist" eType="#//ArgList"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="arglist" eType="#//NameOnlyParList"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="QualifInstVal" eSuperTypes="#//InstVal">
@@ -137,6 +137,10 @@
   <eClassifiers xsi:type="ecore:EClass" name="FormalParList">
     <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"
         eType="#//FormalPar" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NameOnlyParList">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="names" unique="false" upperBound="-1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ArgList">
     <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"

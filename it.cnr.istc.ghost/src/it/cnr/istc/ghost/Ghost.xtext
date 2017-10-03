@@ -42,7 +42,7 @@ TransConstraint : (controllability=Controllability)? head=ValueDecl
 	(interval=IntvOrDflt)? ('->' body=TransConstrBody)?
 ;
 ValueDecl : name=ID parlist=FormalParList?;
-SimpleInstVal: name=[ValueDecl|ID] arglist=ArgList?;
+SimpleInstVal: name=[ValueDecl|ID] arglist=NameOnlyParList?;
 QualifInstVal: name=QUALID arglist=ArgList?;
 InstVal: 'this' | QualifInstVal | ResConstr;
 
@@ -73,6 +73,7 @@ ResSimpleInstVal: type=ResourceAction '(' arg=ID_ ')';
 
 FormalPar: type=[SimpleType|QUALID] (name=ID_)?;
 FormalParList: '(' (values+=FormalPar (SEP+ values+=FormalPar )* SEP* )? ')';
+NameOnlyParList: '(' (names+=ID_ (SEP+ names+=ID_ )* SEP* )? ')';
 ArgList: '(' (values+=GenericExpression (SEP+ values+=GenericExpression)* SEP* )? ')';
 BindList: '['(varNames+=ID '=')? values+=[CompDecl|QUALID] (SEP+ (varNames+=ID '=')? values+=[CompDecl|QUALID] )* SEP* ']';
 
