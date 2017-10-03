@@ -3,6 +3,17 @@
  */
 package it.cnr.istc.ghost.scoping
 
+import org.eclipse.xtext.scoping.IScope
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EReference
+import it.cnr.istc.ghost.ghost.GhostPackage
+import it.cnr.istc.ghost.ghost.NamedCompDecl
+import org.eclipse.xtext.scoping.Scopes
+import org.eclipse.xtext.EcoreUtil2
+import it.cnr.istc.ghost.ghost.ComponentType
+import it.cnr.istc.ghost.ghost.ObjVarDecl
+import it.cnr.istc.ghost.ghost.QualifInstVal
+import it.cnr.istc.ghost.ghost.ValueDecl
 
 /**
  * This class contains custom scoping description.
@@ -11,5 +22,24 @@ package it.cnr.istc.ghost.scoping
  * on how and when to use it.
  */
 class GhostScopeProvider extends AbstractGhostScopeProvider {
+	
+	private def getScopeFor(ComponentType type) {
+		if (type === null)
+			return IScope.NULLSCOPE;
+		return Scopes.scopeFor(EcoreUtil2.eAllOfType(type,ValueDecl));
+	}
+	
+	override IScope getScope(EObject context, EReference reference) {
+		if (context instanceof QualifInstVal &&
+			reference == GhostPackage.Literals.QUALIF_INST_VAL__VALUE) {
+				val comp = (context as QualifInstVal).comp;
+				switch (comp) {
+				NamedCompDecl : return getScopeFor(comp.type)
+				ObjVarDecl : return getScopeFor(comp.type)
+			}
+		}
+		return super.getScope(context, reference);
+	}
+	
 
 }

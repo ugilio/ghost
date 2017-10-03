@@ -75,8 +75,10 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//TransConstraint/interval"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//TransConstraint/body"/>
     </genClasses>
+    <genClasses ecoreClass="Ghost.ecore#//CompRef">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//CompRef/name"/>
+    </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//ValueDecl">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//ValueDecl/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//ValueDecl/parlist"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//SimpleInstVal">
@@ -84,7 +86,8 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//SimpleInstVal/arglist"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//QualifInstVal">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//QualifInstVal/name"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//QualifInstVal/comp"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//QualifInstVal/value"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//QualifInstVal/arglist"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//InstVal"/>
@@ -106,7 +109,6 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//ResConstr/res"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//ObjVarDecl">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//ObjVarDecl/name"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//ObjVarDecl/type"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//ResourceBody">
@@ -119,15 +121,18 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//ResSimpleInstVal/type"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//ResSimpleInstVal/arg"/>
     </genClasses>
+    <genClasses ecoreClass="Ghost.ecore#//SymbolReference">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//SymbolReference/name"/>
+    </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//FormalPar">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//FormalPar/type"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//FormalPar/name"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//FormalParList">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//FormalParList/values"/>
     </genClasses>
+    <genClasses ecoreClass="Ghost.ecore#//NamedPar"/>
     <genClasses ecoreClass="Ghost.ecore#//NameOnlyParList">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//NameOnlyParList/names"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//NameOnlyParList/values"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//ArgList">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//ArgList/values"/>
@@ -137,7 +142,6 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//BindList/values"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//LocVarDecl">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//LocVarDecl/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//LocVarDecl/value"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//RValue"/>
@@ -174,7 +178,6 @@
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//CompDecl">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//CompDecl/externality"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//CompDecl/name"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//NamedCompDecl">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//NamedCompDecl/type"/>

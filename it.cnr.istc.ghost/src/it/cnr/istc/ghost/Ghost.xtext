@@ -41,9 +41,13 @@ UnnamedTransitionSection returns TransitionSection: (values+=TransConstraint (SE
 TransConstraint : (controllability=Controllability)? head=ValueDecl
 	(interval=IntvOrDflt)? ('->' body=TransConstrBody)?
 ;
+
+CompRef: ObjVarDecl | CompDecl;
+
 ValueDecl : name=ID parlist=FormalParList?;
 SimpleInstVal: name=[ValueDecl|ID] arglist=NameOnlyParList?;
-QualifInstVal: name=QUALID arglist=ArgList?;
+//needs validator check to insure that has a comp and arglist only if it is a ValueDecl reference
+QualifInstVal: (comp=[CompRef|ID]".")? value=[SymbolReference] arglist=ArgList?;
 InstVal: 'this' | QualifInstVal | ResConstr;
 
 TransConstrBody: (=>values+=SingleTransConstr) | ('('
@@ -70,10 +74,13 @@ ResourceBody : ('('(val1=ConstExpr (SEP+ val2=ConstExpr)? SEP*)?
 
 ResSimpleInstVal: type=ResourceAction '(' arg=ID_ ')';
 
+//Variable: FormalPar | NamedPar | LocVarDecl;
+SymbolReference: FormalPar | NamedPar | LocVarDecl | ValueDecl;
 
 FormalPar: type=[SimpleType|QUALID] (name=ID_)?;
 FormalParList: '(' (values+=FormalPar (SEP+ values+=FormalPar )* SEP* )? ')';
-NameOnlyParList: '(' (names+=ID_ (SEP+ names+=ID_ )* SEP* )? ')';
+NamedPar: name=ID_;
+NameOnlyParList: '(' (values+=NamedPar (SEP+ values+=NamedPar )* SEP* )? ')';
 ArgList: '(' (values+=GenericExpression (SEP+ values+=GenericExpression)* SEP* )? ')';
 BindList: '['(varNames+=ID '=')? values+=[CompDecl|QUALID] (SEP+ (varNames+=ID '=')? values+=[CompDecl|QUALID] )* SEP* ']';
 
