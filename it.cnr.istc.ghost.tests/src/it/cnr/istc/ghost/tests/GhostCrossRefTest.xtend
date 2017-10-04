@@ -24,6 +24,7 @@ import it.cnr.istc.ghost.ghost.CompDecl
 import it.cnr.istc.ghost.ghost.ObjVarDecl
 import it.cnr.istc.ghost.ghost.SvDecl
 import it.cnr.istc.ghost.ghost.SimpleInstVal
+import it.cnr.istc.ghost.ghost.BindList
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -251,4 +252,25 @@ synchronize:
 		assertThat(value,is(orig));
 	}
 	
+	@Test	
+	def void testBindListNameRef() {
+		val result = parseHelper.parse('''
+type t = sv(A
+variable:
+	avar : t;
+);
+comp c : t[avar=c];
+		''');
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val bl = EcoreUtil2.eAllOfType(result,BindList)?.head;
+		assertNotNull(bl?.varNames);
+		val ref = bl.varNames.get(0);
+		assertNotNull(ref);
+		assertThat(ref.eIsProxy,is(false));
+		val sv = EcoreUtil2.eAllOfType(result,SvDecl).head;
+		val orig = EcoreUtil2.eAllOfType(sv,ObjVarDecl).head;
+		assertThat(orig.name,is(equalTo("avar")));
+		assertThat(ref,is(orig));
+	}
 }

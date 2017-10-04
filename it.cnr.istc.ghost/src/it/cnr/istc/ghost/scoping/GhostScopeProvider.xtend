@@ -25,6 +25,9 @@ import it.cnr.istc.ghost.ghost.TransConstraint
 import it.cnr.istc.ghost.ghost.FormalPar
 import it.cnr.istc.ghost.ghost.SimpleInstVal
 import it.cnr.istc.ghost.ghost.SvDecl
+import it.cnr.istc.ghost.ghost.BindList
+import it.cnr.istc.ghost.ghost.CompDecl
+import it.cnr.istc.ghost.ghost.ResourceDecl
 
 /**
  * This class contains custom scoping description.
@@ -81,6 +84,31 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 		return IScope.NULLSCOPE;
 	}
 	
+	private def IScope getScopeForBindList(EObject v) {
+		if (v === null)
+			return IScope.NULLSCOPE;
+		val comp = EcoreUtil2.getContainerOfType(v,CompDecl);
+		if (comp !== null) {
+			val pScope = if (comp instanceof NamedCompDecl)
+					getScopeForBindList((comp as NamedCompDecl).type)
+				else
+					IScope.NULLSCOPE;
+			return Scopes.scopeFor(EcoreUtil2.eAllOfType(comp,ObjVarDecl),pScope);
+		}
+		val type = EcoreUtil2.getContainerOfType(v,ComponentType);
+		if (type !== null) {
+			val pScope = switch(type)
+				{
+					SvDecl: getScopeForBindList((type as SvDecl).parent)
+					ResourceDecl: getScopeForBindList((type as ResourceDecl).parent)
+					default: IScope.NULLSCOPE
+				}
+			return Scopes.scopeFor(EcoreUtil2.eAllOfType(type,ObjVarDecl),pScope);
+		}
+
+		return IScope.NULLSCOPE;
+	}	
+	
 	override IScope getScope(EObject context, EReference reference) {
 		
 		if (context instanceof QualifInstVal &&
@@ -100,6 +128,13 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 			reference == GhostPackage.Literals.SIMPLE_INST_VAL__VALUE)
 		{
 			val scope = getScopeForSyncTrigger(context);
+			if (scope !== IScope.NULLSCOPE)
+				return scope;
+		}
+		if (context instanceof BindList &&
+			reference == GhostPackage.Literals.BIND_LIST__VAR_NAMES)
+		{
+			val scope = getScopeForBindList(context);
 			if (scope !== IScope.NULLSCOPE)
 				return scope;
 		}

@@ -84,7 +84,7 @@ FormalParList: '(' (values+=FormalPar (SEP+ values+=FormalPar )* SEP* )? ')';
 NamedPar: name=ID_;
 NameOnlyParList: '(' (values+=NamedPar (SEP+ values+=NamedPar )* SEP* )? ')';
 ArgList: '(' (values+=GenericExpression (SEP+ values+=GenericExpression)* SEP* )? ')';
-BindList: '['(varNames+=ID '=')? values+=[CompDecl|QUALID] (SEP+ (varNames+=ID '=')? values+=[CompDecl|QUALID] )* SEP* ']';
+BindList: '['(varNames+=[ObjVarDecl] '=')? values+=[CompDecl|QUALID] (SEP+ (varNames+=[ObjVarDecl] '=')? values+=[CompDecl|QUALID] )* SEP* ']';
 
 LocVarDecl: 'var' name=ID '=' value=RValue;
 RValue: (=>TemporalExp) | GenericExpression;
