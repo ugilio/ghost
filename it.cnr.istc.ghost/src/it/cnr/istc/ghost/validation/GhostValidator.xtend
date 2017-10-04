@@ -24,9 +24,11 @@ import it.cnr.istc.ghost.ghost.QualifInstVal
 import it.cnr.istc.ghost.ghost.ValueDecl
 import it.cnr.istc.ghost.ghost.SimpleInstVal
 import it.cnr.istc.ghost.ghost.Synchronization
-import it.cnr.istc.ghost.ghost.CompDecl
 import it.cnr.istc.ghost.ghost.NamedCompDecl
-import it.cnr.istc.ghost.ghost.ComponentType
+import it.cnr.istc.ghost.ghost.InheritedKwd
+import it.cnr.istc.ghost.ghost.TransConstraint
+import it.cnr.istc.ghost.ghost.TransConstrBody
+import it.cnr.istc.ghost.ghost.SyncBody
 
 /**
  * This class contains custom validation rules. 
@@ -44,6 +46,7 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val QUALIFINSTVAL_INCOMPATIBLE_COMP = "qualifInstValIncompatibleComp";
 	public static val QUALIFINSTVAL_INCOMPATIBLE_ARGS = "qualifInstValIncompatibleArgs";
 	public static val INHERITANCE_INCOMPATIBLE_PARAMS = "inheritanceIncompatibleParams";
+	public static val INHERITED_KWD_NO_ANCESTOR = "inheritedKwdNoAncestor";
 
 	// Checks for type hierarchy
 
@@ -166,49 +169,129 @@ class GhostValidator extends AbstractGhostValidator {
 		}
 	}
 	
-	//Overriding definitions checks
-	@Check
-	def checkInheritedValuesCompatibility(ValueDecl v) {
-		val name = v.name;
-		var type = null as SvDecl;
+	//Inheritance checks
+	
+	private def getParentType(EObject o) {
+		if (o === null)
+			return null;
 		//we are in a component with a type, find the type
-		val comp = EcoreUtil2.getContainerOfType(v,NamedCompDecl);
+		val comp = EcoreUtil2.getContainerOfType(o,NamedCompDecl);
 		if (comp !== null && comp.type instanceof SvDecl)
-			type = comp.type as SvDecl
-		else
+			return comp.type
+		else if (comp !== null && comp.type instanceof ResourceDecl)
+			return comp.type
+		else {
 		//we are in a type, find the parent, if any
-			type = EcoreUtil2.getContainerOfType(v,SvDecl)?.parent;
-		
+			val type = EcoreUtil2.getContainerOfType(o,SvDecl)?.parent;
+			if (type !== null)
+				return type;
+			return EcoreUtil2.getContainerOfType(o,ResourceDecl)?.parent;
+		}
+	}	
+	
+	
+	private def getParentValue(ValueDecl o) {
+		val name = o?.name;
+		if (name === null || o === null)
+			return null;
+		var type = getParentType(o) as SvDecl;
+
 		while (type !== null) {
-			val parentVal = EcoreUtil2.eAllOfType(type,ValueDecl).filter[v.name==name].head;
+			val parentVal = EcoreUtil2.eAllOfType(type,ValueDecl).filter[v|v.name==name].head;
 			if (parentVal !== null) {
 				//found the value we are inheriting from.
-				val parCount = if (parentVal.parlist?.values !== null) parentVal.parlist.values.size
-					else 0;
-				val thisCount = if (v.parlist?.values !== null) v.parlist.values.size
-					else 0;
-				if (parCount != thisCount) {
-					error(String.format(
-					"Incompatible parameter list: parent value has %d parameters, got %d",
-					parCount,thisCount),VALUE_DECL__PARLIST,INHERITANCE_INCOMPATIBLE_PARAMS);
-					return;
-				}
-				for (var i = 0; i < parCount; i++) {
-					val p = parentVal.parlist.values.get(i);
-					val t = v.parlist.values.get(i);
-					if (p.type != t.type) {
-						val pn = if (p.type?.name === null) "<error>" else p.type.name; 
-						val tn = if (t.type?.name === null) "<error>" else t.type.name; 
-						error(String.format("Incompatible parameter: expected '%s' but got '%s'",
-							pn,tn),VALUE_DECL__PARLIST,INHERITANCE_INCOMPATIBLE_PARAMS);
-					}
-				}
-				return;
+				return parentVal;
 			}
-			
 			type = type.parent;
 		}
+		return null;			
+	}
+	
+	private def dispatch getParentSync(SimpleInstVal o) {
+		val name = o?.value?.name;
+		if (name === null || o === null)
+			return null;
+		var type = getParentType(o) as SvDecl;
+			
+		while (type !== null) {
+			val parentSync = EcoreUtil2.eAllOfType(type,SimpleInstVal).filter[v|v?.value?.name==name].head;
+			if (parentSync !== null) {
+				//found the sync we are inheriting from.
+				return parentSync;
+			}
+			type = type.parent;
+		}
+		return null;			
+	}		
+	
+	private def dispatch getParentSync(ResSimpleInstVal o) {
+		val action = o?.type;
+		if (action === null || o === null)
+			return null;
+		var type = getParentType(o) as ResourceDecl;
+
+		while (type !== null) {
+			val parentSync = EcoreUtil2.eAllOfType(type,ResSimpleInstVal).filter[v|v?.type==action].head;
+			if (parentSync !== null) {
+				//found the sync we are inheriting from.
+				return parentSync;
+			}
+			type = type.parent;
+		}
+		return null;			
+	}	
 		
+	@Check
+	def checkInheritedValuesCompatibility(ValueDecl v) {
+		val parentVal = getParentValue(v);
+		if (parentVal !== null) {
+			val parCount = if (parentVal.parlist?.values !== null) parentVal.parlist.values.size
+				else 0;
+			val thisCount = if (v.parlist?.values !== null) v.parlist.values.size
+				else 0;
+			if (parCount != thisCount) {
+				error(String.format(
+					"Incompatible parameter list: parent value has %d parameters, got %d",
+					parCount,thisCount),VALUE_DECL__PARLIST,INHERITANCE_INCOMPATIBLE_PARAMS);
+				return;
+			}
+			for (var i = 0; i < parCount; i++) {
+				val p = parentVal.parlist.values.get(i);
+				val t = v.parlist.values.get(i);
+				if (p.type != t.type) {
+					val pn = if (p.type?.name === null) "<error>" else p.type.name; 
+					val tn = if (t.type?.name === null) "<error>" else t.type.name; 
+					error(String.format("Incompatible parameter: expected '%s' but got '%s'",
+						pn,tn),VALUE_DECL__PARLIST,INHERITANCE_INCOMPATIBLE_PARAMS);
+				}
+			}
+		}
+	}
+	
+	@Check
+	def checkInheritedOutOfContext(TransConstrBody tcb) {
+		val tc = tcb.eContainer as TransConstraint;
+		for (var i = 0; i < tcb.values.size; i++)
+			if (tcb.values.get(i) instanceof InheritedKwd)
+				if (getParentValue(tc.head)===null) {
+					error("There is no ancestor value to inherit from",
+						TRANS_CONSTR_BODY__VALUES,i,
+						INHERITED_KWD_NO_ANCESTOR);
+					return;
+				}
+	}
+
+	@Check
+	def checkInheritedOutOfContext(SyncBody sb) {
+		val s = sb.eContainer as Synchronization;
+		for (var i = 0; i < sb.values.size; i++)
+			if (sb.values.get(i) instanceof InheritedKwd)
+				if (getParentSync(s.trigger)===null) {
+					error("There is no ancestor synchronization to inherit from",
+						SYNC_BODY__VALUES,i,
+						INHERITED_KWD_NO_ANCESTOR);
+					return;
+				}
 	}
 	
 }

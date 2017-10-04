@@ -405,4 +405,123 @@ type ct2 = sv ct(
 		'''.parse;
 		model.assertError(GhostPackage.Literals.VALUE_DECL, GhostValidator.INHERITANCE_INCOMPATIBLE_PARAMS);
 	}
+	
+	@Test
+	def void testWrongInheritedKwd1() {
+		val model = '''
+type t = int [0,100];
+type ct = sv (
+	A(t x1, t x2) -> inherited
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.INHERITED_KWD_NO_ANCESTOR);
+	}
+	
+	@Test
+	def void testWrongInheritedKwd2() {
+		val model = '''
+type t = int [0,100];
+comp c : sv (
+	A(t x1, t x2) -> inherited
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.INHERITED_KWD_NO_ANCESTOR);
+	}
+	
+	@Test
+	def void testWrongInheritedKwd3() {
+		val model = '''
+type t = int [0,100];
+type ct = sv (
+	A(t x1, t x2)
+synchronize:
+	A -> inherited
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.SYNC_BODY, GhostValidator.INHERITED_KWD_NO_ANCESTOR);
+	}
+	
+	@Test
+	def void testWrongInheritedKwd4() {
+		val model = '''
+type t = int [0,100];
+comp c : sv (
+	A(t x1, t x2)
+synchronize:
+	A -> inherited
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.SYNC_BODY, GhostValidator.INHERITED_KWD_NO_ANCESTOR);
+	}
+	
+	@Test
+	def void testWrongInheritedKwd5() {
+		val model = '''
+type t = int [0,100];
+type ct = resource (
+synchronize:
+	require(x) -> inherited
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.SYNC_BODY, GhostValidator.INHERITED_KWD_NO_ANCESTOR);
+	}
+	
+	@Test
+	def void testWrongInheritedKwd6() {
+		val model = '''
+comp c : resource (10
+synchronize:
+	require(x) -> inherited
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.SYNC_BODY, GhostValidator.INHERITED_KWD_NO_ANCESTOR);
+	}
+	
+	@Test
+	def void testInheritedKwdOk1() {
+		val model = '''
+type t = int [0,100];
+type ct = sv (
+	A(t x1, t x2)
+);
+type ct2 = sv ct(
+	A(t y1, t y2) -> inherited
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testInheritedKwdOk2() {
+		val model = '''
+type t = int [0,100];
+type ct = sv (
+	A(t x1, t x2)
+synchronize:
+	A(x) -> x < 10
+);
+type ct2 = sv ct(
+synchronize:
+	A -> inherited
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testInheritedKwdOk3() {
+		val model = '''
+type r = resource (10
+synchronize:
+	require(x) -> x < 10
+);
+type r2 = resource r(10
+synchronize:
+	require(x) -> inherited
+);
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	
 }

@@ -42,6 +42,8 @@ TransConstraint : (controllability=Controllability)? head=ValueDecl
 	(interval=IntvOrDflt)? ('->' body=TransConstrBody)?
 ;
 
+InheritedKwd : {InheritedKwd}'inherited';
+
 CompRef: ObjVarDecl | CompDecl;
 
 ValueDecl : name=ID parlist=FormalParList?;
@@ -52,12 +54,12 @@ InstVal: 'this' | QualifInstVal | ResConstr;
 
 TransConstrBody: (=>values+=SingleTransConstr) | ('('
 	(values+=SingleTransConstr (SEP+ values+=SingleTransConstr)* SEP*)? ')');
-SingleTransConstr: 'inherited' | LocVarDecl | GenericExpression;
+SingleTransConstr: InheritedKwd | LocVarDecl | GenericExpression;
 
 Synchronization : trigger=TriggerType '->' bodies+=SyncBody ('or' bodies+=SyncBody)*;
 SyncBody: (=>values+=SingleSyncConstr) | ('('
 	(values+=SingleSyncConstr (SEP+ values+=SingleSyncConstr)* SEP*)? ')');
-SingleSyncConstr:  (=>TemporalExp) | LocVarDecl | GenericExpression;
+SingleSyncConstr:  InheritedKwd | (=>TemporalExp) | LocVarDecl | GenericExpression;
 
 TriggerType : ResSimpleInstVal | SimpleInstVal;
 
