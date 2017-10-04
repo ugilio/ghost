@@ -45,7 +45,7 @@ TransConstraint : (controllability=Controllability)? head=ValueDecl
 CompRef: ObjVarDecl | CompDecl;
 
 ValueDecl : name=ID parlist=FormalParList?;
-SimpleInstVal: name=[ValueDecl|ID] arglist=NameOnlyParList?;
+SimpleInstVal: value=[ValueDecl|ID] arglist=NameOnlyParList?;
 //needs validator check to insure that has a comp and arglist only if it is a ValueDecl reference
 QualifInstVal: (comp=[CompRef|ID]".")? value=[SymbolReference] arglist=ArgList?;
 InstVal: 'this' | QualifInstVal | ResConstr;

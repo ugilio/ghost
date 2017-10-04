@@ -82,7 +82,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//ValueDecl/parlist"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//SimpleInstVal">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//SimpleInstVal/name"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//SimpleInstVal/value"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//SimpleInstVal/arglist"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//QualifInstVal">
