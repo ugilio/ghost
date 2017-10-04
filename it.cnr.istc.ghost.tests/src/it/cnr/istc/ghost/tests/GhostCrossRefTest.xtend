@@ -25,7 +25,7 @@ class GhostCrossRefTest{
 	ParseHelper<Ghost> parseHelper
 	
 	@Test
-	def void testLocalDom() {
+	def void testNamedParRef() {
 		val result = parseHelper.parse('''
 type ANumType = int [0,100];
 
