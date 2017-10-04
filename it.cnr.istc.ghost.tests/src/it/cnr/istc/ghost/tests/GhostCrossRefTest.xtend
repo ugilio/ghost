@@ -134,28 +134,6 @@ synchronize:
 	}
 	
 	@Test
-	def void testCompValueRef1() {
-		val result = parseHelper.parse('''
-type ANumType = int [0,100];
-
-comp ASVWithAnonymousType : sv(
-	A(ANumType x) -> B;
-	B
-synchronize:
-	A(x) -> this.B
-);		''')
-		assertNotNull(result);
-		EcoreUtil2.resolveAll(result);
-		val sync = EcoreUtil2.eAllOfType(result,Synchronization).head;
-		val value = EcoreUtil2.eAllOfType(sync,QualifInstVal).head?.value;
-		assertNotNull(value);
-		assertThat(value.eIsProxy,is(false));
-		val par = EcoreUtil2.eAllOfType(result,ValueDecl).get(1);
-		assertThat(par.name,is(equalTo("B")));
-		assertThat(value,is(par));
-	}
-	
-	@Test
 	def void testCompValueRef2a() {
 		val result = parseHelper.parse('''
 type ANumType = int [0,100];
