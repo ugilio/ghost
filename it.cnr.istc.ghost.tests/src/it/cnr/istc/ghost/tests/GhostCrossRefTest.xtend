@@ -16,6 +16,12 @@ import static org.hamcrest.CoreMatchers.*
 import org.eclipse.xtext.EcoreUtil2
 import it.cnr.istc.ghost.ghost.QualifInstVal
 import it.cnr.istc.ghost.ghost.NamedPar
+import it.cnr.istc.ghost.ghost.FormalPar
+import it.cnr.istc.ghost.ghost.LocVarDecl
+import it.cnr.istc.ghost.ghost.ValueDecl
+import it.cnr.istc.ghost.ghost.Synchronization
+import it.cnr.istc.ghost.ghost.CompDecl
+import it.cnr.istc.ghost.ghost.ObjVarDecl
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -37,10 +43,206 @@ synchronize:
 );		''')
 		assertNotNull(result);
 		EcoreUtil2.resolveAll(result);
-		val value = EcoreUtil2.eAllOfType(result,QualifInstVal).head?.value;
+		val sync = EcoreUtil2.eAllOfType(result,Synchronization).head;
+		val value = EcoreUtil2.eAllOfType(sync,QualifInstVal).head?.value;
 		assertNotNull(value);
 		assertThat(value.eIsProxy,is(false));
 		val par = EcoreUtil2.eAllOfType(result,NamedPar).head;
+		assertThat(par.name,is(equalTo("x")));
 		assertThat(value,is(par));
 	}
+	
+	@Test
+	def void testResourceNamedParRef() {
+		val result = parseHelper.parse('''
+comp AResWithAnonymousType : resource(10
+synchronize:
+	require(x) -> x < 10;
+);		''')
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val sync = EcoreUtil2.eAllOfType(result,Synchronization).head;
+		val value = EcoreUtil2.eAllOfType(sync,QualifInstVal).head?.value;
+		assertNotNull(value);
+		assertThat(value.eIsProxy,is(false));
+		val par = EcoreUtil2.eAllOfType(result,NamedPar).head;
+		assertThat(par.name,is(equalTo("x")));
+		assertThat(value,is(par));
+	}
+	
+	@Test
+	def void testFormalParRef() {
+		val result = parseHelper.parse('''
+type ANumType = int [0,100];
+
+comp ASVWithAnonymousType : sv(
+	A(ANumType x) -> (B, x < 10);
+	B
+);		''')
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val value = EcoreUtil2.eAllOfType(result,QualifInstVal).get(1).value;
+		assertNotNull(value);
+		assertThat(value.eIsProxy,is(false));
+		val par = EcoreUtil2.eAllOfType(result,FormalPar).head;
+		assertThat(par.name,is(equalTo("x")));
+		assertThat(value,is(par));
+	}
+	
+	@Test
+	def void testLocVarRef() {
+		val result = parseHelper.parse('''
+type ANumType = int [0,100];
+
+comp ASVWithAnonymousType : sv(
+	A(ANumType x) -> B;
+	B
+synchronize:
+	A(x) -> (var y = x + 1; y < 10;)
+);		''')
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val sync = EcoreUtil2.eAllOfType(result,Synchronization).head;
+		val value = EcoreUtil2.eAllOfType(sync,QualifInstVal).get(1).value;
+		assertNotNull(value);
+		assertThat(value.eIsProxy,is(false));
+		val par = EcoreUtil2.eAllOfType(result,LocVarDecl).head;
+		assertThat(par.name,is(equalTo("y")));
+		assertThat(value,is(par));
+	}
+	
+	@Test
+	def void testValueRef1() {
+		val result = parseHelper.parse('''
+type ANumType = int [0,100];
+
+comp ASVWithAnonymousType : sv(
+	A(ANumType x) -> B;
+	B
+synchronize:
+	A(x) -> B
+);		''')
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val sync = EcoreUtil2.eAllOfType(result,Synchronization).head;
+		val value = EcoreUtil2.eAllOfType(sync,QualifInstVal).head?.value;
+		assertNotNull(value);
+		assertThat(value.eIsProxy,is(false));
+		val par = EcoreUtil2.eAllOfType(result,ValueDecl).get(1);
+		assertThat(par.name,is(equalTo("B")));
+		assertThat(value,is(par));
+	}
+	
+	@Test
+	def void testCompValueRef1() {
+		val result = parseHelper.parse('''
+type ANumType = int [0,100];
+
+comp ASVWithAnonymousType : sv(
+	A(ANumType x) -> B;
+	B
+synchronize:
+	A(x) -> this.B
+);		''')
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val sync = EcoreUtil2.eAllOfType(result,Synchronization).head;
+		val value = EcoreUtil2.eAllOfType(sync,QualifInstVal).head?.value;
+		assertNotNull(value);
+		assertThat(value.eIsProxy,is(false));
+		val par = EcoreUtil2.eAllOfType(result,ValueDecl).get(1);
+		assertThat(par.name,is(equalTo("B")));
+		assertThat(value,is(par));
+	}
+	
+	@Test
+	def void testCompValueRef2a() {
+		val result = parseHelper.parse('''
+type ANumType = int [0,100];
+
+comp ASVWithAnonymousType : sv(
+	A(ANumType x) -> B;
+	B
+synchronize:
+	A(x) -> ASVWithAnonymousType.B
+);		''')
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val sync = EcoreUtil2.eAllOfType(result,Synchronization).head;
+		val comp = EcoreUtil2.eAllOfType(sync,QualifInstVal).head?.comp;
+		assertNotNull(comp);
+		assertThat(comp.eIsProxy,is(false));
+		val comp2 = EcoreUtil2.eAllOfType(result,CompDecl).head;
+		assertThat(comp,is(comp2));
+	}
+	
+	@Test
+	def void testCompValueRef2b() {
+		val result = parseHelper.parse('''
+type ANumType = int [0,100];
+
+comp ASVWithAnonymousType : sv(
+	A(ANumType x) -> B;
+	B
+synchronize:
+	A(x) -> ASVWithAnonymousType.B
+);		''')
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val sync = EcoreUtil2.eAllOfType(result,Synchronization).head;
+		val value = EcoreUtil2.eAllOfType(sync,QualifInstVal).head?.value;
+		assertNotNull(value);
+		assertThat(value.eIsProxy,is(false));
+		val par = EcoreUtil2.eAllOfType(result,ValueDecl).get(1);
+		assertThat(par.name,is(equalTo("B")));
+		assertThat(value,is(par));
+	}			
+
+	@Test
+	def void testCompValueRef3a() {
+		val result = parseHelper.parse('''
+type ANumType = int [0,100];
+
+type ASVType = sv(
+	A(ANumType x) -> B;
+	B
+synchronize:
+	A(x) -> other.B;
+variable:
+	other : ASVType;
+);		''')
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val sync = EcoreUtil2.eAllOfType(result,Synchronization).head;
+		val comp = EcoreUtil2.eAllOfType(sync,QualifInstVal).head?.comp;
+		assertNotNull(comp);
+		assertThat(comp.eIsProxy,is(false));
+		val comp2 = EcoreUtil2.eAllOfType(result,ObjVarDecl).head;
+		assertThat(comp,is(comp2));
+	}
+	
+	@Test
+	def void testCompValueRef3b() {
+		val result = parseHelper.parse('''
+type ANumType = int [0,100];
+
+type ASVType = sv(
+	A(ANumType x) -> B;
+	B
+synchronize:
+	A(x) -> other.B;
+variable:
+	other : ASVType;
+);		''')
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val sync = EcoreUtil2.eAllOfType(result,Synchronization).head;
+		val value = EcoreUtil2.eAllOfType(sync,QualifInstVal).head?.value;
+		assertNotNull(value);
+		assertThat(value.eIsProxy,is(false));
+		val par = EcoreUtil2.eAllOfType(result,ValueDecl).get(1);
+		assertThat(par.name,is(equalTo("B")));
+		assertThat(value,is(par));
+	}		
+	
 }
