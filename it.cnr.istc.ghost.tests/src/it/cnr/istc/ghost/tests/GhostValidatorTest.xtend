@@ -316,6 +316,93 @@ synchronize:
 )
 		'''.parse;
 		model.assertError(GhostPackage.Literals.SIMPLE_INST_VAL, GhostValidator.SYNCH_INVALID_PARNUM);
-	}	
-		
+	}
+	
+	
+	//Inheritance tests
+	@Test
+	def void testInheritance1() {
+		val model = '''
+type t = int [0,100];
+type ct = sv (
+	A(t x1, t x2)
+);
+comp c : ct(
+	A(t y1, t y2)
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testInheritance2() {
+		val model = '''
+type t = int [0,100];
+type ct = sv (
+	A(t x1, t x2)
+);
+type ct2 = sv ct(
+	A(t y1, t y2)
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testInheritance3() {
+		val model = '''
+type t = int [0,100];
+type t2 = int [0,50];
+type ct = sv (
+	A(t x1, t x2)
+);
+comp c : ct(
+	A(t2 y1, t2 y2)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.VALUE_DECL, GhostValidator.INHERITANCE_INCOMPATIBLE_PARAMS);
+	}
+	
+	@Test
+	def void testInheritance4() {
+		val model = '''
+type t = int [0,100];
+type t2 = int [0,50];
+type ct = sv (
+	A(t x1, t x2)
+);
+type ct2 = sv ct(
+	A(t2 y1, t2 y2)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.VALUE_DECL, GhostValidator.INHERITANCE_INCOMPATIBLE_PARAMS);
+	}
+	
+	@Test
+	def void testInheritance5() {
+		val model = '''
+type t = int [0,100];
+type ct = sv (
+	A(t x1, t x2)
+);
+comp c : ct(
+	A(t x1)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.VALUE_DECL, GhostValidator.INHERITANCE_INCOMPATIBLE_PARAMS);
+	}
+	
+	@Test
+	def void testInheritance6() {
+		val model = '''
+type t = int [0,100];
+type ct = sv (
+	A(t x1, t x2)
+);
+type ct2 = sv ct(
+	A(t x1)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.VALUE_DECL, GhostValidator.INHERITANCE_INCOMPATIBLE_PARAMS);
+	}
 }

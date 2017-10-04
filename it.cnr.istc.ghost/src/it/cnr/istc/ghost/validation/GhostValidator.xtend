@@ -24,6 +24,9 @@ import it.cnr.istc.ghost.ghost.QualifInstVal
 import it.cnr.istc.ghost.ghost.ValueDecl
 import it.cnr.istc.ghost.ghost.SimpleInstVal
 import it.cnr.istc.ghost.ghost.Synchronization
+import it.cnr.istc.ghost.ghost.CompDecl
+import it.cnr.istc.ghost.ghost.NamedCompDecl
+import it.cnr.istc.ghost.ghost.ComponentType
 
 /**
  * This class contains custom validation rules. 
@@ -40,6 +43,7 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val SYNCH_INVALID_PARNUM = "synchInvalidParNum";
 	public static val QUALIFINSTVAL_INCOMPATIBLE_COMP = "qualifInstValIncompatibleComp";
 	public static val QUALIFINSTVAL_INCOMPATIBLE_ARGS = "qualifInstValIncompatibleArgs";
+	public static val INHERITANCE_INCOMPATIBLE_PARAMS = "inheritanceIncompatibleParams";
 
 	// Checks for type hierarchy
 
@@ -160,6 +164,51 @@ class GhostValidator extends AbstractGhostValidator {
 					"Incompatible parameter list: maximum %d parameters expected, got %d",
 					formalLen,actLen),SIMPLE_INST_VAL__ARGLIST,SYNCH_INVALID_PARNUM);
 		}
+	}
+	
+	//Overriding definitions checks
+	@Check
+	def checkInheritedValuesCompatibility(ValueDecl v) {
+		val name = v.name;
+		var type = null as SvDecl;
+		//we are in a component with a type, find the type
+		val comp = EcoreUtil2.getContainerOfType(v,NamedCompDecl);
+		if (comp !== null && comp.type instanceof SvDecl)
+			type = comp.type as SvDecl
+		else
+		//we are in a type, find the parent, if any
+			type = EcoreUtil2.getContainerOfType(v,SvDecl)?.parent;
+		
+		while (type !== null) {
+			val parentVal = EcoreUtil2.eAllOfType(type,ValueDecl).filter[v.name==name].head;
+			if (parentVal !== null) {
+				//found the value we are inheriting from.
+				val parCount = if (parentVal.parlist?.values !== null) parentVal.parlist.values.size
+					else 0;
+				val thisCount = if (v.parlist?.values !== null) v.parlist.values.size
+					else 0;
+				if (parCount != thisCount) {
+					error(String.format(
+					"Incompatible parameter list: parent value has %d parameters, got %d",
+					parCount,thisCount),VALUE_DECL__PARLIST,INHERITANCE_INCOMPATIBLE_PARAMS);
+					return;
+				}
+				for (var i = 0; i < parCount; i++) {
+					val p = parentVal.parlist.values.get(i);
+					val t = v.parlist.values.get(i);
+					if (p.type != t.type) {
+						val pn = if (p.type?.name === null) "<error>" else p.type.name; 
+						val tn = if (t.type?.name === null) "<error>" else t.type.name; 
+						error(String.format("Incompatible parameter: expected '%s' but got '%s'",
+							pn,tn),VALUE_DECL__PARLIST,INHERITANCE_INCOMPATIBLE_PARAMS);
+					}
+				}
+				return;
+			}
+			
+			type = type.parent;
+		}
+		
 	}
 	
 }
