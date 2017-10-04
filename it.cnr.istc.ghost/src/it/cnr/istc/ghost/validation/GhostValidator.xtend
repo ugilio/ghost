@@ -23,7 +23,6 @@ import it.cnr.istc.ghost.ghost.CompResBody
 import it.cnr.istc.ghost.ghost.QualifInstVal
 import it.cnr.istc.ghost.ghost.ValueDecl
 import it.cnr.istc.ghost.ghost.SimpleInstVal
-import it.cnr.istc.ghost.ghost.TriggerType
 import it.cnr.istc.ghost.ghost.Synchronization
 
 /**
