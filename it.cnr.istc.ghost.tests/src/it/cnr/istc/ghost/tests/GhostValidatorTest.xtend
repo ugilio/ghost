@@ -173,5 +173,44 @@ init();
 		'''.parse;
 		model.assertNoErrors;
 	}
+
+	@Test
+	def void testQualifInstValOk1() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x);
+synchronize:
+	A(x) -> c.A 
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testQualifInstValErr1() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x);
+synchronize:
+	A(x) -> c.x 
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.QUALIF_INST_VAL, GhostValidator.QUALIFINSTVAL_INCOMPATIBLE_COMP);
+	}
+	
+	@Test
+	def void testQualifInstValErr2() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x);
+synchronize:
+	A(x) -> x(1) 
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.QUALIF_INST_VAL, GhostValidator.QUALIFINSTVAL_INCOMPATIBLE_ARGS);
+	}
 	
 }

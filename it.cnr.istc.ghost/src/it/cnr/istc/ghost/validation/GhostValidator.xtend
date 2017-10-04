@@ -16,6 +16,8 @@ import java.util.List
 import org.eclipse.emf.ecore.EStructuralFeature
 import it.cnr.istc.ghost.ghost.Ghost
 import it.cnr.istc.ghost.naming.GhostNameProvider
+import it.cnr.istc.ghost.ghost.QualifInstVal
+import it.cnr.istc.ghost.ghost.ValueDecl
 
 /**
  * This class contains custom validation rules. 
@@ -28,6 +30,8 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val EMPTY_ENUM = 'emptyEnum';
 	public static val DUPLICATE_IDENTIFIER = 'duplicateIdentifier';
 	public static val DUPLICATE_IMPORT = 'duplicateImport';
+	public static val QUALIFINSTVAL_INCOMPATIBLE_COMP = "qualifInstValIncompatibleComp";
+	public static val QUALIFINSTVAL_INCOMPATIBLE_ARGS = "qualifInstValIncompatibleArgs";
 
 	// Checks for type hierarchy
 
@@ -110,4 +114,15 @@ class GhostValidator extends AbstractGhostValidator {
 		checkDuplicateIdentifiers(ghost,GHOST__IMPORTS,"Duplicate import '%s'",DUPLICATE_IMPORT);
 	}
 	
+	@Check
+	def checkQualifInstValCompat(QualifInstVal v) {
+		if (! (v.value instanceof ValueDecl)) {
+			if (v.comp !== null)
+				error(String.format("Cannot find value '%s' in '%s'",v.value.name,v.comp.name),
+					 QUALIF_INST_VAL__VALUE,QUALIFINSTVAL_INCOMPATIBLE_COMP);
+			if (v.arglist !== null)
+				error(String.format("'%s' cannot have arguments since it is not a value",v.value.name),
+					 QUALIF_INST_VAL__ARGLIST,QUALIFINSTVAL_INCOMPATIBLE_ARGS);
+		}
+	}
 }
