@@ -119,7 +119,7 @@
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//ResSimpleInstVal">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//ResSimpleInstVal/type"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//ResSimpleInstVal/arg"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//ResSimpleInstVal/arg"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//SymbolReference">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//SymbolReference/name"/>

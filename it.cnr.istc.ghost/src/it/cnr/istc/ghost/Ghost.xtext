@@ -72,7 +72,7 @@ ResourceBody : ('('(val1=ConstExpr (SEP+ val2=ConstExpr)? SEP*)?
 	)*
 ')')?;
 
-ResSimpleInstVal: type=ResourceAction '(' arg=ID_ ')';
+ResSimpleInstVal: type=ResourceAction '(' arg=NamedPar ')';
 
 //Variable: FormalPar | NamedPar | LocVarDecl;
 SymbolReference: FormalPar | NamedPar | LocVarDecl | ValueDecl;
