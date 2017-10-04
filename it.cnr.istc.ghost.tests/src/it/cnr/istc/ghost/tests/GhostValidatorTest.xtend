@@ -213,4 +213,109 @@ synchronize:
 		model.assertError(GhostPackage.Literals.QUALIF_INST_VAL, GhostValidator.QUALIFINSTVAL_INCOMPATIBLE_ARGS);
 	}
 	
+	
+	//Synchronizations tests
+	@Test
+	def void testResActionInNonRes() {
+		val model = '''
+type t = sv(
+	A;
+synchronize:
+	require (x) -> A;
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.RES_SIMPLE_INST_VAL, GhostValidator.RESACTION_NONRES);
+	}
+	
+	@Test
+	def void testSynchArgsMatch1() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x1, t x2), B
+synchronize:
+	A -> B
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testSynchArgsMatch2() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x1, t x2), B
+synchronize:
+	A(y) -> B
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testSynchArgsMatch3() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x1, t x2), B
+synchronize:
+	A(y1, y2) -> B
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testSynchArgsMatch4() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x1, t x2), B
+synchronize:
+	A(_, y2) -> B
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+
+	@Test
+	def void testSynchArgsMatch5() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x1, t x2), B
+synchronize:
+	A(y1, _) -> B
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testSynchArgsMatch6() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x1, t x2), B
+synchronize:
+	A(y1, y2, y3) -> B
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.SIMPLE_INST_VAL, GhostValidator.SYNCH_INVALID_PARNUM);
+	}	
+
+	@Test
+	def void testSynchArgsMatch7() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x1, t x2), B
+synchronize:
+	A(y1, y2, _) -> B
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.SIMPLE_INST_VAL, GhostValidator.SYNCH_INVALID_PARNUM);
+	}	
+		
 }

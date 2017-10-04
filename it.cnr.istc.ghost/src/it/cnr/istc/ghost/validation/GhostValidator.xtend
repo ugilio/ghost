@@ -16,8 +16,15 @@ import java.util.List
 import org.eclipse.emf.ecore.EStructuralFeature
 import it.cnr.istc.ghost.ghost.Ghost
 import it.cnr.istc.ghost.naming.GhostNameProvider
+import it.cnr.istc.ghost.ghost.ResSimpleInstVal
+import org.eclipse.xtext.EcoreUtil2
+import it.cnr.istc.ghost.ghost.ResourceBody
+import it.cnr.istc.ghost.ghost.CompResBody
 import it.cnr.istc.ghost.ghost.QualifInstVal
 import it.cnr.istc.ghost.ghost.ValueDecl
+import it.cnr.istc.ghost.ghost.SimpleInstVal
+import it.cnr.istc.ghost.ghost.TriggerType
+import it.cnr.istc.ghost.ghost.Synchronization
 
 /**
  * This class contains custom validation rules. 
@@ -30,6 +37,8 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val EMPTY_ENUM = 'emptyEnum';
 	public static val DUPLICATE_IDENTIFIER = 'duplicateIdentifier';
 	public static val DUPLICATE_IMPORT = 'duplicateImport';
+	public static val RESACTION_NONRES = 'resactionNonRes';
+	public static val SYNCH_INVALID_PARNUM = "synchInvalidParNum";
 	public static val QUALIFINSTVAL_INCOMPATIBLE_COMP = "qualifInstValIncompatibleComp";
 	public static val QUALIFINSTVAL_INCOMPATIBLE_ARGS = "qualifInstValIncompatibleArgs";
 
@@ -125,4 +134,33 @@ class GhostValidator extends AbstractGhostValidator {
 					 QUALIF_INST_VAL__ARGLIST,QUALIFINSTVAL_INCOMPATIBLE_ARGS);
 		}
 	}
+	
+	
+	//Synchronizations check
+	@Check
+	def checkResactionTrigger(ResSimpleInstVal v) {
+		if (EcoreUtil2.getContainerOfType(v,ResourceBody) !== null)
+			return;
+		if (EcoreUtil2.getContainerOfType(v,CompResBody) !== null)
+			return;
+		error("Resource actions can be used as triggers in resources only",RES_SIMPLE_INST_VAL__TYPE,RESACTION_NONRES);
+	}
+	
+	@Check
+	def checkSynchArgs(SimpleInstVal v) {
+		if (!(v.eContainer instanceof Synchronization))
+			return;
+		val s = v.eContainer as Synchronization;
+		if (s.trigger === v) {
+			val formalLen = if (v.value?.parlist?.values !== null) v.value.parlist.values.size
+				else 0;
+			val actLen = if (v.arglist?.values !== null) v.arglist.values.size
+				else 0;
+			if (actLen>formalLen)
+				error(String.format(
+					"Incompatible parameter list: maximum %d parameters expected, got %d",
+					formalLen,actLen),SIMPLE_INST_VAL__ARGLIST,SYNCH_INVALID_PARNUM);
+		}
+	}
+	
 }
