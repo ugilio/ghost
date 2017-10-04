@@ -14,6 +14,15 @@ import it.cnr.istc.ghost.ghost.ComponentType
 import it.cnr.istc.ghost.ghost.ObjVarDecl
 import it.cnr.istc.ghost.ghost.QualifInstVal
 import it.cnr.istc.ghost.ghost.ValueDecl
+import it.cnr.istc.ghost.ghost.SyncBody
+import it.cnr.istc.ghost.ghost.Synchronization
+import it.cnr.istc.ghost.ghost.NamedPar
+import java.util.Collections
+import it.cnr.istc.ghost.ghost.LocVarDecl
+import com.google.common.collect.Iterables
+import it.cnr.istc.ghost.ghost.TransConstrBody
+import it.cnr.istc.ghost.ghost.TransConstraint
+import it.cnr.istc.ghost.ghost.FormalPar
 
 /**
  * This class contains custom scoping description.
@@ -29,14 +38,40 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 		return Scopes.scopeFor(EcoreUtil2.eAllOfType(type,ValueDecl));
 	}
 	
+	private def getScopeForBlock(EObject context, IScope parent) {
+		//Inside a synchronization body
+		val syncbody = EcoreUtil2.getContainerOfType(context,SyncBody);
+		if (syncbody !== null) {
+			val trigger = (syncbody.eContainer as Synchronization).trigger;
+			val args = if (trigger !== null) EcoreUtil2.eAllOfType(trigger,NamedPar)
+						else Collections.emptyList;
+			val locVars = EcoreUtil2.eAllOfType(syncbody,LocVarDecl);
+			return Scopes.scopeFor(Iterables.concat(args,locVars),parent);
+		}
+		//Inside a transition constraint body
+		val tcbody = EcoreUtil2.getContainerOfType(context,TransConstrBody);
+		if (tcbody !== null) {
+			val head = (tcbody.eContainer as TransConstraint).head;
+			val args = if (head !== null) EcoreUtil2.eAllOfType(head,FormalPar)
+						else Collections.emptyList;
+			val locVars = EcoreUtil2.eAllOfType(tcbody,LocVarDecl);
+			return Scopes.scopeFor(Iterables.concat(args,locVars),parent);
+		}
+		return parent;
+	}
+	
 	override IScope getScope(EObject context, EReference reference) {
 		if (context instanceof QualifInstVal &&
 			reference == GhostPackage.Literals.QUALIF_INST_VAL__VALUE) {
 				val comp = (context as QualifInstVal).comp;
-				switch (comp) {
-				NamedCompDecl : return getScopeFor(comp.type)
-				ObjVarDecl : return getScopeFor(comp.type)
-			}
+				if (comp === null) {
+					return getScopeForBlock(context,super.getScope(context,reference));
+				}
+				//component.value: scope is the values defined in component
+				else switch (comp) {
+					NamedCompDecl : return getScopeFor(comp.type)
+					ObjVarDecl : return getScopeFor(comp.type)
+				}
 		}
 		return super.getScope(context, reference);
 	}
