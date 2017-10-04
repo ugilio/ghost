@@ -23,6 +23,8 @@ import com.google.common.collect.Iterables
 import it.cnr.istc.ghost.ghost.TransConstrBody
 import it.cnr.istc.ghost.ghost.TransConstraint
 import it.cnr.istc.ghost.ghost.FormalPar
+import it.cnr.istc.ghost.ghost.SimpleInstVal
+import it.cnr.istc.ghost.ghost.SvDecl
 
 /**
  * This class contains custom scoping description.
@@ -60,7 +62,27 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 		return parent;
 	}
 	
+	/**
+	 * Returns nested scopes for each parent. This way most recent ancestors
+	 * are searched first
+	 */
+	private def IScope getScopeForSyncTrigger(EObject v) {
+		if (v === null)
+			return IScope.NULLSCOPE;
+		val comp = EcoreUtil2.getContainerOfType(v,NamedCompDecl);
+		if (comp !== null)
+			return Scopes.scopeFor(EcoreUtil2.eAllOfType(comp,ValueDecl),
+				getScopeForSyncTrigger(comp.type));
+		val type = EcoreUtil2.getContainerOfType(v,SvDecl);
+		if (type !== null)
+			return Scopes.scopeFor(EcoreUtil2.eAllOfType(type,ValueDecl),
+				getScopeForSyncTrigger(type.parent));
+
+		return IScope.NULLSCOPE;
+	}
+	
 	override IScope getScope(EObject context, EReference reference) {
+		
 		if (context instanceof QualifInstVal &&
 			reference == GhostPackage.Literals.QUALIF_INST_VAL__VALUE) {
 				val comp = (context as QualifInstVal).comp;
@@ -73,6 +95,15 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 					ObjVarDecl : return getScopeFor(comp.type)
 				}
 		}
+		//Synchronization triggers
+		if (context instanceof SimpleInstVal &&
+			reference == GhostPackage.Literals.SIMPLE_INST_VAL__VALUE)
+		{
+			val scope = getScopeForSyncTrigger(context);
+			if (scope !== IScope.NULLSCOPE)
+				return scope;
+		}
+
 		return super.getScope(context, reference);
 	}
 	

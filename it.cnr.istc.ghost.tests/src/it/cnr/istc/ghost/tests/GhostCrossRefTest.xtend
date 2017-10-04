@@ -22,6 +22,8 @@ import it.cnr.istc.ghost.ghost.ValueDecl
 import it.cnr.istc.ghost.ghost.Synchronization
 import it.cnr.istc.ghost.ghost.CompDecl
 import it.cnr.istc.ghost.ghost.ObjVarDecl
+import it.cnr.istc.ghost.ghost.SvDecl
+import it.cnr.istc.ghost.ghost.SimpleInstVal
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -222,5 +224,31 @@ variable:
 		assertThat(par.name,is(equalTo("B")));
 		assertThat(value,is(par));
 	}		
+
+	@Test	
+	def void testSyncInheritance() {
+		val result = parseHelper.parse('''
+type t = int [0,100];
+type ct = sv (
+	A(t x1, t x2)
+synchronize:
+	A(x) -> x < 10
+);
+type ct2 = sv ct(
+synchronize:
+	A(x) -> x < 10
+)
+		''');
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val sv2 = EcoreUtil2.eAllOfType(result,SvDecl).get(1);
+		val value = EcoreUtil2.eAllOfType(sv2,SimpleInstVal).head?.value;
+		assertNotNull(value);
+		assertThat(value.eIsProxy,is(false));
+		val sv1 = EcoreUtil2.eAllOfType(result,SvDecl).head;
+		val orig = EcoreUtil2.eAllOfType(sv1,ValueDecl).head;
+		assertThat(orig.name,is(equalTo("A")));
+		assertThat(value,is(orig));
+	}
 	
 }
