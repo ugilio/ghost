@@ -3,31 +3,22 @@
  */
 package it.cnr.istc.ghost.scoping
 
-import org.eclipse.xtext.scoping.IScope
-import org.eclipse.emf.ecore.EObject
-import org.eclipse.emf.ecore.EReference
-import it.cnr.istc.ghost.ghost.GhostPackage
-import it.cnr.istc.ghost.ghost.NamedCompDecl
-import org.eclipse.xtext.scoping.Scopes
-import org.eclipse.xtext.EcoreUtil2
-import it.cnr.istc.ghost.ghost.ComponentType
-import it.cnr.istc.ghost.ghost.ObjVarDecl
-import it.cnr.istc.ghost.ghost.QualifInstVal
-import it.cnr.istc.ghost.ghost.ValueDecl
-import it.cnr.istc.ghost.ghost.SyncBody
-import it.cnr.istc.ghost.ghost.Synchronization
-import it.cnr.istc.ghost.ghost.NamedPar
-import java.util.Collections
-import it.cnr.istc.ghost.ghost.LocVarDecl
-import com.google.common.collect.Iterables
-import it.cnr.istc.ghost.ghost.TransConstrBody
-import it.cnr.istc.ghost.ghost.TransConstraint
-import it.cnr.istc.ghost.ghost.FormalPar
-import it.cnr.istc.ghost.ghost.SimpleInstVal
-import it.cnr.istc.ghost.ghost.SvDecl
 import it.cnr.istc.ghost.ghost.BindList
 import it.cnr.istc.ghost.ghost.CompDecl
+import it.cnr.istc.ghost.ghost.ComponentType
+import it.cnr.istc.ghost.ghost.GhostPackage
+import it.cnr.istc.ghost.ghost.NamedCompDecl
+import it.cnr.istc.ghost.ghost.ObjVarDecl
+import it.cnr.istc.ghost.ghost.QualifInstVal
 import it.cnr.istc.ghost.ghost.ResourceDecl
+import it.cnr.istc.ghost.ghost.SimpleInstVal
+import it.cnr.istc.ghost.ghost.SvDecl
+import it.cnr.istc.ghost.ghost.ValueDecl
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EReference
+import org.eclipse.xtext.EcoreUtil2
+import org.eclipse.xtext.scoping.IScope
+import org.eclipse.xtext.scoping.Scopes
 
 /**
  * This class contains custom scoping description.
@@ -44,25 +35,8 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 	}
 	
 	private def getScopeForBlock(EObject context, IScope parent) {
-		//Inside a synchronization body
-		val syncbody = EcoreUtil2.getContainerOfType(context,SyncBody);
-		if (syncbody !== null) {
-			val trigger = (syncbody.eContainer as Synchronization).trigger;
-			val args = if (trigger !== null) EcoreUtil2.eAllOfType(trigger,NamedPar)
-						else Collections.emptyList;
-			val locVars = EcoreUtil2.eAllOfType(syncbody,LocVarDecl);
-			return Scopes.scopeFor(Iterables.concat(args,locVars),parent);
-		}
-		//Inside a transition constraint body
-		val tcbody = EcoreUtil2.getContainerOfType(context,TransConstrBody);
-		if (tcbody !== null) {
-			val head = (tcbody.eContainer as TransConstraint).head;
-			val args = if (head !== null) EcoreUtil2.eAllOfType(head,FormalPar)
-						else Collections.emptyList;
-			val locVars = EcoreUtil2.eAllOfType(tcbody,LocVarDecl);
-			return Scopes.scopeFor(Iterables.concat(args,locVars),parent);
-		}
-		return parent;
+		val itr = Utils.getSymbolsForBlock(context);
+		return if (itr === null) parent else return Scopes.scopeFor(itr,parent);
 	}
 	
 	/**
