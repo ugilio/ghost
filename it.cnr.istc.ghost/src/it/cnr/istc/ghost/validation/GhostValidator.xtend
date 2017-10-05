@@ -250,14 +250,6 @@ class GhostValidator extends AbstractGhostValidator {
 			SYNC_BODY__VALUES,"Duplicate usage of '%s' keyword",DUPLICATE_IDENTIFIER);
 	}
 	
-	
-	//duplicate arguments (except _)
-	//duplicate local variables
-	//duplicate objvardecl
-	//duplicate values
-	//duplicate synchronizations
-	//duplicate "inherited"
-	
 	//Unique imports
 	
 	@Check
