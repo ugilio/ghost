@@ -29,6 +29,15 @@ import it.cnr.istc.ghost.ghost.InheritedKwd
 import it.cnr.istc.ghost.ghost.TransConstraint
 import it.cnr.istc.ghost.ghost.TransConstrBody
 import it.cnr.istc.ghost.ghost.SyncBody
+import it.cnr.istc.ghost.ghost.SvBody
+import it.cnr.istc.ghost.ghost.CompSVBody
+import it.cnr.istc.ghost.ghost.TriggerType
+import it.cnr.istc.ghost.ghost.CompBody
+import it.cnr.istc.ghost.ghost.ObjVarDecl
+import it.cnr.istc.ghost.ghost.FormalParList
+import it.cnr.istc.ghost.ghost.NameOnlyParList
+import it.cnr.istc.ghost.scoping.Utils
+import it.cnr.istc.ghost.ghost.LocVarDecl
 
 /**
  * This class contains custom validation rules. 
@@ -98,10 +107,13 @@ class GhostValidator extends AbstractGhostValidator {
 	
 	//Checks for duplicate identifiers
 	private def getObjName(EObject obj) {
-		return GhostNameProvider.getObjName(obj);
+		val name = GhostNameProvider.getObjName(obj);
+		if ("_" == name)
+			return null;
+		return name;
 	}
 
-	private def getByName(Object name, List<EObject> list) {
+	private def getByName(Object name, Iterable<? extends EObject> list) {
 		if (name!==null)
 			for (o : list)
 				if (name.equals(getObjName(o)))
@@ -119,15 +131,141 @@ class GhostValidator extends AbstractGhostValidator {
 		}
 	}
 	
+	private def checkDuplicateIdentifiers(Iterable<? extends EObject> list,
+		EStructuralFeature feat, String msg, String id) {
+			checkDuplicateIdentifiers(list,list,feat,msg,id);
+	}
+	
+	private def checkDuplicateIdentifiers(Iterable<? extends EObject> haystack,
+		Iterable<? extends EObject> needle,
+		EStructuralFeature feat, String msg, String id) {
+		for (o : needle) {
+			val name = getObjName(o)
+			if (name!==null && getByName(name,haystack) != o)
+				error(String.format(msg,name),o.eContainer,feat,id);
+		}
+	}
+	
 	@Check
 	def checkUniqueTopLevelDeclarations(Ghost ghost) {
 		checkDuplicateIdentifiers(ghost,GHOST__DECLS,"Duplicate identifier '%s'",DUPLICATE_IDENTIFIER);
 	}
 	
+	//Unique SV Values
+	
+	private def doCheckUniqueSVValues(EObject body) {
+		checkDuplicateIdentifiers(EcoreUtil2.eAllOfType(body,ValueDecl),
+			TRANS_CONSTRAINT__HEAD,"Duplicate identifier '%s'",DUPLICATE_IDENTIFIER
+		);
+	}
+	
+	@Check
+	def checkUniqueSVValues(SvBody body) {
+		doCheckUniqueSVValues(body);
+	}
+	
+	@Check
+	def checkUniqueSVValues(CompSVBody body) {
+		doCheckUniqueSVValues(body);
+	}
+	
+	//Unique Synchronizations
+	private def doCheckUniqueSynchronizations(EObject body) {
+		checkDuplicateIdentifiers(EcoreUtil2.eAllOfType(body,TriggerType),
+			SYNCHRONIZATION__TRIGGER,"Duplicate identifier '%s'",DUPLICATE_IDENTIFIER);
+	}
+	
+	@Check
+	def checkUniqueSynchronizations(SvBody body) {
+		doCheckUniqueSynchronizations(body);
+	}
+	
+	@Check
+	def checkUniqueSynchronizations(ResourceBody body) {
+		doCheckUniqueSynchronizations(body);
+	}
+	
+	@Check
+	def checkUniqueSynchronizations(CompBody body) {
+		doCheckUniqueSynchronizations(body);
+	}
+	
+	//Unique Object variables declarations
+	private def doCheckUniqueObjVarDecls(EObject body) {
+		checkDuplicateIdentifiers(EcoreUtil2.eAllOfType(body,ObjVarDecl),
+			VARIABLE_SECTION__VALUES,"Duplicate identifier '%s'",DUPLICATE_IDENTIFIER);
+	}
+	
+	@Check
+	def checkUniqueObjVarDecls(SvBody body) {
+		doCheckUniqueObjVarDecls(body);
+	}
+	
+	@Check
+	def checkUniqueObjVarDecls(ResourceBody body) {
+		doCheckUniqueObjVarDecls(body);
+	}
+	
+	//Unique arguments
+	@Check
+	def checkUniqueNamesInParList(NameOnlyParList parList) {
+		checkDuplicateIdentifiers(parList,NAME_ONLY_PAR_LIST__VALUES,"Duplicate identifier '%s'",DUPLICATE_IDENTIFIER);
+	}
+	
+	@Check
+	def checkUniqueFormalParams(FormalParList parList) {
+		checkDuplicateIdentifiers(parList,FORMAL_PAR_LIST__VALUES,"Duplicate identifier '%s'",DUPLICATE_IDENTIFIER);
+	}
+	
+	//Unique local variables
+	@Check
+	def checkUniqueLocVars(TransConstrBody body) {
+		val syms = Utils.getSymbolsForBlock(body);
+		val vars = syms.filter[o|o instanceof LocVarDecl];
+		checkDuplicateIdentifiers(syms,vars,
+			TRANS_CONSTR_BODY__VALUES,
+			"Duplicate identifier '%s'",DUPLICATE_IDENTIFIER);
+	}
+	
+	@Check
+	def checkUniqueLocVars(SyncBody body) {
+		val syms = Utils.getSymbolsForBlock(body);
+		val vars = syms.filter[o|o instanceof LocVarDecl];
+		checkDuplicateIdentifiers(syms,vars,
+			SYNC_BODY__VALUES,
+			"Duplicate identifier '%s'",DUPLICATE_IDENTIFIER);
+	}
+	
+	//Unique "inherited" keyword usages
+	
+	@Check
+	def checkUniqueInherited(TransConstrBody tcb) {
+		checkDuplicateIdentifiers(EcoreUtil2.eAllOfType(tcb,InheritedKwd),
+			TRANS_CONSTR_BODY__VALUES,"Duplicate usage of '%s' keyword",DUPLICATE_IDENTIFIER);
+	}
+	
+	@Check
+	def checkUniqueInherited(Synchronization s) {
+		checkDuplicateIdentifiers(EcoreUtil2.eAllOfType(s,InheritedKwd),
+			SYNC_BODY__VALUES,"Duplicate usage of '%s' keyword",DUPLICATE_IDENTIFIER);
+	}
+	
+	
+	//duplicate arguments (except _)
+	//duplicate local variables
+	//duplicate objvardecl
+	//duplicate values
+	//duplicate synchronizations
+	//duplicate "inherited"
+	
+	//Unique imports
+	
 	@Check
 	def checkUniqueImports(Ghost ghost) {
 		checkDuplicateIdentifiers(ghost,GHOST__IMPORTS,"Duplicate import '%s'",DUPLICATE_IMPORT);
 	}
+	
+	//Check QualifInstVal has compatible fields
 	
 	@Check
 	def checkQualifInstValCompat(QualifInstVal v) {

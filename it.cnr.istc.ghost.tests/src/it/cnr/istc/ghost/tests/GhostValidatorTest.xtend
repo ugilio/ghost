@@ -133,6 +133,266 @@ const t1 = 10;
 		model.assertError(GhostPackage.Literals.GHOST, GhostValidator.DUPLICATE_IDENTIFIER);
 	}
 	
+	//Duplicate arguments
+	
+	@Test
+	def void testDuplArgs1() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x, t x);
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.FORMAL_PAR_LIST, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDuplArgs2() {
+		val model = '''
+type t1 = int [0,100];
+type t2 = int [0,100];
+comp c : sv(
+	A(t1 x, t2 x);
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.FORMAL_PAR_LIST, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDuplArgs3() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x, t y);
+synchronize:
+	A(x, x) -> x < 10
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.NAME_ONLY_PAR_LIST, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDuplArgsPlaceholder1() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t _, t _)
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testDuplArgsPlaceholder2() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x, t y); B
+synchronize:
+	A(_, _) -> B
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	//Duplicate local variables
+	
+	@Test
+	def void testDuplLocVar1() {
+		val model = '''
+comp c : sv(
+	A -> (var x = 1; var x = 2)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDuplLocVar2() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x) -> var x = 1
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDuplLocVar3() {
+		val model = '''
+comp c : sv(
+	A
+synchronize:
+	A -> (var x = 1; var x = 2)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.SYNC_BODY, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDuplLocVar4() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x)
+synchronize:
+	A(x) -> var x = 1
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.SYNC_BODY, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	//Duplicate values
+
+	@Test
+	def void testDuplValues1() {
+		val model = '''
+comp c : sv(
+	A,A
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.TRANS_CONSTRAINT, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDuplValues2() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x),A(t x)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.TRANS_CONSTRAINT, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDuplValues3() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x),A
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.TRANS_CONSTRAINT, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	//Duplicate synchronizations
+	
+	@Test
+	def void testDuplSync1() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x)
+synchronize:
+	A(t x) -> x < 10;
+	A(t x) -> x < 10;
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.SYNCHRONIZATION, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDuplSync2() {
+		val model = '''
+type t = int [0,100];
+comp c : sv(
+	A(t x), B
+synchronize:
+	A(t x) -> x < 10;
+	A(t x) -> B;
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.SYNCHRONIZATION, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDuplSync3() {
+		val model = '''
+comp c : resource(10
+synchronize:
+	require(x) -> x < 10;
+	require(x) -> x < 10;
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.SYNCHRONIZATION, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDuplSync4() {
+		val model = '''
+comp c : resource(10
+synchronize:
+	require(x) -> x < 10;
+	require(x) -> (var y = 10; y > x);
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.SYNCHRONIZATION, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	//Duplicate object variable
+	
+	@Test
+	def void testDuplObjVar1() {
+		val model = '''
+type t = sv(
+	A
+variable:
+	other: t,
+	other: t
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.VARIABLE_SECTION, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDuplObjVar2() {
+		val model = '''
+type t1 = sv(B);
+type t2 = sv(
+	A
+variable:
+	other: t1,
+	other: t2
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.VARIABLE_SECTION, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	//Duplicate "inherited"
+	@Test
+	def void testDuplInherited1() {
+		val model = '''
+type ct = sv(
+	A -> B, B
+),
+type ct2 = sv ct(
+	A -> (inherited, inherited)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	@Test
+	def void testDuplInherited2() {
+		val model = '''
+type t = int [0,100];
+type ct = sv(
+	A(t x)
+synchronize:
+	A(x) -> x < 10
+),
+type ct2 = sv ct(
+synchronize:
+	A -> (inherited, inherited)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.SYNC_BODY, GhostValidator.DUPLICATE_IDENTIFIER);
+	}
+	
+	//Duplicate imports
+		
 	@Test
 	def void testDuplImport1() {
 		val model = '''
@@ -174,6 +434,8 @@ init();
 		model.assertNoErrors;
 	}
 
+	//Checks for QualifInstVal
+
 	@Test
 	def void testQualifInstValOk1() {
 		val model = '''
@@ -212,7 +474,6 @@ synchronize:
 		'''.parse;
 		model.assertError(GhostPackage.Literals.QUALIF_INST_VAL, GhostValidator.QUALIFINSTVAL_INCOMPATIBLE_ARGS);
 	}
-	
 	
 	//Synchronizations tests
 	@Test
