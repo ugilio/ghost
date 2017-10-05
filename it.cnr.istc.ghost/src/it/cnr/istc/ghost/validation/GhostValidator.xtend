@@ -56,6 +56,7 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val QUALIFINSTVAL_INCOMPATIBLE_ARGS = "qualifInstValIncompatibleArgs";
 	public static val INHERITANCE_INCOMPATIBLE_PARAMS = "inheritanceIncompatibleParams";
 	public static val INHERITED_KWD_NO_ANCESTOR = "inheritedKwdNoAncestor";
+	public static val RECURSIVE_VARDECL = "recursiveVarDecl";
 
 	// Checks for type hierarchy
 
@@ -271,6 +272,15 @@ class GhostValidator extends AbstractGhostValidator {
 		}
 	}
 	
+	//Recursive local variables definition;
+	@Check
+	def checkRecursiveLocVar(LocVarDecl x) {
+		if (x.value !== null) {
+			val ref = EcoreUtil2.eAllOfType(x.value,QualifInstVal).filter[q|q.value===x].head;
+			if (ref !== null)
+				error("Recursive variable definition",ref.eContainer,ref.eContainingFeature,RECURSIVE_VARDECL);
+		}
+	}
 	
 	//Synchronizations check
 	@Check

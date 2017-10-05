@@ -783,6 +783,25 @@ synchronize:
 		'''.parse;
 		model.assertNoErrors;
 	}
+
+	//Recursive local variable definition	
+	@Test
+	def void testRecLocVarDef1() {
+		val model = '''
+comp c : sv (
+	A -> var x = x;
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.LOC_VAR_DECL, GhostValidator.RECURSIVE_VARDECL);
+	}
 	
-	
+	@Test
+	def void testRecLocVarDef2() {
+		val model = '''
+comp c : sv (
+	A -> var x = (52 + 11)*x;
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION, GhostValidator.RECURSIVE_VARDECL);
+	}
 }
