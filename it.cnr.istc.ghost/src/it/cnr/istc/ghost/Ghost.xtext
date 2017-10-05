@@ -90,11 +90,11 @@ LocVarDecl: 'var' name=ID '=' value=RValue;
 RValue: (=>TemporalExp) | GenericExpression;
 
 
-BasicExp returns Expression: '(' EqExp {Expression.left=current}')' | '_' | TimePointOp | InstVal | NumAndUnit;
-Term returns Expression: BasicExp {Expression.left=current} (ops+=('*' | '/' | '%') right+=BasicExp)*;
-SumExp returns Expression: Term {Expression.left=current} (ops+=('+' | '-' ) right+=Term)*;
-CompExp returns Expression: SumExp {Expression.left=current} (ops+=('<' | '<=' | '>' | '>=' ) right+=SumExp)?;
-EqExp returns Expression: CompExp {Expression.left=current} (ops+=('=' | '!=') right+=CompExp)?;
+BasicExp returns Expression: '(' EqExp ')' | '_' | TimePointOp | InstVal | NumAndUnit;
+Term returns Expression: BasicExp ({Expression.left=current} ops+=('*' | '/' | '%') right+=BasicExp)*;
+SumExp returns Expression: Term ({Expression.left=current} ops+=('+' | '-' ) right+=Term)*;
+CompExp returns Expression: SumExp ({Expression.left=current} ops+=('<' | '<=' | '>' | '>=' ) right+=SumExp)?;
+EqExp returns Expression: CompExp ({Expression.left=current} ops+=('=' | '!=') right+=CompExp)?;
 
 TemporalExp : (left=SumExp)? op=TemporalRelation right=SumExp;
 
