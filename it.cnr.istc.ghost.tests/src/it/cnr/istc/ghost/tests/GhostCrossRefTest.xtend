@@ -273,4 +273,44 @@ comp c : t[avar=c];
 		assertThat(orig.name,is(equalTo("avar")));
 		assertThat(ref,is(orig));
 	}
+	
+	@Test
+	def void testNamedParTypeRef1() {
+		val result = parseHelper.parse('''
+type t = int [0,100];
+comp c : sv(
+	A(t x) -> B, B
+synchronize:
+	A(x) -> x < 10
+);		''')
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val namedParType = EcoreUtil2.eAllOfType(result,NamedPar).head?.type;
+		assertNotNull(namedParType);
+		assertThat(namedParType.eIsProxy,is(false));
+		val formalParType = EcoreUtil2.eAllOfType(result,FormalPar).head?.type;
+		assertThat(formalParType.name,is(equalTo("t")));
+		assertThat(formalParType,is(namedParType));
+	}
+	
+	@Test
+	def void testNamedParTypeRef2() {
+		val result = parseHelper.parse('''
+type t = int [0,100];
+comp c : sv(
+	A(t x) -> B, B
+synchronize:
+	A(_) -> 0 < 10
+);		''')
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val namedParType = EcoreUtil2.eAllOfType(result,NamedPar).head?.type;
+		assertNotNull(namedParType);
+		assertThat(namedParType.eIsProxy,is(false));
+		val formalParType = EcoreUtil2.eAllOfType(result,FormalPar).head?.type;
+		assertThat(formalParType.name,is(equalTo("t")));
+		assertThat(formalParType,is(namedParType));
+	}
+	
+	
 }

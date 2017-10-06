@@ -79,6 +79,8 @@ ResSimpleInstVal: type=ResourceAction '(' arg=NamedPar ')';
 //Variable: FormalPar | NamedPar | LocVarDecl;
 SymbolReference: FormalPar | NamedPar | LocVarDecl | ValueDecl;
 
+AbstractNamedPar: (NamedPar) type=[SimpleType];
+
 FormalPar: type=[SimpleType|QUALID] (name=ID_)?;
 FormalParList: '(' (values+=FormalPar (SEP+ values+=FormalPar )* SEP* )? ')';
 NamedPar: name=ID_;

@@ -23,6 +23,8 @@ import org.eclipse.xtext.util.Strings
 import it.cnr.istc.ghost.conversion.NumAndUnitHelper
 import org.eclipse.xtext.util.concurrent.IUnitOfWork
 import org.eclipse.emf.ecore.resource.Resource
+import it.cnr.istc.ghost.ghost.NameOnlyParList
+import it.cnr.istc.ghost.ghost.SimpleInstVal
 
 class GhostLinker extends LazyLinker {
 	
@@ -47,6 +49,7 @@ class GhostLinker extends LazyLinker {
 				runPreprocessor(model,p);
 				resolveAllNumbers(model,p);
 				resolveAllConstants(model,p);
+				linkNamedPars(model,p);
 		}});
 	}
 	
@@ -102,6 +105,19 @@ class GhostLinker extends LazyLinker {
 				p.addDiagnostic(new DiagnosticMessage(
 					e.message,Severity.ERROR,CONST_EVAL_ERROR));
 		}
+	}
+	
+	private def linkNamedPars(EObject model, IDiagnosticProducer p) {
+		for (list : EcoreUtil2.getAllContentsOfType(model,NameOnlyParList))
+			if (list.eContainer instanceof SimpleInstVal) {
+				val formalValues = (list.eContainer as SimpleInstVal)?.value?.parlist?.values;
+				val values = (list.values);
+				val count = Math.min(
+					if (values === null) 0 else values.size,
+					if (formalValues === null) 0 else formalValues.size);
+				for (var i = 0; i < count; i++)
+					values.get(i).type = formalValues.get(i).type;
+			}
 	}
 	
 }

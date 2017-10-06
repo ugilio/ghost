@@ -125,13 +125,16 @@
     <genClasses ecoreClass="Ghost.ecore#//SymbolReference">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//SymbolReference/name"/>
     </genClasses>
+    <genClasses ecoreClass="Ghost.ecore#//AbstractNamedPar"/>
     <genClasses ecoreClass="Ghost.ecore#//FormalPar">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//FormalPar/type"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//FormalParList">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//FormalParList/values"/>
     </genClasses>
-    <genClasses ecoreClass="Ghost.ecore#//NamedPar"/>
+    <genClasses ecoreClass="Ghost.ecore#//NamedPar">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//NamedPar/type"/>
+    </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//NameOnlyParList">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//NameOnlyParList/values"/>
     </genClasses>
