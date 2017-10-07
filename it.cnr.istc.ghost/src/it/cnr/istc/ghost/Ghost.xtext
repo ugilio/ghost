@@ -158,7 +158,7 @@ AtParams: AtParamsNamed | (=> AtParamsPos);
 AtParamsNamed returns AtParams:  ('start' '=' start=IntvOrDflt)? & ('duration' '=' duration=IntvOrDflt)? & ('end' '=' end=IntvOrDflt)?;
 AtParamsPos returns AtParams: (start=IntvOrDflt (duration=IntvOrDflt (end=IntvOrDflt)?)?)?;
 
-TimePointOp: ( ('start'|'end') '(' value=GenericExpression ')');
+TimePointOp: ( ('start'|'end') '(' value=EqExp ')');
 
 EnumLiteral: name=ID;
 ConstLiteral: (ConstDecl | EnumLiteral);
