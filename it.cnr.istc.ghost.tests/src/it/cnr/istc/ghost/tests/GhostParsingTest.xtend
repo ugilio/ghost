@@ -227,6 +227,9 @@ synchronize:
 	@Test
 	def void test16() {
 		val result = parseHelper.parse('''
+type coord = int [-1000, +1000];
+type angle = int [-360, 360];
+type file_id = int [0, 100];
 type CameraType = sv (
   CamIdle -> TakingPicture;
   TakingPicture(file_id, coord, coord, angle, angle) 10 -> CamIdle;
@@ -244,6 +247,9 @@ synchronize:
 	@Test
 	def void test17() {
 		val result = parseHelper.parse('''
+type coord = int [-1000, +1000];
+type angle = int [-360, 360];
+type file_id = int [0, 100];
 type MissionTimelineType = sv (
   Idle -> (TakingPicture, Communicating, At);
   TakingPicture(file_id, coord, coord, angle, angle) 10 -> Idle;
@@ -582,6 +588,7 @@ type halfTank = resource(0,50);
 	@Test
 	def void test41() {
 		val result = parseHelper.parse('''
+type fuel = int [0, 100];
 comp aComp : sv(
   Start(fuel) -> Stop, Stop -> Start;
 synchronize:
@@ -595,6 +602,7 @@ synchronize:
 	@Test
 	def void test42() {
 		val result = parseHelper.parse('''
+type fuel = int [0, 100];
 comp aComp : sv(
   Start(fuel) -> Stop, Stop -> Start;
 synchronize:
