@@ -4,3 +4,4 @@ xtend-gen/
 target/
 .settings/
 .metadata/
+.recommenders/
