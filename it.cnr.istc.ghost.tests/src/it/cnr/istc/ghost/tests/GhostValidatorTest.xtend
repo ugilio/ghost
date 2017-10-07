@@ -286,8 +286,8 @@ type t = int [0,100];
 comp c : sv(
 	A(t x)
 synchronize:
-	A(t x) -> x < 10;
-	A(t x) -> x < 10;
+	A(x) -> x < 10;
+	A(x) -> x < 10;
 )
 		'''.parse;
 		model.assertError(GhostPackage.Literals.SYNCHRONIZATION, GhostValidator.DUPLICATE_IDENTIFIER);
@@ -300,8 +300,8 @@ type t = int [0,100];
 comp c : sv(
 	A(t x), B
 synchronize:
-	A(t x) -> x < 10;
-	A(t x) -> B;
+	A(x) -> x < 10;
+	A(x) -> B;
 )
 		'''.parse;
 		model.assertError(GhostPackage.Literals.SYNCHRONIZATION, GhostValidator.DUPLICATE_IDENTIFIER);
