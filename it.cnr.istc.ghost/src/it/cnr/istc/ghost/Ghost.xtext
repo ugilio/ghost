@@ -78,7 +78,7 @@ ResourceBody : ('('(val1=ConstExpr (SEP+ val2=ConstExpr)? SEP*)?
 ResSimpleInstVal: type=ResourceAction '(' arg=NamedPar ')';
 
 //Variable: FormalPar | NamedPar | LocVarDecl;
-SymbolReference: FormalPar | NamedPar | LocVarDecl | ValueDecl;
+SymbolReference: FormalPar | NamedPar | LocVarDecl | ValueDecl | ConstLiteral;
 
 AbstractNamedPar: (NamedPar) type=[SimpleType];
 
