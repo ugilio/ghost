@@ -76,6 +76,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//TransConstraint/body"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//InheritedKwd"/>
+    <genClasses ecoreClass="Ghost.ecore#//ThisKwd"/>
     <genClasses ecoreClass="Ghost.ecore#//CompRef">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//CompRef/name"/>
     </genClasses>

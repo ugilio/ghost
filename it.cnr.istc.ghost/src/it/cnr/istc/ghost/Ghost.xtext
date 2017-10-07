@@ -43,6 +43,7 @@ TransConstraint : (controllability=Controllability)? head=ValueDecl
 ;
 
 InheritedKwd : {InheritedKwd}'inherited';
+ThisKwd : {ThisKwd}'this';
 
 CompRef: ObjVarDecl | CompDecl;
 
@@ -50,7 +51,7 @@ ValueDecl : name=ID parlist=FormalParList?;
 SimpleInstVal: value=[ValueDecl|ID] arglist=NameOnlyParList?;
 //needs validator check to insure that has a comp and arglist only if it is a ValueDecl reference
 QualifInstVal: (comp=[CompRef|ID]".")? value=[SymbolReference] arglist=ArgList?;
-InstVal: 'this' | QualifInstVal | ResConstr;
+InstVal: ThisKwd | QualifInstVal | ResConstr;
 
 TransConstrBody: (=>values+=SingleTransConstr) | ('('
 	(values+=SingleTransConstr (SEP+ values+=SingleTransConstr)* SEP*)? ')');
