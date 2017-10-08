@@ -262,7 +262,7 @@ class GhostValidator extends AbstractGhostValidator {
 	
 	@Check
 	def checkQualifInstValCompat(QualifInstVal v) {
-		if (! (v.value instanceof ValueDecl) && v !== null) {
+		if (! (v.value instanceof ValueDecl) && (v?.value?.name !== null)) {
 			if (v.comp !== null)
 				error(String.format("Cannot find value '%s' in '%s'",v.value.name,v.comp.name),
 					 QUALIF_INST_VAL__VALUE,QUALIFINSTVAL_INCOMPATIBLE_COMP);
