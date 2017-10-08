@@ -41,6 +41,7 @@ import it.cnr.istc.ghost.ghost.LocVarDecl
 import it.cnr.istc.ghost.ghost.ResConstr
 import it.cnr.istc.ghost.ghost.AnonResDecl
 import it.cnr.istc.ghost.ghost.AnonSVDecl
+import it.cnr.istc.ghost.ghost.ConstExpr
 
 /**
  * This class contains custom validation rules. 
@@ -60,6 +61,7 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val RESCONSTR_INCOMPATIBLE_COMP = "resConstrIncompatibleComp";
 	public static val INHERITANCE_INCOMPATIBLE_PARAMS = "inheritanceIncompatibleParams";
 	public static val INHERITED_KWD_NO_ANCESTOR = "inheritedKwdNoAncestor";
+	public static val RENEWABLE_CONSUMABLE_MIX = "renewableConsumableMix";
 	public static val RECURSIVE_VARDECL = "recursiveVarDecl";
 	public static val EXPECTED_TYPE = "expectedType";
 	public static val BOOLEAN_TO_NUMERIC = "booleanToNumeric";
@@ -460,6 +462,32 @@ class GhostValidator extends AbstractGhostValidator {
 						INHERITED_KWD_NO_ANCESTOR);
 					return;
 				}
+	}
+	
+	@Check
+	def checkRenewableConsumableHierarchy(ResourceDecl decl) {
+		doCheckRenewableConsumableHierarchy(decl,decl.body?.val2,decl.name,RESOURCE_DECL__PARENT);
+	}
+	
+	@Check
+	def checkRenewableConsumableHierarchy(NamedCompDecl decl) {
+		if (decl.type instanceof ResourceDecl)
+			doCheckRenewableConsumableHierarchy(decl,
+				(decl.body as CompResBody)?.val2,decl.name,NAMED_COMP_DECL__TYPE
+			);
+	}
+	
+	private def doCheckRenewableConsumableHierarchy(EObject decl, ConstExpr v2,
+		String name, EReference ref) {
+		val parent = getParentType(decl);
+		if (parent !== null && parent instanceof ResourceDecl) {
+			val pv2 = (parent as ResourceDecl).body?.val2;
+			if ((v2 === null || pv2 === null) && v2 !== pv2) {
+				val msg = if (pv2 === null) "Consumable resource '%s' has a renewable resource as parent"
+				else "Renewable resource '%s' has a consumable resource as parent";
+				warning(String.format(msg,name),ref,RENEWABLE_CONSUMABLE_MIX);
+			}
+		}
 	}
 	
 	

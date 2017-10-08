@@ -745,6 +745,46 @@ type ct2 = sv ct(
 	}
 	
 	@Test
+	def void testConsRenewInheritance1() {
+		val model = '''
+type r1 = resource (_,_);
+type r2 = resource r1(_);
+		'''.parse;
+		model.assertWarning(GhostPackage.Literals.RESOURCE_DECL,GhostValidator.RENEWABLE_CONSUMABLE_MIX
+		);
+	}
+	
+	@Test
+	def void testConsRenewInheritance2() {
+		val model = '''
+type r1 = resource (_);
+type r2 = resource r1(_,_);
+		'''.parse;
+		model.assertWarning(GhostPackage.Literals.RESOURCE_DECL,GhostValidator.RENEWABLE_CONSUMABLE_MIX
+		);
+	}
+	
+	@Test
+	def void testConsRenewInheritance3() {
+		val model = '''
+type r1 = resource (_,_);
+comp r2 : r1(10);
+		'''.parse;
+		model.assertWarning(GhostPackage.Literals.COMP_DECL,GhostValidator.RENEWABLE_CONSUMABLE_MIX
+		);
+	}
+	
+	@Test
+	def void testConsRenewInheritance4() {
+		val model = '''
+type r1 = resource (_);
+comp r2 : r1(10,20);
+		'''.parse;
+		model.assertWarning(GhostPackage.Literals.COMP_DECL,GhostValidator.RENEWABLE_CONSUMABLE_MIX
+		);
+	}
+	
+	@Test
 	def void testWrongInheritedKwd1() {
 		val model = '''
 type t = int [0,100];
