@@ -10,7 +10,7 @@ import com.google.inject.Singleton
 import java.util.Set
 import java.util.HashSet
 import it.cnr.istc.ghost.ghost.ConstLiteral
-import it.cnr.istc.ghost.ghost.PlaceHolder
+import it.cnr.istc.ghost.ghost.impl.PlaceHolderImpl
 import it.cnr.istc.ghost.ghost.EnumLiteral
 import it.cnr.istc.ghost.ghost.ConstDecl
 import it.cnr.istc.ghost.ghost.ConstNumber
@@ -24,6 +24,12 @@ class ConstCalculator {
 	@Inject extension IntervalHelper intvHelper;
 	@Inject extension NumAndUnitHelper numHelper;
 	
+	private static class FinalConstPlaceHolder extends PlaceHolderImpl {
+		override getComputed() { return null;}
+		override setComputed(Object value) {}
+	}
+	public static final PlaceHolder CONST_PLACEHOLDER = new FinalConstPlaceHolder();
+	
 	private Set<String> constInProgress = new HashSet<String>();
 	
 	def Object compute(ConstExpr expr) {
@@ -33,7 +39,7 @@ class ConstCalculator {
 		if (expr instanceof ConstSumExp)
 			calcSumExp(expr as ConstSumExp)
 		else if (expr instanceof PlaceHolder)
-			expr
+			CONST_PLACEHOLDER
 		else 		
 			throw new ConstCalculatorException("Unknown constant expression type: "+expr.class);
 		expr.computed = result;
