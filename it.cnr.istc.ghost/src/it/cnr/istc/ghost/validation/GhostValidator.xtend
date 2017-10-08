@@ -61,6 +61,9 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val INHERITANCE_INCOMPATIBLE_PARAMS = "inheritanceIncompatibleParams";
 	public static val INHERITED_KWD_NO_ANCESTOR = "inheritedKwdNoAncestor";
 	public static val RECURSIVE_VARDECL = "recursiveVarDecl";
+	public static val EXPECTED_TYPE = "expectedType";
+	public static val BOOLEAN_TO_NUMERIC = "booleanToNumeric";
+	public static val COMPARISON_DIFFERENT_TYPES = "comparisonDifferentTypes";
 
 	// Checks for type hierarchy
 
@@ -459,4 +462,23 @@ class GhostValidator extends AbstractGhostValidator {
 				}
 	}
 	
+	
+	// Expressions checks
+	private def doCheckExpressions(EObject block) {
+		new ExpressionValidator([message,source,feature,index,code,issueData|
+			error(message,source,feature,index,code,issueData);
+		],[message,source,feature,index,code,issueData|
+			warning(message,source,feature,index,code,issueData);
+		]).checkExpressions(block);
+	}
+	
+	@Check
+	def checkExpressions(SyncBody sb) {
+		doCheckExpressions(sb);
+	}
+	
+	@Check
+	def checkExpressions(TransConstrBody tcb) {
+		doCheckExpressions(tcb);
+	}
 }
