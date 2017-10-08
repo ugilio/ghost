@@ -549,8 +549,85 @@ variable:
 		'''.parse;
 		model.assertError(GhostPackage.Literals.RES_CONSTR,
 			GhostValidator.RESCONSTR_INCOMPATIBLE_COMP);
-
-	}	
+	}
+	
+	@Test
+	def void testResourceConstrErr4() {
+		val model = '''
+comp r : resource(10,20);
+comp c : sv(
+	A
+synchronize:
+	A -> require r(10); 
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.RES_CONSTR,
+			GhostValidator.RESACTION_WRONGRES);
+	}
+	
+	@Test
+	def void testResourceConstrErr5() {
+		val model = '''
+comp r : resource(10);
+comp c : sv(
+	A
+synchronize:
+	A -> produce r(10); 
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.RES_CONSTR,
+			GhostValidator.RESACTION_WRONGRES);
+	}
+	
+	@Test
+	def void testResourceConstrErr6() {
+		val model = '''
+comp r : resource(10);
+comp c : sv(
+	A
+synchronize:
+	A -> consume r(10); 
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.RES_CONSTR,
+			GhostValidator.RESACTION_WRONGRES);
+	}
+	
+	@Test
+	def void testResInstVal1() {
+		val model = '''
+comp r : resource(10,20
+synchronize:
+	require(x) -> x < 10; 
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.RES_SIMPLE_INST_VAL,
+			GhostValidator.RESACTION_WRONGRES);
+	}
+	
+	@Test
+	def void testResInstVal2() {
+		val model = '''
+comp r : resource(10
+synchronize:
+	produce(x) -> x < 10; 
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.RES_SIMPLE_INST_VAL,
+			GhostValidator.RESACTION_WRONGRES);
+	}
+	
+	@Test
+	def void testResInstVal3() {
+		val model = '''
+comp r : resource(10
+synchronize:
+	consume(x) -> x < 10; 
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.RES_SIMPLE_INST_VAL,
+			GhostValidator.RESACTION_WRONGRES);
+	}
 	
 	//Synchronizations tests
 	@Test

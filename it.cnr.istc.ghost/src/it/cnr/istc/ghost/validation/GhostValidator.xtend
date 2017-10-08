@@ -42,6 +42,7 @@ import it.cnr.istc.ghost.ghost.ResConstr
 import it.cnr.istc.ghost.ghost.AnonResDecl
 import it.cnr.istc.ghost.ghost.AnonSVDecl
 import it.cnr.istc.ghost.ghost.ConstExpr
+import it.cnr.istc.ghost.ghost.ResourceAction
 
 /**
  * This class contains custom validation rules. 
@@ -55,6 +56,7 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val DUPLICATE_IDENTIFIER = 'duplicateIdentifier';
 	public static val DUPLICATE_IMPORT = 'duplicateImport';
 	public static val RESACTION_NONRES = 'resactionNonRes';
+	public static val RESACTION_WRONGRES = 'resactionWrongRes';
 	public static val SYNCH_INVALID_PARNUM = "synchInvalidParNum";
 	public static val QUALIFINSTVAL_INCOMPATIBLE_COMP = "qualifInstValIncompatibleComp";
 	public static val QUALIFINSTVAL_INCOMPATIBLE_ARGS = "qualifInstValIncompatibleArgs";
@@ -301,6 +303,59 @@ class GhostValidator extends AbstractGhostValidator {
 		error(String.format("Resource component expected, but %s found",errType),
 			RES_CONSTR__RES,RESCONSTR_INCOMPATIBLE_COMP);
 	}
+
+	private def boolean isResource(Object obj) {
+		return
+		switch(obj) {
+			ResourceDecl,
+			AnonResDecl : true
+			NamedCompDecl: obj?.type instanceof ResourceDecl
+			default: false
+		}
+	}
+	
+	private def dispatch boolean isConsumable(ResourceDecl decl) {
+		return decl?.body?.val2 !== null;
+	}
+	
+	private def dispatch boolean isConsumable(AnonResDecl decl) {
+		return decl?.body?.val2 !== null;
+	}
+	
+	private def dispatch boolean isConsumable(NamedCompDecl decl) {
+		if (decl?.type instanceof ResourceDecl)
+			return isConsumable(decl.type);
+		return false;
+	}
+	
+	private def dispatch boolean isConsumable(EObject decl) {
+		return false;
+	}
+	
+	private def checkResActionComp(ResourceAction action, EObject resource,
+		EStructuralFeature feature) {
+		if (action === null || !isResource(resource))
+			return; 
+		if (isConsumable(resource) && action==ResourceAction.REQUIRE)
+			error(String.format("Cannot use '%s' on a consumable resource",action.literal),
+				feature,RESACTION_WRONGRES)
+		else if (!isConsumable(resource) &&
+			(action==ResourceAction.PRODUCE || action==ResourceAction.CONSUME))
+			error(String.format("Cannot use '%s' on a renewable resource",action.literal),
+				feature,RESACTION_WRONGRES);
+	}
+
+	// Check resconstr action is compatible with the resource type
+	@Check
+	def checkResConstrActionTypeCompat(ResConstr rc) {
+		checkResActionComp(rc.type,rc.res,RES_CONSTR__RES);
+	}
+	
+	@Check
+	def checkR(ResSimpleInstVal v) {
+		checkResActionComp(v.type,v.eContainer?.eContainer?.eContainer?.eContainer,RES_SIMPLE_INST_VAL__TYPE);
+	}
+	
 	
 	//Recursive local variables definition;
 	@Check
