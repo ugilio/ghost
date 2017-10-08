@@ -168,29 +168,25 @@
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="RValue"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Expression" eSuperTypes="#//GenericExpression">
+  <eClassifiers xsi:type="ecore:EClass" name="PlaceHolder" eSuperTypes="#//Expression"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Expression" eSuperTypes="#//SingleSyncConstr #//RValue #//GenericExpression">
     <eStructuralFeatures xsi:type="ecore:EReference" name="left" eType="#//Expression"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="ops" unique="false" upperBound="-1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="right" upperBound="-1"
         eType="#//Expression" containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TemporalExp" eSuperTypes="#//SingleSyncConstr #//RValue">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="left" eType="#//Expression"
-        containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="op" eType="#//TemporalRelation"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="right" eType="#//Expression"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TemporalRelation">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="l" eType="#//IntvOrDflt"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="r" eType="#//IntvOrDflt"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="GenericExpression" eSuperTypes="#//SingleTransConstr #//SingleSyncConstr #//RValue"/>
+  <eClassifiers xsi:type="ecore:EClass" name="GenericExpression" eSuperTypes="#//SingleTransConstr"/>
   <eClassifiers xsi:type="ecore:EClass" name="BaseConstExpr"/>
   <eClassifiers xsi:type="ecore:EClass" name="ConstFactor"/>
   <eClassifiers xsi:type="ecore:EClass" name="ConstTerm">

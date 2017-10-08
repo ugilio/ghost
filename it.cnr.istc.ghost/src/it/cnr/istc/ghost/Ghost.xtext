@@ -60,7 +60,7 @@ SingleTransConstr: InheritedKwd | LocVarDecl | GenericExpression;
 Synchronization : trigger=TriggerType '->' bodies+=SyncBody ('or' bodies+=SyncBody)*;
 SyncBody: (=>values+=SingleSyncConstr) | ('('
 	(values+=SingleSyncConstr (SEP+ values+=SingleSyncConstr)* SEP*)? ')');
-SingleSyncConstr:  InheritedKwd | (=>TemporalExp) | LocVarDecl | GenericExpression;
+SingleSyncConstr:  InheritedKwd | TemporalExp | LocVarDecl;
 
 TriggerType : ResSimpleInstVal | SimpleInstVal;
 
@@ -90,21 +90,22 @@ ArgList: '(' (values+=GenericExpression (SEP+ values+=GenericExpression)* SEP* )
 BindList: '['(varNames+=[ObjVarDecl] '=')? values+=[CompDecl|QUALID] (SEP+ (varNames+=[ObjVarDecl] '=')? values+=[CompDecl|QUALID] )* SEP* ']';
 
 LocVarDecl: 'var' name=ID '=' value=RValue;
-RValue: (=>TemporalExp) | GenericExpression;
+RValue: TemporalExp;
 
-
-BasicExp returns Expression: '(' EqExp ')' | '_' | TimePointOp | InstVal | NumAndUnit;
+PlaceHolder: {PlaceHolder} '_';
+BasicExp returns Expression: '(' EqExp ')' | PlaceHolder | TimePointOp | InstVal | NumAndUnit;
 Term returns Expression: BasicExp ({Expression.left=current} ops+=('*' | '/' | '%') right+=BasicExp)*;
-SumExp returns Expression: Term ({Expression.left=current} ops+=('+' | '-' ) right+=Term)*;
-CompExp returns Expression: SumExp ({Expression.left=current} ops+=('<' | '<=' | '>' | '>=' ) right+=SumExp)?;
+SumExp returns Expression: Term ({Expression.left=current} ops+=('+' | '-') right+=Term)*;
+CompExp returns Expression: SumExp ({Expression.left=current} ops+=('<' | '<=' | '>' | '>=') right+=SumExp)?;
 EqExp returns Expression: CompExp ({Expression.left=current} ops+=('=' | '!=') right+=CompExp)?;
 
-TemporalExp : (left=SumExp)? op=TemporalRelation right=SumExp;
+TemporalExp returns Expression: (EqExp ({Expression.left=current} op=TemporalRelation right+=SumExp)?) | (op=TemporalRelation right+=SumExp);
 
 TemporalRelation: 
-	'=' | '!=' | 'equals' | '|=' | 'meets' | '<' | '>' | 'starts' | 'finishes' |
-	(('before' | 'after') (=>'(' l=IntvOrDflt? ')')? ) |
-	( ('contains'|'during') (=>'(' (l=IntvOrDflt (SEP r=IntvOrDflt)?)? ')')? ) 
+//	'=' | '!=' | '<' | '>'
+	name=('equals' | '|=' | 'meets' | 'starts' | 'finishes') |
+	(name=('before' | 'after') (=>'(' l=IntvOrDflt? ')')? ) |
+	( name=('contains'|'during') (=>'(' (l=IntvOrDflt (SEP r=IntvOrDflt)?)? ')')? ) 
 ;
 
 GenericExpression: EqExp;

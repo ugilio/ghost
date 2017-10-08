@@ -150,17 +150,15 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//LocVarDecl/value"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//RValue"/>
+    <genClasses ecoreClass="Ghost.ecore#//PlaceHolder"/>
     <genClasses ecoreClass="Ghost.ecore#//Expression">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//Expression/left"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//Expression/ops"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//Expression/right"/>
-    </genClasses>
-    <genClasses ecoreClass="Ghost.ecore#//TemporalExp">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//TemporalExp/left"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//TemporalExp/op"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//TemporalExp/right"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//Expression/op"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//TemporalRelation">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//TemporalRelation/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//TemporalRelation/l"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//TemporalRelation/r"/>
     </genClasses>
