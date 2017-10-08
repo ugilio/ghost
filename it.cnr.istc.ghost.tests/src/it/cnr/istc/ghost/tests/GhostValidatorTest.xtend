@@ -462,6 +462,96 @@ synchronize:
 		model.assertError(GhostPackage.Literals.QUALIF_INST_VAL, GhostValidator.QUALIFINSTVAL_INCOMPATIBLE_ARGS);
 	}
 	
+	//Checks for ResConstr
+
+	@Test
+	def void testResourceConstrOk1() {
+		val model = '''
+comp r : resource(10);
+comp c : sv(
+	A
+synchronize:
+	A -> require r(10); 
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testResourceConstrOk2() {
+		val model = '''
+type tr = resource(10);
+comp r : tr;
+comp c : sv(
+	A
+synchronize:
+	A -> require r(10); 
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testResourceConstrOk3() {
+		val model = '''
+type tr = resource(10);
+type tc = sv(
+	A
+synchronize:
+	A -> require r(10);
+variable:
+	r : tr; 
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testResourceConstrErr1() {
+		val model = '''
+comp r : sv;
+comp c : sv(
+	A
+synchronize:
+	A -> require r(10); 
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.RES_CONSTR,
+			GhostValidator.RESCONSTR_INCOMPATIBLE_COMP);
+	}
+	
+	@Test
+	def void testResourceConstrErr2() {
+		val model = '''
+type tr = sv10);
+comp r : tr;
+comp c : sv(
+	A
+synchronize:
+	A -> require r(10); 
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.RES_CONSTR,
+			GhostValidator.RESCONSTR_INCOMPATIBLE_COMP);
+	}
+	
+	@Test
+	def void testResourceConstrErr3() {
+		val model = '''
+type tr = sv;
+comp c : sv(
+	A
+synchronize:
+	A -> require r(10);
+variable:
+	r : tr; 
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.RES_CONSTR,
+			GhostValidator.RESCONSTR_INCOMPATIBLE_COMP);
+
+	}	
+	
 	//Synchronizations tests
 	@Test
 	def void testResActionInNonRes() {

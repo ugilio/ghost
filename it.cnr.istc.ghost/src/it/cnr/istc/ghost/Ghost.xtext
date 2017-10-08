@@ -64,7 +64,7 @@ SingleSyncConstr:  InheritedKwd | TemporalExp | LocVarDecl;
 
 TriggerType : ResSimpleInstVal | SimpleInstVal;
 
-ResConstr: type=ResourceAction res=QualifInstVal;
+ResConstr: type=ResourceAction res=[CompRef|QUALID] '(' amount=EqExp ')';
 
 ObjVarDecl : name=ID ':' type=[ComponentType|QUALID];
 

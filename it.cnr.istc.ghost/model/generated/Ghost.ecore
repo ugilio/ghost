@@ -114,7 +114,8 @@
   <eClassifiers xsi:type="ecore:EClass" name="TriggerType"/>
   <eClassifiers xsi:type="ecore:EClass" name="ResConstr" eSuperTypes="#//InstVal">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//ResourceAction"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="res" eType="#//QualifInstVal"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="res" eType="#//CompRef"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="amount" eType="#//Expression"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ObjVarDecl" eSuperTypes="#//CompRef">

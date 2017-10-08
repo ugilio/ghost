@@ -38,6 +38,9 @@ import it.cnr.istc.ghost.ghost.FormalParList
 import it.cnr.istc.ghost.ghost.NameOnlyParList
 import it.cnr.istc.ghost.scoping.Utils
 import it.cnr.istc.ghost.ghost.LocVarDecl
+import it.cnr.istc.ghost.ghost.ResConstr
+import it.cnr.istc.ghost.ghost.AnonResDecl
+import it.cnr.istc.ghost.ghost.AnonSVDecl
 
 /**
  * This class contains custom validation rules. 
@@ -54,6 +57,7 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val SYNCH_INVALID_PARNUM = "synchInvalidParNum";
 	public static val QUALIFINSTVAL_INCOMPATIBLE_COMP = "qualifInstValIncompatibleComp";
 	public static val QUALIFINSTVAL_INCOMPATIBLE_ARGS = "qualifInstValIncompatibleArgs";
+	public static val RESCONSTR_INCOMPATIBLE_COMP = "resConstrIncompatibleComp";
 	public static val INHERITANCE_INCOMPATIBLE_PARAMS = "inheritanceIncompatibleParams";
 	public static val INHERITED_KWD_NO_ANCESTOR = "inheritedKwdNoAncestor";
 	public static val RECURSIVE_VARDECL = "recursiveVarDecl";
@@ -270,6 +274,27 @@ class GhostValidator extends AbstractGhostValidator {
 				error(String.format("'%s' cannot have arguments since it is not a value",v.value.name),
 					 QUALIF_INST_VAL__ARGLIST,QUALIFINSTVAL_INCOMPATIBLE_ARGS);
 		}
+	}
+	
+	//Check ResConstr's component is a resource
+	
+	@Check
+	def checkResConstrCompat(ResConstr rc) {
+		val res = rc.res
+		if (res instanceof AnonResDecl)
+			return;
+		val type = 
+			switch (res) {
+				NamedCompDecl: (res as NamedCompDecl).type
+				ObjVarDecl: (res as ObjVarDecl).type
+				default : null
+			}
+		if (type instanceof ResourceDecl)
+			return;
+		val errType = if ((type instanceof SvDecl) || (res instanceof AnonSVDecl)) "state variable component"
+			else "unknown type";
+		error(String.format("Resource component expected, but %s found",errType),
+			RES_CONSTR__RES,RESCONSTR_INCOMPATIBLE_COMP);
 	}
 	
 	//Recursive local variables definition;
