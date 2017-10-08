@@ -119,9 +119,9 @@ ConstFactor: {ConstSubExp} '(' value=ConstSumExp ')'
 	| {ConstIntv}(value=StrictInterval);
 ConstTerm: {ConstTerm} left=ConstFactor (ops+=('*' | '/' | '%') right+=ConstFactor)*;
 ConstSumExp: {ConstSumExp} left=ConstTerm (ops+=('+' | '-' ) right+=ConstTerm)*;
-PlaceHolder: {PlaceHolder} '_';
+ConstPlaceHolder: {ConstPlaceHolder} '_';
 
-ConstExpr : ConstSumExp | PlaceHolder;
+ConstExpr : ConstSumExp | ConstPlaceHolder;
 
 enum Externality : PLANNED='planned' | EXTERNAL='external';
 enum Controllability: CONTROLLABLE='contr' | UNCONTROLLABLE='uncontr';

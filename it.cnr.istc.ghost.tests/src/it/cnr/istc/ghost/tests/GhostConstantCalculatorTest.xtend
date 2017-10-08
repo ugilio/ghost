@@ -18,11 +18,11 @@ import org.eclipse.xtext.EcoreUtil2
 import it.cnr.istc.ghost.conversion.ConstCalculator
 import it.cnr.istc.ghost.ghost.ConstExpr
 import it.cnr.istc.ghost.ghost.Interval
-import it.cnr.istc.ghost.ghost.PlaceHolder
 import it.cnr.istc.ghost.ghost.EnumLiteral
 import it.cnr.istc.ghost.ghost.ConstDecl
 import it.cnr.istc.ghost.conversion.ConstCalculator.ConstCalculatorException
 import it.cnr.istc.ghost.conversion.IntervalHelper
+import it.cnr.istc.ghost.ghost.ConstPlaceHolder
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -74,7 +74,7 @@ const c = _;
 		''')
 		val exp = EcoreUtil2.eAllOfType(result,ConstExpr).head;
 		val value = calc.compute(exp);
-		assertThat(value,is(instanceOf(PlaceHolder)));
+		assertThat(value,is(instanceOf(ConstPlaceHolder)));
 	}
 	
 	@Test

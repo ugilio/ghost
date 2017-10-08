@@ -10,13 +10,14 @@ import com.google.inject.Singleton
 import java.util.Set
 import java.util.HashSet
 import it.cnr.istc.ghost.ghost.ConstLiteral
-import it.cnr.istc.ghost.ghost.impl.PlaceHolderImpl
 import it.cnr.istc.ghost.ghost.EnumLiteral
 import it.cnr.istc.ghost.ghost.ConstDecl
 import it.cnr.istc.ghost.ghost.ConstNumber
 import it.cnr.istc.ghost.ghost.Interval
 import it.cnr.istc.ghost.utils.ArithUtils
 import com.google.inject.Inject
+import it.cnr.istc.ghost.ghost.ConstPlaceHolder
+import it.cnr.istc.ghost.ghost.impl.ConstPlaceHolderImpl
 
 @Singleton
 class ConstCalculator {
@@ -24,11 +25,11 @@ class ConstCalculator {
 	@Inject extension IntervalHelper intvHelper;
 	@Inject extension NumAndUnitHelper numHelper;
 	
-	private static class FinalConstPlaceHolder extends PlaceHolderImpl {
+	private static class FinalConstPlaceHolder extends ConstPlaceHolderImpl {
 		override getComputed() { return null;}
 		override setComputed(Object value) {}
 	}
-	public static final PlaceHolder CONST_PLACEHOLDER = new FinalConstPlaceHolder();
+	public static final ConstPlaceHolder CONST_PLACEHOLDER = new FinalConstPlaceHolder();
 	
 	private Set<String> constInProgress = new HashSet<String>();
 	
@@ -38,7 +39,7 @@ class ConstCalculator {
 		val result = 
 		if (expr instanceof ConstSumExp)
 			calcSumExp(expr as ConstSumExp)
-		else if (expr instanceof PlaceHolder)
+		else if (expr instanceof ConstPlaceHolder)
 			CONST_PLACEHOLDER
 		else 		
 			throw new ConstCalculatorException("Unknown constant expression type: "+expr.class);
@@ -138,7 +139,7 @@ class ConstCalculator {
 			case Long: "Number"
 			case EnumLiteral: "Enumeration Literal"
 			case Interval: "Interval"
-			case PlaceHolder: "_"
+			case ConstPlaceHolder: "_"
 			default: "<unknown type "+o.class.simpleName+">" 
 		}
 	}
