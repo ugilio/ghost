@@ -285,6 +285,10 @@ class ExpressionValidator extends AbstractExpressionValidator {
 		return ResultType.ENUM;
 	}	
 
+	protected def dispatch ResultType evalRef(ValueDecl decl) {
+		return ResultType.INSTVAL;
+	}	
+
 	protected def dispatch ResultType evalRef(FormalPar exp) {
 		return evalRef(exp?.type);
 	}	
