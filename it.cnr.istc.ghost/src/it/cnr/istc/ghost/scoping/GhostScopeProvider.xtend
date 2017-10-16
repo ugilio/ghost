@@ -28,10 +28,29 @@ import org.eclipse.xtext.scoping.Scopes
  */
 class GhostScopeProvider extends AbstractGhostScopeProvider {
 	
-	private def getScopeFor(ComponentType type) {
-		if (type === null)
-			return IScope.NULLSCOPE;
-		return Scopes.scopeFor(EcoreUtil2.eAllOfType(type,ValueDecl));
+	private def dispatch IScope getScopeFor(Void type) {
+		return IScope.NULLSCOPE;
+	}
+	
+	private def dispatch IScope getScopeFor(ComponentType type) {
+		val parentScope = switch(type) {
+			SvDecl : getScopeFor(type.parent)
+			ResourceDecl : getScopeFor(type.parent)
+			default: IScope.NULLSCOPE
+		}
+		return Scopes.scopeFor(EcoreUtil2.eAllOfType(type,ValueDecl),parentScope);
+	}
+	
+	private def dispatch IScope getScopeFor(ObjVarDecl decl) {
+		return getScopeFor(decl.type);
+	}
+	
+	private def dispatch IScope getScopeFor(CompDecl comp) {
+		val parentScope = switch (comp) {
+			NamedCompDecl : getScopeFor(comp.type)
+			default : IScope.NULLSCOPE
+		}
+		return Scopes.scopeFor(EcoreUtil2.eAllOfType(comp,ValueDecl),parentScope);
 	}
 	
 	private def getScopeForBlock(EObject context, IScope parent) {
@@ -92,10 +111,7 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 					return getScopeForBlock(context,super.getScope(context,reference));
 				}
 				//component.value: scope is the values defined in component
-				else switch (comp) {
-					NamedCompDecl : return getScopeFor(comp.type)
-					ObjVarDecl : return getScopeFor(comp.type)
-				}
+				else return getScopeFor(comp);
 		}
 		//Synchronization triggers
 		if (context instanceof SimpleInstVal &&
