@@ -124,6 +124,7 @@ ConstPlaceHolder: {ConstPlaceHolder} '_';
 
 ConstExpr : ConstSumExp | ConstPlaceHolder;
 
+enum TimePointSelector : START='start' | END='end';
 enum Externality : PLANNED='planned' | EXTERNAL='external';
 enum Controllability: CONTROLLABLE='contr' | UNCONTROLLABLE='uncontr';
 enum ResourceAction: REQUIRE='require' | PRODUCE='produce' | CONSUME='consume';
@@ -160,7 +161,7 @@ AtParams: AtParamsNamed | (=> AtParamsPos);
 AtParamsNamed returns AtParams:  ('start' '=' start=IntvOrDflt)? & ('duration' '=' duration=IntvOrDflt)? & ('end' '=' end=IntvOrDflt)?;
 AtParamsPos returns AtParams: (start=IntvOrDflt (duration=IntvOrDflt (end=IntvOrDflt)?)?)?;
 
-TimePointOp: ( ('start'|'end') '(' value=InstVal ')');
+TimePointOp: ( selector=TimePointSelector '(' value=InstVal ')');
 
 EnumLiteral: name=ID;
 ConstLiteral: (ConstDecl | EnumLiteral);

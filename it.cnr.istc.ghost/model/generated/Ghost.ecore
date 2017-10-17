@@ -210,6 +210,10 @@
   <eClassifiers xsi:type="ecore:EClass" name="ConstExpr" eSuperTypes="#//BaseConstExpr">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="computed" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="TimePointSelector">
+    <eLiterals name="START" literal="start"/>
+    <eLiterals name="END" value="1" literal="end"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="Externality">
     <eLiterals name="PLANNED" literal="planned"/>
     <eLiterals name="EXTERNAL" value="1" literal="external"/>
@@ -279,6 +283,7 @@
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TimePointOp" eSuperTypes="#//Expression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="selector" eType="#//TimePointSelector"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//InstVal"
         containment="true"/>
   </eClassifiers>

@@ -6,6 +6,10 @@
     copyrightFields="false" runtimeVersion="2.13">
   <genPackages prefix="Ghost" basePackage="it.cnr.istc.ghost" disposableProviderFactory="true"
       fileExtensions="ghost" ecorePackage="Ghost.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="Ghost.ecore#//TimePointSelector">
+      <genEnumLiterals ecoreEnumLiteral="Ghost.ecore#//TimePointSelector/START"/>
+      <genEnumLiterals ecoreEnumLiteral="Ghost.ecore#//TimePointSelector/END"/>
+    </genEnums>
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="Ghost.ecore#//Externality">
       <genEnumLiterals ecoreEnumLiteral="Ghost.ecore#//Externality/PLANNED"/>
       <genEnumLiterals ecoreEnumLiteral="Ghost.ecore#//Externality/EXTERNAL"/>
@@ -221,6 +225,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//AtParams/end"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//TimePointOp">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//TimePointOp/selector"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//TimePointOp/value"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//EnumLiteral"/>
