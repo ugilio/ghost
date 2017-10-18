@@ -57,7 +57,7 @@ class GhostDefaultsProviderTest{
 	def void testAllDefaultDefinitions() {
 		assertThat(p.getDuration(0),is(equalTo(intv(0,Long.MAX_VALUE))));
 		assertThat(p.isExternal(0),is(false));
-		assertThat(p.getControllability(0),is(nullValue));
+		assertThat(p.getControllability(0),is(equalTo(Controllability.UNKNOWN)));
 		assertThat(p.getStart(0),is(0L));
 		assertThat(p.getHorizon(0),is(1000L));
 	}
@@ -164,7 +164,7 @@ class GhostDefaultsProviderTest{
 	@Test()
 	def void testContr3() {
 		p.addDefinition("contr","unknown",1);
-		assertThat(p.getControllability(2),is(nullValue));
+		assertThat(p.getControllability(2),is(equalTo(Controllability.UNKNOWN)));
 	}
 	
 	@Test(expected=DefaultsProviderException)

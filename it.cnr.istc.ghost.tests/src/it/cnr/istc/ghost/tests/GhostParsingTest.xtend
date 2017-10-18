@@ -12,7 +12,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import static org.junit.Assert.*
-import static org.hamcrest.CoreMatchers.*
+//import static org.hamcrest.CoreMatchers.*
+import static org.hamcrest.Matchers.*
+import org.eclipse.xtext.EcoreUtil2
+import it.cnr.istc.ghost.ghost.TransConstraint
+import it.cnr.istc.ghost.ghost.Controllability
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -817,5 +821,53 @@ init (
 		''')
 		assertNotNull(result)
 		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+	}
+	
+	@Test
+	def void testControllability1() {
+		val result = parseHelper.parse('''
+type c = sv (
+	contr A -> B, B
+)
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		val tc = EcoreUtil2.eAllOfType(result,TransConstraint).head;
+		assertThat(tc.controllability,is(Controllability.CONTROLLABLE));
+	}
+
+	@Test
+	def void testControllability2() {
+		val result = parseHelper.parse('''
+type c = sv (
+	uncontr A -> B, B
+)
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		val tc = EcoreUtil2.eAllOfType(result,TransConstraint).head;
+		assertThat(tc.controllability,is(Controllability.UNCONTROLLABLE));
+	}
+
+	@Test
+	def void testControllability3() {
+		val result = parseHelper.parse('''
+type c = sv (
+	UNSPECIFIED A -> B, B
+)
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors.size,is(greaterThan(0)));
+	}
+
+	@Test
+	def void testControllability4() {
+		val result = parseHelper.parse('''
+type c = sv (
+	UNKNOWN A -> B, B
+)
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors.size,is(greaterThan(0)));
 	}
 }

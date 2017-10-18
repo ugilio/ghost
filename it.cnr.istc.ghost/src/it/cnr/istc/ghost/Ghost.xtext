@@ -38,7 +38,7 @@ SynchronizeSection: 'synchronize:' (values+=Synchronization (SEP+ values+=Synchr
 VariableSection: 'variable:' (values+=ObjVarDecl (SEP+ values+=ObjVarDecl)* SEP*)?;
 UnnamedTransitionSection returns TransitionSection: (values+=TransConstraint (SEP+ values+=TransConstraint)* SEP*)?;
 
-TransConstraint : (controllability=Controllability)? head=ValueDecl
+TransConstraint : (controllability=ControllabilityRule)? head=ValueDecl
 	(interval=IntvOrDflt)? ('->' body=TransConstrBody)?
 ;
 
@@ -126,8 +126,10 @@ ConstExpr : ConstSumExp | ConstPlaceHolder;
 
 enum TimePointSelector : START='start' | END='end';
 enum Externality : PLANNED='planned' | EXTERNAL='external';
-enum Controllability: CONTROLLABLE='contr' | UNCONTROLLABLE='uncontr';
+enum Controllability: UNSPECIFIED | UNKNOWN | CONTROLLABLE='contr' | UNCONTROLLABLE='uncontr';
 enum ResourceAction: REQUIRE='require' | PRODUCE='produce' | CONSUME='consume';
+
+ControllabilityRule returns Controllability: 'contr'|'uncontr';
 
 CompDecl : NamedCompDecl | AnonSVDecl | AnonResDecl;
 NamedCompDecl : (externality=Externality)? 'comp' name=ID ':' type=[ComponentType|QUALID] body=CompBody;

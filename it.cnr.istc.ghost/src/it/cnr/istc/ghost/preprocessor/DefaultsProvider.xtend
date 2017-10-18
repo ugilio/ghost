@@ -186,9 +186,9 @@ class DefaultsProvider {
 			checkThereIsArg(aValue);
 			val value = aValue.trim;
 			if ("unknown".equals(value))
-				return null;
+				return Controllability.UNKNOWN;
 			val retval = Controllability.get(value);
-			if (retval === null)
+			if (retval === null || retval.ordinal<Controllability.CONTROLLABLE.ordinal)
 				throw new DefaultsProviderException(
 				String.format("Invalid controllability specifier: '%s'",value));
 			return retval;

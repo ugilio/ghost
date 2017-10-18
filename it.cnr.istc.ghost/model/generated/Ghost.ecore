@@ -219,8 +219,10 @@
     <eLiterals name="EXTERNAL" value="1" literal="external"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="Controllability">
-    <eLiterals name="CONTROLLABLE" literal="contr"/>
-    <eLiterals name="UNCONTROLLABLE" value="1" literal="uncontr"/>
+    <eLiterals name="UNSPECIFIED" literal="UNSPECIFIED"/>
+    <eLiterals name="UNKNOWN" value="1" literal="UNKNOWN"/>
+    <eLiterals name="CONTROLLABLE" value="2" literal="contr"/>
+    <eLiterals name="UNCONTROLLABLE" value="3" literal="uncontr"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="ResourceAction">
     <eLiterals name="REQUIRE" literal="require"/>
