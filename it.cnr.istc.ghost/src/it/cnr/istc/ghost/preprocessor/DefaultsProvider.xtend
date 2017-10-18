@@ -174,7 +174,7 @@ class DefaultsProvider {
 		private def parseExtPlanned(String value,String extra) {
 			checkThereIsArg(value);
 			val retval = Externality.get(value);
-			if (retval === null)
+			if (retval === null || retval.ordinal < Externality.PLANNED.ordinal)
 				throw new DefaultsProviderException(
 				String.format("Expected 'external' or 'planned' but '%s' found",value));
 			if (!Strings.isEmpty(extra?.trim))

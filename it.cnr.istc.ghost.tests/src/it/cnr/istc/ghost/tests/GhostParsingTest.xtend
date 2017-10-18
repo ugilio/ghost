@@ -17,6 +17,8 @@ import static org.hamcrest.Matchers.*
 import org.eclipse.xtext.EcoreUtil2
 import it.cnr.istc.ghost.ghost.TransConstraint
 import it.cnr.istc.ghost.ghost.Controllability
+import it.cnr.istc.ghost.ghost.Externality
+import it.cnr.istc.ghost.ghost.TypeDecl
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -883,4 +885,47 @@ type c = sv (
 		val tc = EcoreUtil2.eAllOfType(result,TransConstraint).head;
 		assertThat(tc.controllability,is(Controllability.UNSPECIFIED));
 	}
+	
+	@Test
+	def void testExternality1() {
+		val result = parseHelper.parse('''
+planned type c = sv;
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		val c = EcoreUtil2.eAllOfType(result,TypeDecl).head;
+		assertThat(c.externality,is(Externality.PLANNED));
+	}
+
+	@Test
+	def void testExternality2() {
+		val result = parseHelper.parse('''
+external type c = sv;
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		val c = EcoreUtil2.eAllOfType(result,TypeDecl).head;
+		assertThat(c.externality,is(Externality.EXTERNAL));
+	}
+
+	@Test
+	def void testExternality3() {
+		val result = parseHelper.parse('''
+type c = sv;
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		val c = EcoreUtil2.eAllOfType(result,TypeDecl).head;
+		assertThat(c.externality,is(Externality.UNSPECIFIED));
+	}
+
+	@Test
+	def void testExternality4() {
+		val result = parseHelper.parse('''
+UNSPECIFIED type c = sv;
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors.size,is(greaterThan(0)));
+	}
+	
 }

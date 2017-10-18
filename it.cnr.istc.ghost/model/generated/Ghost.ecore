@@ -215,8 +215,9 @@
     <eLiterals name="END" value="1" literal="end"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="Externality">
-    <eLiterals name="PLANNED" literal="planned"/>
-    <eLiterals name="EXTERNAL" value="1" literal="external"/>
+    <eLiterals name="UNSPECIFIED" literal="UNSPECIFIED"/>
+    <eLiterals name="PLANNED" value="1" literal="planned"/>
+    <eLiterals name="EXTERNAL" value="2" literal="external"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="Controllability">
     <eLiterals name="UNSPECIFIED" literal="UNSPECIFIED"/>

@@ -20,10 +20,10 @@ TypeDecl: SimpleType | ComponentType;
 
 SimpleType: IntDecl | EnumDecl;
 ComponentType : SvDecl | ResourceDecl;
-IntDecl :  (externality=Externality)? 'type'name=ID '=' 'int' value=Interval;
-EnumDecl : (externality=Externality)? 'type'name=ID '=' 'enum' '(' (values+=EnumLiteral (SEP values+=EnumLiteral)*)? ')';
-SvDecl :  (externality=Externality)? 'type'name=ID '=' 'sv' (parent=[SvDecl|QUALID])? body=SvBody;
-ResourceDecl :  (externality=Externality)? 'type'name=ID '=' 'resource' (parent=[ResourceDecl|QUALID])? body=ResourceBody;
+IntDecl :  (externality=ExternalityRule)? 'type'name=ID '=' 'int' value=Interval;
+EnumDecl : (externality=ExternalityRule)? 'type'name=ID '=' 'enum' '(' (values+=EnumLiteral (SEP values+=EnumLiteral)*)? ')';
+SvDecl :  (externality=ExternalityRule)? 'type'name=ID '=' 'sv' (parent=[SvDecl|QUALID])? body=SvBody;
+ResourceDecl :  (externality=ExternalityRule)? 'type'name=ID '=' 'resource' (parent=[ResourceDecl|QUALID])? body=ResourceBody;
 
 SvBody : ('('
 	transitions+=UnnamedTransitionSection
@@ -125,16 +125,17 @@ ConstPlaceHolder: {ConstPlaceHolder} '_';
 ConstExpr : ConstSumExp | ConstPlaceHolder;
 
 enum TimePointSelector : START='start' | END='end';
-enum Externality : PLANNED='planned' | EXTERNAL='external';
+enum Externality : UNSPECIFIED | PLANNED='planned' | EXTERNAL='external';
 enum Controllability: UNSPECIFIED | UNKNOWN | CONTROLLABLE='contr' | UNCONTROLLABLE='uncontr';
 enum ResourceAction: REQUIRE='require' | PRODUCE='produce' | CONSUME='consume';
 
+ExternalityRule returns Externality: 'planned'|'external';
 ControllabilityRule returns Controllability: 'contr'|'uncontr';
 
 CompDecl : NamedCompDecl | AnonSVDecl | AnonResDecl;
-NamedCompDecl : (externality=Externality)? 'comp' name=ID ':' type=[ComponentType|QUALID] body=CompBody;
-AnonSVDecl : (externality=Externality)? 'comp' name=ID ':' 'sv' body=CompSVBody;
-AnonResDecl : (externality=Externality)? 'comp' name=ID ':' 'resource' body=CompResBody;
+NamedCompDecl : (externality=ExternalityRule)? 'comp' name=ID ':' type=[ComponentType|QUALID] body=CompBody;
+AnonSVDecl : (externality=ExternalityRule)? 'comp' name=ID ':' 'sv' body=CompSVBody;
+AnonResDecl : (externality=ExternalityRule)? 'comp' name=ID ':' 'resource' body=CompResBody;
 
 CompBody : (=> CompResBody) | CompSVBody;
 
