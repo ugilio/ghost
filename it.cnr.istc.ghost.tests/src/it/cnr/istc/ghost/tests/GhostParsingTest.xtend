@@ -870,4 +870,17 @@ type c = sv (
 		assertNotNull(result)
 		assertThat(result.eResource.errors.size,is(greaterThan(0)));
 	}
+	
+	@Test
+	def void testControllability5() {
+		val result = parseHelper.parse('''
+type c = sv (
+	A -> B, B
+)
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		val tc = EcoreUtil2.eAllOfType(result,TransConstraint).head;
+		assertThat(tc.controllability,is(Controllability.UNSPECIFIED));
+	}
 }
