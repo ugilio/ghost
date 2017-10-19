@@ -66,6 +66,7 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val RENEWABLE_CONSUMABLE_MIX = "renewableConsumableMix";
 	public static val RECURSIVE_VARDECL = "recursiveVarDecl";
 	public static val EXPECTED_TYPE = "expectedType";
+	public static val TEMPOP_INCOMPATIBLE = "tempopIncompatible";
 	public static val BOOLEAN_TO_NUMERIC = "booleanToNumeric";
 	public static val COMPARISON_DIFFERENT_TYPES = "comparisonDifferentTypes";
 	public static val UNUSED_VAR = "unusedVar";

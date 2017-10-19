@@ -12,6 +12,7 @@ public class AbstractExpressionValidator {
 		BOOLEAN("boolean"),
 		//"complex types"
 		INSTVAL("instantiated value"),
+		TIMEPOINT("temporal point"),
 		TEMPORALEXP("temporal expression");
 		
 		private String desc;

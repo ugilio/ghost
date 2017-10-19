@@ -245,7 +245,7 @@ synchronize:
 		val exp = EcoreUtil2.eAllOfType(body,Expression).head;
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
-		assertThat(rt,is(ResultType.INSTVAL));
+		assertThat(rt,is(ResultType.TIMEPOINT));
 		model.assertNoErrors;
 	}	
 		

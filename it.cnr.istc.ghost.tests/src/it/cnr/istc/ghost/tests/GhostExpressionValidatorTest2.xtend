@@ -164,5 +164,69 @@ synchronize:
 		model.assertNoIssue(GhostPackage.Literals.SYNC_BODY, GhostValidator.USELESS_EXPRESSION);
 	}
 	
+	@Test
+	def void testIncompTempOp1() {
+		val model = '''
+comp c : sv (
+	A
+synchronize:
+	A -> A meets start(A)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOp2() {
+		val model = '''
+comp c : sv (
+	A
+synchronize:
+	A -> start(A) meets A
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOp3() {
+		val model = '''
+comp c : sv (
+	A
+synchronize:
+	A -> start(A) meets start(A)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOp4() {
+		val model = '''
+comp c : sv (
+	A
+synchronize:
+	A -> meets start(A)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOpNoErr() {
+		val model = '''
+comp c : sv (
+	A
+synchronize:
+	A -> A meets A
+)
+		'''.parse;
+		model.assertNoErrors();
+	}
+	
 	
 }

@@ -116,14 +116,23 @@ class ExpressionValidator extends AbstractExpressionValidator {
 	}
 	
 	private def expected(ResultType expected, ResultType got, Expression exp) {
+		expected(expected,got,exp,formatType(expected));
+	}
+	
+	private def expected(ResultType expected, ResultType got, Expression exp, String expStr) {
 			error(String.format(
-				"Expected operand of type '%s' but got '%s'",formatType(expected),formatType(got)),
+				"Expected operand of type '%s' but got '%s'",expStr,formatType(got)),
 				exp,GhostValidator.EXPECTED_TYPE);
 	}
 	
 	private def checkType(ResultType expected, ResultType got, Expression exp) {
 		if (expected != got && !isUnknown(got))
 			expected(expected,got,exp);
+	}
+	
+	private def checkType(ResultType expected, ResultType got, Expression exp, String expStr) {
+		if (expected != got && !isUnknown(got))
+			expected(expected,got,exp,expStr);
 	}
 	
 	private def checkNumOpCompat(ResultType type, Expression exp) {
@@ -137,6 +146,13 @@ class ExpressionValidator extends AbstractExpressionValidator {
 		if (right == ResultType.INSTVAL)
 			if (left == ResultType.INSTVAL || isUnknown(left))
 				return ResultType.TEMPORALEXP;
+		if (left == ResultType.TIMEPOINT && left == right)
+			return ResultType.TEMPORALEXP;
+
+		checkCompCompatNoTempExp(left,leftExp,right,rightExp);
+	}
+	
+	private def checkCompCompatNoTempExp(ResultType left, Expression leftExp, ResultType right, Expression rightExp) {
 		if (left == right || isUnknown(left)|| isUnknown(right))
 			return ResultType.BOOLEAN;
 		warning(String.format(
@@ -147,8 +163,9 @@ class ExpressionValidator extends AbstractExpressionValidator {
 	}
 	
 	private def checkNumCompCompat(ResultType left, Expression leftExp, ResultType right, Expression rightExp) {
-		if (right == ResultType.INSTVAL)
-			if (left === null || left == ResultType.INSTVAL)
+		//any combination of instval and timepoint is valid for < and >
+		if (right == ResultType.INSTVAL || right == ResultType.TIMEPOINT)
+			if (left === null || left == ResultType.INSTVAL || left == ResultType.TIMEPOINT)
 				return ResultType.TEMPORALEXP;
 		checkNumOpCompat(left,leftExp);
 		checkNumOpCompat(right,rightExp);
@@ -162,7 +179,7 @@ class ExpressionValidator extends AbstractExpressionValidator {
 	private def ResultType getType(EObject exp) {
 		switch (exp) {
 			ResConstr,
-			TimePointOp: return ResultType.INSTVAL
+			TimePointOp: return ResultType.TIMEPOINT
 			QualifInstVal: return evalRef(exp.value)
 			NumAndUnit: return ResultType.NUMERIC
 			Expression: {
@@ -240,24 +257,60 @@ class ExpressionValidator extends AbstractExpressionValidator {
 						checkNumOpCompat(right,rightExp);
 						return ResultType.BOOLEAN;
 						} 
-				case '=',
-				case '!=' : return checkCompCompat(left,leftExp,right,rightExp)
+				case '=' : return checkCompCompat(left,leftExp,right,rightExp)
+				case '!=' : return checkCompCompatNoTempExp(left,leftExp,right,rightExp)
 			}
 			return ResultType.UNKNOWN;
 	}
 	
-	private def doOperator(TemporalRelation op, ResultType left, ResultType right,
+	private def doOperator(TemporalRelation op, ResultType l, ResultType right,
 		Expression leftExp, Expression rightExp) {
-
-		checkType(ResultType.INSTVAL,left,leftExp);
-		checkType(ResultType.INSTVAL,right,rightExp);
+			
+		val left = if (leftExp === null) ResultType.INSTVAL else l; 
+			
+		var ok = 
+		if (left == ResultType.TIMEPOINT)
+			switch(op.name) {
+				case '=', case 'equals',
+				case '<', case 'before',
+				case '>', case 'after' : true
+				default: false
+			}
+		else if (left == ResultType.INSTVAL && right == ResultType.TIMEPOINT)
+			switch(op.name) {
+				case '<', case 'before',
+				case '>', case 'after',
+				case 'starts',
+				case 'finishes',
+				case 'contains' : true
+				default: false
+			}
+		else if (left == ResultType.TIMEPOINT && right == ResultType.INSTVAL)
+			switch(op.name) {
+				case '<', case 'before',
+				case '>', case 'after',
+				case 'starts',
+				case 'finishes',
+				case 'during' : true
+				default: false
+			}
+		else {
+			val msg = 'instantiated value or temporal point'
+			checkType(ResultType.INSTVAL,left,leftExp,msg);
+			checkType(ResultType.INSTVAL,right,rightExp,msg);
+			true;
+		}
+		if (!ok)
+			error(String.format("Incompatible operator '%s' between '%s' and '%s'",
+				op.name,formatType(left),formatType(right)),op,
+				GhostValidator.TEMPOP_INCOMPATIBLE);
 		return ResultType.TEMPORALEXP;
 	}	
 
 	protected def dispatch ResultType eval(TimePointOp exp) {
 		val value = eval(exp?.value);
 		checkType(ResultType.INSTVAL,value,exp);
-		return ResultType.INSTVAL;
+		return ResultType.TIMEPOINT;
 	}
 
 	protected def dispatch ResultType eval(QualifInstVal exp) {
