@@ -67,4 +67,24 @@ comp c : sv (
 			GhostValidator.EXPECTED_TYPE);
 	}
 	
+	//Unused variables
+	@Test
+	def void testUnusedVar1() {
+		val model = '''
+comp c : sv (
+	A -> var x = 12;
+);
+		'''.parse;
+		model.assertWarning(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.UNUSED_VAR);
+	}
+	
+	@Test
+	def void testUnusedVar2() {
+		val model = '''
+comp c : sv (
+	A -> (var x = 12, x > 10);
+);
+		'''.parse;
+		model.assertNoIssues();
+	}
 }
