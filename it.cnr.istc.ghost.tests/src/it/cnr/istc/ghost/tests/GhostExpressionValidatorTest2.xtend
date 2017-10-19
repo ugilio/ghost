@@ -87,4 +87,82 @@ comp c : sv (
 		'''.parse;
 		model.assertNoIssues();
 	}
+	
+	//Useless expressions
+	@Test
+	def void testUselessExp1() {
+		val model = '''
+comp c : sv (
+	A -> 15
+);
+		'''.parse;
+		model.assertWarning(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.USELESS_EXPRESSION);
+	}
+	
+	@Test
+	def void testUselessExp2() {
+		val model = '''
+comp c : sv (
+	A, B
+synchronize:
+	A -> B
+);
+		'''.parse;
+		model.assertWarning(GhostPackage.Literals.SYNC_BODY, GhostValidator.USELESS_EXPRESSION);
+	}
+	
+	@Test
+	def void testUselessExp3() {
+		val model = '''
+type e = enum(E1,E2);
+comp c : sv (
+	A -> E1
+);
+		'''.parse;
+		model.assertWarning(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.USELESS_EXPRESSION);
+	}
+	
+	@Test
+	def void testNotUselessExp1() {
+		val model = '''
+comp c : sv (
+	A -> var x = 15
+);
+		'''.parse;
+		model.assertNoIssue(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.USELESS_EXPRESSION);
+	}
+	
+	@Test
+	def void testNotUselessExp2() {
+		val model = '''
+comp c : sv (
+	A -> B, B
+);
+		'''.parse;
+		model.assertNoIssue(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.USELESS_EXPRESSION);
+	}
+	
+	@Test
+	def void testNotUselessExp3() {
+		val model = '''
+comp c : sv (
+	A -> 10 < 15
+);
+		'''.parse;
+		model.assertNoIssue(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.USELESS_EXPRESSION);
+	}
+	
+	@Test
+	def void testNotUselessExp4() {
+		val model = '''
+comp c : sv (
+	A, B
+synchronize:
+	A -> EQUALS B
+);
+		'''.parse;
+		model.assertNoIssue(GhostPackage.Literals.SYNC_BODY, GhostValidator.USELESS_EXPRESSION);
+	}
+	
+	
 }

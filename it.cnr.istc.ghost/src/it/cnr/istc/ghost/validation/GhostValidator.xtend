@@ -69,6 +69,7 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val BOOLEAN_TO_NUMERIC = "booleanToNumeric";
 	public static val COMPARISON_DIFFERENT_TYPES = "comparisonDifferentTypes";
 	public static val UNUSED_VAR = "unusedVar";
+	public static val USELESS_EXPRESSION = "uselessExpression";
 
 	// Checks for type hierarchy
 

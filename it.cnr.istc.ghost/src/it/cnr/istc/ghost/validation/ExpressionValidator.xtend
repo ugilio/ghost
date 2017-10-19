@@ -25,6 +25,7 @@ import it.cnr.istc.ghost.ghost.TemporalRelation
 import it.cnr.istc.ghost.ghost.ResSimpleInstVal
 import it.cnr.istc.ghost.ghost.PlaceHolder
 import java.util.HashSet
+import it.cnr.istc.ghost.ghost.TransConstrBody
 
 class ExpressionValidator extends AbstractExpressionValidator {
 
@@ -56,8 +57,9 @@ class ExpressionValidator extends AbstractExpressionValidator {
 		determineLocVarTypes(body);
 		unusedVars.addAll(body.eContents.filter(LocVarDecl));
 		//now check everything with proper error messages
+		val inTC = body instanceof TransConstrBody;
 		for (exp : body.eContents)
-			eval(exp);
+			evalTopLevel(exp,inTC);
 		reportUnusedVars();
 	}
 	
@@ -172,6 +174,22 @@ class ExpressionValidator extends AbstractExpressionValidator {
 			}
 		}
 		return ResultType.UNKNOWN;
+	}
+	
+	protected def evalTopLevel(EObject exp, boolean inTransConstr) {
+		val result = eval(exp);
+		if (! (exp instanceof LocVarDecl) ) {
+			val ok = 
+			switch (result) {
+				case UNKNOWN,
+				case BOOLEAN,
+				case TEMPORALEXP : true
+				case INSTVAL: inTransConstr
+				default: false
+			}
+			if (!ok)
+				warning("Expression has no effect since it is not a constraint",exp,GhostValidator.USELESS_EXPRESSION)
+		}
 	}
 
 	protected def dispatch ResultType eval(Object exp) {

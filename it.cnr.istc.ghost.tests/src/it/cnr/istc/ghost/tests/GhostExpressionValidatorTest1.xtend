@@ -61,7 +61,7 @@ comp c : sv (
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.NUMERIC));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 	
 	@Test
@@ -77,7 +77,7 @@ comp c : sv (
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.ENUM));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 	
 	@Test
@@ -94,7 +94,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.UNKNOWN));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 	
 	@Test
@@ -109,7 +109,7 @@ comp c : sv (
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.INSTVAL));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 	
 	@Test
@@ -127,7 +127,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.INSTVAL));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 	
 	@Test
@@ -145,7 +145,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.INSTVAL));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 
 	@Test
@@ -163,7 +163,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.NUMERIC));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 	
 	@Test
@@ -181,7 +181,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.ENUM));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}	
 		
 	@Test
@@ -197,7 +197,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.NUMERIC));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 	
 	@Test
@@ -213,7 +213,7 @@ comp c : sv (
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.NUMERIC));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}	
 		
 	@Test
@@ -229,7 +229,7 @@ comp c : sv (
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.ENUM));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}	
 
 	@Test
@@ -246,7 +246,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.INSTVAL));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}	
 		
 	@Test
@@ -264,7 +264,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.INSTVAL));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}	
 		
 	@Test
@@ -281,7 +281,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.INSTVAL));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}	
 		
 	@Test
@@ -297,7 +297,7 @@ comp c : t(
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.UNKNOWN));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}	
 
 	@Test
@@ -327,7 +327,7 @@ comp c : sv(
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.UNKNOWN));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}	
 
 	@Test
@@ -342,7 +342,7 @@ comp c : sv(
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.NUMERIC));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}	
 
 	@Test
@@ -357,7 +357,7 @@ comp c : sv(
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.NUMERIC));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 
 	@Test
@@ -374,7 +374,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.TEMPORALEXP));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 
 	@Test
@@ -391,7 +391,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.TEMPORALEXP));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 
 	@Test
@@ -408,7 +408,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.BOOLEAN));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 
 	@Test
@@ -425,7 +425,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.BOOLEAN));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 
 	@Test
@@ -442,7 +442,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.BOOLEAN));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 
 	@Test
@@ -459,7 +459,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.TEMPORALEXP));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 
 	@Test
@@ -476,7 +476,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.TEMPORALEXP));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 	
 	@Test
@@ -493,7 +493,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.TEMPORALEXP));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 	
 
@@ -511,7 +511,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.BOOLEAN));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 
 	@Test
@@ -528,7 +528,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.TEMPORALEXP));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 
 	@Test
@@ -545,7 +545,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.NUMERIC));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 	
 	@Test
@@ -562,7 +562,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.NUMERIC));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 	
 	@Test
@@ -580,7 +580,7 @@ synchronize:
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.BOOLEAN));
-		model.assertNoIssues;
+		model.assertNoErrors;
 	}
 	
 	@Test
