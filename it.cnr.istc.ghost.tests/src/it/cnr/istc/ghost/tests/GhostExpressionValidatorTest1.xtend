@@ -312,7 +312,7 @@ comp c : sv(
 		v.checkExpressions(body);
 		val rt = v.eval(exp);
 		assertThat(rt,is(ResultType.NUMERIC));
-		model.assertNoIssues;
+		model.assertNoErrors();
 	}	
 
 	@Test

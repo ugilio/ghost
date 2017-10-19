@@ -24,6 +24,7 @@ import it.cnr.istc.ghost.ghost.ThisKwd
 import it.cnr.istc.ghost.ghost.TemporalRelation
 import it.cnr.istc.ghost.ghost.ResSimpleInstVal
 import it.cnr.istc.ghost.ghost.PlaceHolder
+import java.util.HashSet
 
 class ExpressionValidator extends AbstractExpressionValidator {
 
@@ -32,6 +33,7 @@ class ExpressionValidator extends AbstractExpressionValidator {
  *  - return also the computed values, if computation is possible? Or bounds?
  */
 	private HashMap<String,ResultType> locVarTypes = new HashMap();
+	private HashSet<LocVarDecl> unusedVars = new HashSet();
 	private ErrMsgFunction errMsgFunction;
 	private WarnMsgFunction warnMsgFunction;
 	
@@ -52,9 +54,11 @@ class ExpressionValidator extends AbstractExpressionValidator {
 	//SyncBody or TransConstrBody
 	def checkExpressions(EObject body) {
 		determineLocVarTypes(body);
+		unusedVars.addAll(body.eContents.filter(LocVarDecl));
 		//now check everything with proper error messages
 		for (exp : body.eContents)
 			eval(exp);
+		reportUnusedVars();
 	}
 	
 	private def determineLocVarTypes(EObject body) {
@@ -73,6 +77,12 @@ class ExpressionValidator extends AbstractExpressionValidator {
 				addType(locVar.name,type);
 			}
 		}
+	}
+	
+	private def reportUnusedVars() {
+		for (v : unusedVars)
+			warning(String.format(
+			"Local variable '%s' declared but not used",v.name),v,GhostValidator.UNUSED_VAR);
 	}
 	
 	protected def error(String message, EObject source, EStructuralFeature feature, int index, String code,
@@ -300,6 +310,7 @@ class ExpressionValidator extends AbstractExpressionValidator {
 	}	
 
 	protected def dispatch ResultType evalRef(LocVarDecl exp) {
+		unusedVars.remove(exp);
 		val t = locVarTypes.get(exp?.name);
 		if (t === null)
 			return ResultType.UNKNOWN;
