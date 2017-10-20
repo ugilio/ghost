@@ -977,6 +977,22 @@ synchronize:
 		'''.parse;
 		model.assertNoErrors;
 	}
+	
+	@Test
+	def void testInheritedMultiBranch() {
+		val model = '''
+type t1 = sv(
+	A
+synchronize:
+	A -> 1 < 0 or 7 > 5
+);
+type t2 = sv t1(
+synchronize:
+	A -> inherited
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.SYNC_BODY, GhostValidator.INHERITANCE_MULTIBRANCH);
+	}
 
 	//Recursive local variable definition	
 	@Test

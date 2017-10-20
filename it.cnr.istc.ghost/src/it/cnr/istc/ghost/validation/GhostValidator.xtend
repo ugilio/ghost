@@ -63,6 +63,7 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val RESCONSTR_INCOMPATIBLE_COMP = "resConstrIncompatibleComp";
 	public static val INHERITANCE_INCOMPATIBLE_PARAMS = "inheritanceIncompatibleParams";
 	public static val INHERITED_KWD_NO_ANCESTOR = "inheritedKwdNoAncestor";
+	public static val INHERITANCE_MULTIBRANCH = "inheritanceMultibranch";
 	public static val RENEWABLE_CONSUMABLE_MIX = "renewableConsumableMix";
 	public static val RECURSIVE_VARDECL = "recursiveVarDecl";
 	public static val EXPECTED_TYPE = "expectedType";
@@ -520,6 +521,21 @@ class GhostValidator extends AbstractGhostValidator {
 						INHERITED_KWD_NO_ANCESTOR);
 					return;
 				}
+	}
+	
+	@Check
+	def checkInheritedFromMultipleBranches(SyncBody sb) {
+		val s = sb.eContainer as Synchronization;
+		for (var i = 0; i < sb.values.size; i++)
+			if (sb.values.get(i) instanceof InheritedKwd) {
+				val parentTrigger = getParentSync(s.trigger);
+				if (parentTrigger !== null)
+					if ((parentTrigger.eContainer as Synchronization).bodies.size>1) {
+						error("Cannot inherit from a synchronization having multiple branches",
+						SYNC_BODY__VALUES,i,INHERITANCE_MULTIBRANCH);
+					return;
+					}
+			}
 	}
 	
 	@Check
