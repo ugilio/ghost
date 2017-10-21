@@ -9,8 +9,8 @@ import org.eclipse.xtext.AbstractRule
 
 class NumberValueConverter extends AbstractValueConverter<Long> implements IValueConverter.RuleSpecific {
 	
-	private long MAX_VALUE = Long.MAX_VALUE;
-	private long MIN_VALUE = Long.MIN_VALUE;
+	public static long MAX_VALUE = Long.MAX_VALUE;
+	public static long MIN_VALUE = Long.MIN_VALUE;
 	
 	override toValue(String string, INode node) throws ValueConverterException {
 		if (Strings.isEmpty(string))
