@@ -165,6 +165,19 @@ synchronize:
 	}
 	
 	@Test
+	def void testNotUselessExp5() {
+		val model = '''
+comp r : resource(10);
+comp c : sv (
+	A, B
+synchronize:
+	A -> require r(10);
+);
+		'''.parse;
+		model.assertNoIssues();
+	}
+	
+	@Test
 	def void testIncompTempOp1() {
 		val model = '''
 comp c : sv (
