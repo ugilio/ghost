@@ -150,9 +150,12 @@
     <genClasses ecoreClass="Ghost.ecore#//ArgList">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//ArgList/values"/>
     </genClasses>
+    <genClasses ecoreClass="Ghost.ecore#//BindPar">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//BindPar/name"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//BindPar/value"/>
+    </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//BindList">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//BindList/varNames"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Ghost.ecore#//BindList/values"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//BindList/values"/>
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//LocVarDecl">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//LocVarDecl/value"/>

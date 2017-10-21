@@ -3,7 +3,6 @@
  */
 package it.cnr.istc.ghost.scoping
 
-import it.cnr.istc.ghost.ghost.BindList
 import it.cnr.istc.ghost.ghost.CompDecl
 import it.cnr.istc.ghost.ghost.ComponentType
 import it.cnr.istc.ghost.ghost.GhostPackage
@@ -19,6 +18,7 @@ import org.eclipse.emf.ecore.EReference
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.scoping.IScope
 import org.eclipse.xtext.scoping.Scopes
+import it.cnr.istc.ghost.ghost.BindPar
 
 /**
  * This class contains custom scoping description.
@@ -77,13 +77,13 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 		return IScope.NULLSCOPE;
 	}
 	
-	private def IScope getScopeForBindList(EObject v) {
+	private def IScope getScopeForBindName(EObject v) {
 		if (v === null)
 			return IScope.NULLSCOPE;
 		val comp = EcoreUtil2.getContainerOfType(v,CompDecl);
 		if (comp !== null) {
 			val pScope = if (comp instanceof NamedCompDecl)
-					getScopeForBindList((comp as NamedCompDecl).type)
+					getScopeForBindName((comp as NamedCompDecl).type)
 				else
 					IScope.NULLSCOPE;
 			return Scopes.scopeFor(EcoreUtil2.eAllOfType(comp,ObjVarDecl),pScope);
@@ -92,8 +92,8 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 		if (type !== null) {
 			val pScope = switch(type)
 				{
-					SvDecl: getScopeForBindList((type as SvDecl).parent)
-					ResourceDecl: getScopeForBindList((type as ResourceDecl).parent)
+					SvDecl: getScopeForBindName((type as SvDecl).parent)
+					ResourceDecl: getScopeForBindName((type as ResourceDecl).parent)
 					default: IScope.NULLSCOPE
 				}
 			return Scopes.scopeFor(EcoreUtil2.eAllOfType(type,ObjVarDecl),pScope);
@@ -121,10 +121,10 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 			if (scope !== IScope.NULLSCOPE)
 				return scope;
 		}
-		if (context instanceof BindList &&
-			reference == GhostPackage.Literals.BIND_LIST__VAR_NAMES)
+		if (context instanceof BindPar &&
+			reference == GhostPackage.Literals.BIND_PAR__NAME)
 		{
-			val scope = getScopeForBindList(context);
+			val scope = getScopeForBindName(context);
 			if (scope !== IScope.NULLSCOPE)
 				return scope;
 		}
