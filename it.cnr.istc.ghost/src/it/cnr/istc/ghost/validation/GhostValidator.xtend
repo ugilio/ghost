@@ -43,6 +43,8 @@ import it.cnr.istc.ghost.ghost.AnonResDecl
 import it.cnr.istc.ghost.ghost.AnonSVDecl
 import it.cnr.istc.ghost.ghost.ConstExpr
 import it.cnr.istc.ghost.ghost.ResourceAction
+import it.cnr.istc.ghost.ghost.BindList
+import java.util.Collections
 
 /**
  * This class contains custom validation rules. 
@@ -65,6 +67,9 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val INHERITED_KWD_NO_ANCESTOR = "inheritedKwdNoAncestor";
 	public static val INHERITANCE_MULTIBRANCH = "inheritanceMultibranch";
 	public static val RENEWABLE_CONSUMABLE_MIX = "renewableConsumableMix";
+	public static val BINDLIST_MULTIPLEVAR = "bindlistMultiplevar";
+	public static val BINDLIST_SOME_UNBOUND = "bindlistSomeUnbound"; 
+	public static val BINDLIST_TOO_LARGE = "bindlistTooLarge"; 
 	public static val RECURSIVE_VARDECL = "recursiveVarDecl";
 	public static val EXPECTED_TYPE = "expectedType";
 	public static val TEMPOP_INCOMPATIBLE = "tempopIncompatible";
@@ -549,6 +554,57 @@ class GhostValidator extends AbstractGhostValidator {
 			doCheckRenewableConsumableHierarchy(decl,
 				(decl.body as CompResBody)?.val2,decl.name,NAMED_COMP_DECL__TYPE
 			);
+	}
+	
+	private def Iterable<ObjVarDecl> getVariables(NamedCompDecl cd) {
+		val t = cd?.type;
+		val secs = 
+		switch (t) {
+			SvDecl: t.body?.variables
+			ResourceDecl: t.body?.variables
+			default : null
+		}
+		return if (secs !== null) secs.map[sec|sec.values].flatten
+			else Collections.emptyList();
+	}
+	
+	@Check
+	def void checkBindListCollisions(BindList bl) {
+		val cd = EcoreUtil2.getContainerOfType(bl,NamedCompDecl);
+		if (cd !== null) {
+			var vars = getVariables(cd);
+			val bound = new HashSet<ObjVarDecl>();
+			for (var i = 0; i < bl.values.size(); i++) {
+				val b = bl.values.get(i);
+
+				val v = 
+				if (b.name !== null) b.name
+				else if (i<vars.size()) vars.get(i)
+				else null;
+				
+				if (v !== null) {
+ 					if (bound.contains(v))					
+						error(String.format("Variable '%s' bound multiple times",
+							v.name),BIND_LIST__VALUES,i,BINDLIST_MULTIPLEVAR);
+					bound.add(v);
+				}
+			}
+		}
+	}
+	
+	@Check
+	def void checkBindListSize(BindList bl) {
+		val cd = EcoreUtil2.getContainerOfType(bl,NamedCompDecl);
+		val varSize = if (cd !== null)
+			getVariables(cd).size()
+			else 0;
+		val blSize = bl.values.size();
+		if (varSize > blSize)
+			error("Some component variables are left unbound",
+				BIND_LIST__VALUES,BINDLIST_SOME_UNBOUND)
+		else if (varSize < blSize)
+			error("Too many elements in bind list",
+				BIND_LIST__VALUES,BINDLIST_TOO_LARGE)
 	}
 	
 	private def doCheckRenewableConsumableHierarchy(EObject decl, ConstExpr v2,

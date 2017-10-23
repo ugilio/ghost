@@ -1014,4 +1014,121 @@ comp c : sv (
 		'''.parse;
 		model.assertError(GhostPackage.Literals.EXPRESSION, GhostValidator.RECURSIVE_VARDECL);
 	}
+	
+	@Test
+	def void testBindList1() {
+		val model = '''
+type t1 = sv;
+
+type T = sv(
+variable:
+	A : t1, B : t1;
+);
+comp c1 : t1;
+comp c2 : t1;
+comp c3 : T[A = c1, B = c2];
+		'''.parse;
+		model.assertNoErrors();
+	}
+	
+	@Test
+	def void testBindList2() {
+		val model = '''
+type t1 = sv;
+
+type T = sv(
+variable:
+	A : t1, B : t1;
+);
+comp c1 : t1;
+comp c2 : t1;
+comp c3 : T[c1, c2];
+		'''.parse;
+		model.assertNoErrors();
+	}
+	
+	@Test
+	def void testBindList3() {
+		val model = '''
+type t1 = sv;
+
+type T = sv(
+variable:
+	A : t1, B : t1;
+);
+comp c1 : t1;
+comp c2 : t1;
+comp c3 : T[B = c1, c2];
+		'''.parse;
+		model.assertError(GhostPackage.Literals.BIND_LIST, GhostValidator.BINDLIST_MULTIPLEVAR);
+	}
+	
+	@Test
+	def void testBindList4() {
+		val model = '''
+type t1 = sv;
+
+type T = sv(
+variable:
+	A : t1, B : t1;
+);
+comp c1 : t1;
+comp c2 : t1;
+comp c3 : T[A = c1, A = c2];
+		'''.parse;
+		model.assertError(GhostPackage.Literals.BIND_LIST, GhostValidator.BINDLIST_MULTIPLEVAR);
+	}
+	
+	@Test
+	def void testBindListUnbound1() {
+		val model = '''
+type t1 = sv;
+
+type T = sv(
+variable:
+	A : t1, B : t1;
+);
+comp c1 : t1;
+comp c2 : t1;
+comp c3 : T[c1];
+		'''.parse;
+		model.assertError(GhostPackage.Literals.BIND_LIST, GhostValidator.BINDLIST_SOME_UNBOUND);
+	}
+	
+	@Test
+	def void testBindListTooMuch1() {
+		val model = '''
+type t1 = sv;
+
+type T = sv(
+variable:
+	A : t1;
+);
+comp c1 : t1;
+comp c2 : t1;
+comp c3 : T[c1,c2];
+		'''.parse;
+		model.assertError(GhostPackage.Literals.BIND_LIST, GhostValidator.BINDLIST_TOO_LARGE);
+	}
+	
+	@Test
+	def void testBindListTooMuch2() {
+		val model = '''
+type T = sv;
+comp c1 : T;
+comp c2 : T;
+comp c3 : T[c1,c2];
+		'''.parse;
+		model.assertError(GhostPackage.Literals.BIND_LIST, GhostValidator.BINDLIST_TOO_LARGE);
+	}
+	
+	@Test
+	def void testBindListTooMuch3() {
+		val model = '''
+comp c1 : sv;
+comp c2 : sv[c1];
+		'''.parse;
+		model.assertError(GhostPackage.Literals.BIND_LIST, GhostValidator.BINDLIST_TOO_LARGE);
+	}
+	
 }
