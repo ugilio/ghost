@@ -1130,5 +1130,66 @@ comp c2 : sv[c1];
 		'''.parse;
 		model.assertError(GhostPackage.Literals.BIND_LIST, GhostValidator.BINDLIST_TOO_LARGE);
 	}
+
+	@Test
+	def void testBindListInherited1() {
+		val model = '''
+type t1 = sv;
+
+type S = sv(
+variable:
+	A : t1;
+);
+type T = sv S(
+variable:
+	B : t1;
+);
+comp c1 : t1;
+comp c2 : t1;
+comp c3 : T[A = c1, B = c2];
+		'''.parse;
+		model.assertNoErrors();
+	}
+	
+	@Test
+	def void testBindListInherited2() {
+		val model = '''
+type t1 = sv;
+
+type S = sv(
+variable:
+	A : t1;
+);
+type T = sv S(
+variable:
+	B : t1;
+);
+comp c1 : t1;
+comp c2 : t1;
+comp c3 : T[c1, c2];
+		'''.parse;
+		model.assertNoErrors();
+	}
+	
+	@Test
+	def void testBindListInherited3() {
+		val model = '''
+type t1 = sv;
+
+type S = sv(
+variable:
+	A : t1;
+);
+type T = sv S(
+variable:
+	A : t1, B : t1;
+);
+comp c1 : t1;
+comp c2 : t1;
+comp c3 : T[A = c1, B = c2];
+		'''.parse;
+		model.assertNoErrors();
+	}
+	
 	
 }

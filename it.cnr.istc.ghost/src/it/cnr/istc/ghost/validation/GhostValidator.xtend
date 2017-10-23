@@ -45,6 +45,8 @@ import it.cnr.istc.ghost.ghost.ConstExpr
 import it.cnr.istc.ghost.ghost.ResourceAction
 import it.cnr.istc.ghost.ghost.BindList
 import java.util.Collections
+import it.cnr.istc.ghost.ghost.ComponentType
+import java.util.ArrayList
 
 /**
  * This class contains custom validation rules. 
@@ -556,23 +558,36 @@ class GhostValidator extends AbstractGhostValidator {
 			);
 	}
 	
-	private def Iterable<ObjVarDecl> getVariables(NamedCompDecl cd) {
-		val t = cd?.type;
+	private def contains(List<ObjVarDecl> vars, String name) {
+		for (v : vars)
+			if (v.name==name)
+				return true;
+		return false;
+	}
+	
+	private def List<ObjVarDecl> getVariables(ComponentType type) {
+		if (type === null)
+			return Collections.emptyList;
+		val fromParent = getVariables(type.parent as ComponentType);
 		val secs = 
-		switch (t) {
-			SvDecl: t.body?.variables
-			ResourceDecl: t.body?.variables
+		switch (type) {
+			SvDecl: type.body?.variables
+			ResourceDecl: type.body?.variables
 			default : null
 		}
-		return if (secs !== null) secs.map[sec|sec.values].flatten
+		val fromThis = if (secs !== null) secs.map[sec|sec.values].flatten
 			else Collections.emptyList();
+		val result = new ArrayList(fromParent.size+fromThis.size);
+		result.addAll(fromParent);
+		result.addAll(fromThis.filter[v|!contains(fromParent,v.name)]);
+		return result;
 	}
 	
 	@Check
 	def void checkBindListCollisions(BindList bl) {
 		val cd = EcoreUtil2.getContainerOfType(bl,NamedCompDecl);
 		if (cd !== null) {
-			var vars = getVariables(cd);
+			var vars = getVariables(cd?.type);
 			val bound = new HashSet<ObjVarDecl>();
 			for (var i = 0; i < bl.values.size(); i++) {
 				val b = bl.values.get(i);
@@ -596,7 +611,7 @@ class GhostValidator extends AbstractGhostValidator {
 	def void checkBindListSize(BindList bl) {
 		val cd = EcoreUtil2.getContainerOfType(bl,NamedCompDecl);
 		val varSize = if (cd !== null)
-			getVariables(cd).size()
+			getVariables(cd?.type).size()
 			else 0;
 		val blSize = bl.values.size();
 		if (varSize > blSize)
