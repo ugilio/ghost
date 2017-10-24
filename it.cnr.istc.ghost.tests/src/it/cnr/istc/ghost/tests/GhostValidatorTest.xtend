@@ -1191,5 +1191,13 @@ comp c3 : T[A = c1, B = c2];
 		model.assertNoErrors();
 	}
 	
+	@Test
+	def void testWrongThisKwd() {
+		val model = '''
+init (fact this);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.FACT_GOAL, GhostValidator.THIS_INVALID_USAGE);
+	}
+	
 	
 }

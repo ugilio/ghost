@@ -47,6 +47,8 @@ import it.cnr.istc.ghost.ghost.BindList
 import java.util.Collections
 import it.cnr.istc.ghost.ghost.ComponentType
 import java.util.ArrayList
+import it.cnr.istc.ghost.ghost.InitSection
+import it.cnr.istc.ghost.ghost.ThisKwd
 
 /**
  * This class contains custom validation rules. 
@@ -68,6 +70,7 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val INHERITANCE_INCOMPATIBLE_PARAMS = "inheritanceIncompatibleParams";
 	public static val INHERITED_KWD_NO_ANCESTOR = "inheritedKwdNoAncestor";
 	public static val INHERITANCE_MULTIBRANCH = "inheritanceMultibranch";
+	public static val THIS_INVALID_USAGE = "thisInvalidUsage";
 	public static val RENEWABLE_CONSUMABLE_MIX = "renewableConsumableMix";
 	public static val BINDLIST_MULTIPLEVAR = "bindlistMultiplevar";
 	public static val BINDLIST_SOME_UNBOUND = "bindlistSomeUnbound"; 
@@ -75,6 +78,7 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val RECURSIVE_VARDECL = "recursiveVarDecl";
 	public static val EXPECTED_TYPE = "expectedType";
 	public static val TEMPOP_INCOMPATIBLE = "tempopIncompatible";
+	
 	public static val BOOLEAN_TO_NUMERIC = "booleanToNumeric";
 	public static val COMPARISON_DIFFERENT_TYPES = "comparisonDifferentTypes";
 	public static val UNUSED_VAR = "unusedVar";
@@ -544,6 +548,13 @@ class GhostValidator extends AbstractGhostValidator {
 					}
 			}
 	}
+	
+	@Check
+	def checkThisInInitSec(ThisKwd kwd) {
+		if (EcoreUtil2.getContainerOfType(kwd,InitSection) !== null)
+			error("Cannot use 'this' keyword in an initialization section",
+				kwd.eContainer,kwd.eContainingFeature,THIS_INVALID_USAGE);
+	}	
 	
 	@Check
 	def checkRenewableConsumableHierarchy(ResourceDecl decl) {
