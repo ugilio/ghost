@@ -129,6 +129,7 @@ enum TimePointSelector : START='start' | END='end';
 enum Externality : UNSPECIFIED | PLANNED='planned' | EXTERNAL='external';
 enum Controllability: UNSPECIFIED | UNKNOWN | CONTROLLABLE='contr' | UNCONTROLLABLE='uncontr';
 enum ResourceAction: REQUIRE='require' | PRODUCE='produce' | CONSUME='consume';
+enum InitConstrType: FACT='fact' | GOAL='goal';
 
 ExternalityRule returns Externality: 'planned'|'external';
 ControllabilityRule returns Controllability: 'contr'|'uncontr';
@@ -157,7 +158,7 @@ InitSection: {InitSection} 'init' ((values+=InitConstr) | (->'('
 	
 InitConstr: LocVarDecl | FactGoal;
 
-FactGoal: ('fact'|'goal') value=InstVal ('at' params=AtParams)?;
+FactGoal: type=InitConstrType value=InstVal ('at' params=AtParams)?;
 
 ConstDecl: 'const' name=ID '=' value=ConstExpr;
 

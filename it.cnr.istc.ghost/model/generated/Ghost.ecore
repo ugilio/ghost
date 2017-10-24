@@ -232,6 +232,10 @@
     <eLiterals name="PRODUCE" value="1" literal="produce"/>
     <eLiterals name="CONSUME" value="2" literal="consume"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="InitConstrType">
+    <eLiterals name="FACT" literal="fact"/>
+    <eLiterals name="GOAL" value="1" literal="goal"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="CompDecl" eSuperTypes="#//TopLevelDeclaration #//CompRef">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="externality" eType="#//Externality"/>
   </eClassifiers>
@@ -270,6 +274,7 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="InitConstr"/>
   <eClassifiers xsi:type="ecore:EClass" name="FactGoal" eSuperTypes="#//InitConstr">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//InitConstrType"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//InstVal"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="params" eType="#//AtParams"

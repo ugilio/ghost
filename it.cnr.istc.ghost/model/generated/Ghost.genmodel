@@ -26,6 +26,10 @@
       <genEnumLiterals ecoreEnumLiteral="Ghost.ecore#//ResourceAction/PRODUCE"/>
       <genEnumLiterals ecoreEnumLiteral="Ghost.ecore#//ResourceAction/CONSUME"/>
     </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="Ghost.ecore#//InitConstrType">
+      <genEnumLiterals ecoreEnumLiteral="Ghost.ecore#//InitConstrType/FACT"/>
+      <genEnumLiterals ecoreEnumLiteral="Ghost.ecore#//InitConstrType/GOAL"/>
+    </genEnums>
     <genClasses ecoreClass="Ghost.ecore#//Ghost">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//Ghost/domain"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//Ghost/problem"/>
@@ -219,6 +223,7 @@
     </genClasses>
     <genClasses ecoreClass="Ghost.ecore#//InitConstr"/>
     <genClasses ecoreClass="Ghost.ecore#//FactGoal">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Ghost.ecore#//FactGoal/type"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//FactGoal/value"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//FactGoal/params"/>
     </genClasses>
