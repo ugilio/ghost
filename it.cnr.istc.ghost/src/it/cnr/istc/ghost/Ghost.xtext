@@ -90,7 +90,7 @@ ArgList: '(' (values+=GenericExpression (SEP+ values+=GenericExpression)* SEP* )
 BindPar: (name=[ObjVarDecl] '=')? value=[CompDecl|QUALID];
 BindList: '['values+=BindPar (SEP+ values+=BindPar )* SEP* ']';
 
-LocVarDecl: 'var' name=ID '=' value=RValue;
+LocVarDecl: 'var' name=VARNAMEID '=' value=RValue;
 RValue: TemporalExp;
 
 PlaceHolder: {PlaceHolder} '_';
@@ -185,6 +185,7 @@ NegNumber returns ecore::ELong: '-' (INT |'INF');
 
 QUALID : ID('.'ID)*;
 ID_ : '_' | ID;
+VARNAMEID: ID | 'start' | 'end';
 
 terminal SL_ANNOTATION : '@' !('\n'|'\r')* ('\r'? '\n')?;
 terminal BR_ANNOTATION : '@(' -> ')';
