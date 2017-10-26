@@ -21,7 +21,7 @@ class NumAndUnitValueConverter extends AbstractValueConverter<Long> implements I
 	override toValue(String string, INode node) throws ValueConverterException {
 		try
 		{
-			val res = NodeModelUtils.findActualSemanticObjectFor(node).eResource;
+			val res = NodeModelUtils.findActualSemanticObjectFor(node)?.eResource;
 			val offset = if (node!==null) node.offset else 0;
 			unitProvider.getValue(res,string,offset);
 		}

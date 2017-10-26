@@ -86,6 +86,10 @@ type test = int 10 bananas;
 		assertThat(value,is(equalTo("100")));
 	}
 	
-	
+	@Test
+	def void testEmptyInput() {
+		val value = converter.toValue("100 ms",null);
+		assertThat(value,is(equalTo(100L)));
+	}
 	
 }
