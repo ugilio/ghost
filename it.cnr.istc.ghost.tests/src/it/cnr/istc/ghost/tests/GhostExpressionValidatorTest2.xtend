@@ -241,5 +241,60 @@ synchronize:
 		model.assertNoErrors();
 	}
 	
+	@Test
+	def void testInitVarWrongType1() {
+		val model = '''
+type E = enum (A);
+init( var horizon = A; )
+		'''.parse;
+		model.assertError(GhostPackage.Literals.LOC_VAR_DECL,
+			GhostValidator.INIT_VAR_NOT_NUMBER);
+	}
+	
+	@Test
+	def void testInitVarNotConst1() {
+		val model = '''
+init( var x = _; var horizon = x; )
+		'''.parse;
+		model.assertError(GhostPackage.Literals.QUALIF_INST_VAL,
+			GhostValidator.INIT_VAR_NOT_CONSTANT);
+	}
+	
+	@Test
+	def void testInitVarNotConst2() {
+		val model = '''
+init( var x = 12; var horizon = x; )
+		'''.parse;
+		model.assertError(GhostPackage.Literals.QUALIF_INST_VAL,
+			GhostValidator.INIT_VAR_NOT_CONSTANT);
+	}
+	
+	@Test
+	def void testInitVarOK() {
+		val model = '''
+init( var horizon = 20; )
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testInitVarConstOK() {
+		val model = '''
+const HORIZON = 50;
+init( var horizon = HORIZON; )
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testNoInitVar() {
+		val model = '''
+type E = enum (A);
+type T = sv(C ->  var horizon = A;
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
 	
 }

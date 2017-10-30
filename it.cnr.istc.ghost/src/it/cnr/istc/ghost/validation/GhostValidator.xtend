@@ -77,6 +77,8 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val BINDLIST_TOO_LARGE = "bindlistTooLarge"; 
 	public static val RECURSIVE_VARDECL = "recursiveVarDecl";
 	public static val EXPECTED_TYPE = "expectedType";
+	public static val INIT_VAR_NOT_NUMBER = "initVarNotNumber"
+	public static val INIT_VAR_NOT_CONSTANT = "initVarNotConstant"
 	public static val TEMPOP_INCOMPATIBLE = "tempopIncompatible";
 	
 	public static val BOOLEAN_TO_NUMERIC = "booleanToNumeric";
@@ -664,5 +666,10 @@ class GhostValidator extends AbstractGhostValidator {
 	@Check
 	def checkExpressions(TransConstrBody tcb) {
 		doCheckExpressions(tcb);
+	}
+	
+	@Check
+	def checkExpressions(InitSection sec) {
+		doCheckExpressions(sec);
 	}
 }

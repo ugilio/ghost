@@ -26,6 +26,11 @@ import it.cnr.istc.ghost.ghost.ResSimpleInstVal
 import it.cnr.istc.ghost.ghost.PlaceHolder
 import java.util.HashSet
 import it.cnr.istc.ghost.ghost.TransConstrBody
+import org.eclipse.xtext.EcoreUtil2
+import it.cnr.istc.ghost.ghost.InitSection
+import it.cnr.istc.ghost.ghost.GhostPackage
+import it.cnr.istc.ghost.ghost.ConstLiteral
+import it.cnr.istc.ghost.ghost.FactGoal
 
 class ExpressionValidator extends AbstractExpressionValidator {
 
@@ -61,6 +66,29 @@ class ExpressionValidator extends AbstractExpressionValidator {
 		for (exp : body.eContents)
 			evalTopLevel(exp,inTC);
 		reportUnusedVars();
+	}
+	
+	private def void checkSpecialInitValues(LocVarDecl varDecl, ResultType type) {
+		switch (varDecl?.name) {
+			case 'start', case 'horizon', case 'resolution': {}
+			default: return
+		}
+		if (EcoreUtil2.getContainerOfType(varDecl,InitSection) === null)
+			return;
+		if (type != ResultType.NUMERIC)
+			error(String.format(
+			"Variable '%s' must be of type '%s'",
+			varDecl.name,formatType(ResultType.NUMERIC)
+			),varDecl,GhostPackage.Literals.LOC_VAR_DECL__VALUE,
+			-1,GhostValidator.INIT_VAR_NOT_NUMBER);
+		val nonConst = 
+		EcoreUtil2.eAllOfType(varDecl.value,QualifInstVal).
+			filter[i|!(i.value instanceof ConstLiteral)].
+			filter[i|i.value !== null].head;
+		if (nonConst !== null)
+			error(String.format("Varible '%s' must evaluate to a constant value",
+				varDecl.name),nonConst,GhostPackage.Literals.QUALIF_INST_VAL__VALUE,
+				-1,GhostValidator.INIT_VAR_NOT_CONSTANT);
 	}
 	
 	private def determineLocVarTypes(EObject body) {
@@ -337,7 +365,12 @@ class ExpressionValidator extends AbstractExpressionValidator {
 		val type = eval(decl?.value);
 		//this should not be necessary, shouldn't it?
 		addType(decl?.name,type);
+		checkSpecialInitValues(decl,type);
 		return type;
+	}
+	
+	protected def dispatch ResultType eval(FactGoal fact) {
+		return eval(fact.value);
 	}
 	
 	protected def dispatch ResultType eval(InheritedKwd kwd) {
