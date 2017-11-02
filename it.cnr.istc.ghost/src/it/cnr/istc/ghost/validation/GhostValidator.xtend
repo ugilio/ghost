@@ -49,6 +49,7 @@ import it.cnr.istc.ghost.ghost.ComponentType
 import java.util.ArrayList
 import it.cnr.istc.ghost.ghost.InitSection
 import it.cnr.istc.ghost.ghost.ThisKwd
+import it.cnr.istc.ghost.ghost.ConstPlaceHolder
 
 /**
  * This class contains custom validation rules. 
@@ -72,6 +73,8 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val INHERITANCE_MULTIBRANCH = "inheritanceMultibranch";
 	public static val THIS_INVALID_USAGE = "thisInvalidUsage";
 	public static val RENEWABLE_CONSUMABLE_MIX = "renewableConsumableMix";
+	public static val AMBIGUOUS_RESOURCE_DECL = "ambiguousResourceDecl";
+	public static val RES_UNSPECIFIED_VALUE = "resUnspecifiedValue";
 	public static val BINDLIST_MULTIPLEVAR = "bindlistMultiplevar";
 	public static val BINDLIST_SOME_UNBOUND = "bindlistSomeUnbound"; 
 	public static val BINDLIST_TOO_LARGE = "bindlistTooLarge"; 
@@ -332,7 +335,11 @@ class GhostValidator extends AbstractGhostValidator {
 	}
 	
 	private def dispatch boolean isConsumable(ResourceDecl decl) {
-		return decl?.body?.val2 !== null;
+		if (decl?.body?.val2 !== null)
+			return true;
+		if (decl?.parent === null)
+			return false;
+		return isConsumable(decl?.parent);
 	}
 	
 	private def dispatch boolean isConsumable(AnonResDecl decl) {
@@ -556,7 +563,66 @@ class GhostValidator extends AbstractGhostValidator {
 		if (EcoreUtil2.getContainerOfType(kwd,InitSection) !== null)
 			error("Cannot use 'this' keyword in an initialization section",
 				kwd.eContainer,kwd.eContainingFeature,THIS_INVALID_USAGE);
-	}	
+	}
+	
+	@Check
+	def checkAmbiguousResourceType(ResourceDecl decl) {
+		if ((decl.body?.val1===null) && (decl.parent === null))
+			error("Ambiguous resource declaration: use the placeholder character '_' to qualify it either as a renewable or consumable resource",
+			RESOURCE_DECL__BODY,-1,AMBIGUOUS_RESOURCE_DECL);
+	}
+	
+	private def boolean isUnspecified(Object o) {
+		return (o === null) || (o instanceof ConstPlaceHolder);
+	}
+	
+	private def Object getVal1(ResourceDecl decl) {
+		if (decl === null)
+			return null;
+		if (isUnspecified(decl.body?.val1))
+			return getVal1(decl.parent);
+		return decl.body.val1;
+	}
+	
+	private def Object getVal1(NamedCompDecl decl) {
+		val body = decl.body as CompResBody;
+		if (isUnspecified(body?.val1))
+			return getVal1(decl.type as ResourceDecl);
+		return body?.val1;
+	}
+	
+	private def Object getVal2(ResourceDecl decl) {
+		if (decl === null)
+			return null;
+		if (isUnspecified(decl.body?.val2))
+			return getVal2(decl.parent);
+		return decl.body.val2;
+	}
+	
+	private def Object getVal2(NamedCompDecl decl) {
+		val body = decl.body as CompResBody;
+		if (isUnspecified(body?.val2))
+			return getVal2(decl.type as ResourceDecl);
+		return body?.val2;
+	}
+	
+	@Check
+	def checkUnspecifiedResourceValues(AnonResDecl decl) {
+		if (isUnspecified(decl.body?.val1))
+			error("Instantiation of resource component with unspecified value(s)",
+			ANON_RES_DECL__BODY,-1,RES_UNSPECIFIED_VALUE);
+	}
+	
+	@Check
+	def checkUnspecifiedResourceValues(NamedCompDecl decl) {
+		if (decl.type instanceof ResourceDecl) {
+			val val1 = getVal1(decl);
+			val val2 = getVal2(decl);
+			if (isUnspecified(val1) || (isUnspecified(val2) && isConsumable(decl)))
+				error("Instantiation of resource component with unspecified value(s)",
+				NAMED_COMP_DECL__BODY,-1,RES_UNSPECIFIED_VALUE);
+		}
+	}
 	
 	@Check
 	def checkRenewableConsumableHierarchy(ResourceDecl decl) {

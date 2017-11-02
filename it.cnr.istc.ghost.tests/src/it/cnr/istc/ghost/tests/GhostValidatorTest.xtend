@@ -1199,5 +1199,125 @@ init (fact this);
 		model.assertError(GhostPackage.Literals.FACT_GOAL, GhostValidator.THIS_INVALID_USAGE);
 	}
 	
+	@Test
+	def void testUnspecifiedResType1() {
+		val model = '''
+type A = resource;
+		'''.parse;
+		model.assertError(GhostPackage.Literals.RESOURCE_DECL,GhostValidator.AMBIGUOUS_RESOURCE_DECL);
+	}
+	
+	@Test
+	def void testUnspecifiedResType2() {
+		val model = '''
+comp A : resource;
+		'''.parse;
+		model.assertError(GhostPackage.Literals.ANON_RES_DECL,GhostValidator.RES_UNSPECIFIED_VALUE);
+	}
+	
+	@Test
+	def void testUnspecifiedResTypeOK1() {
+		val model = '''
+type A = resource(10);
+type B = resource A;
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testUnspecifiedResTypeOK2() {
+		val model = '''
+type A = resource(_);
+type B = resource A;
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testUnspecifiedResValue1() {
+		val model = '''
+type A = resource(_);
+comp B : A;
+		'''.parse;
+		model.assertError(GhostPackage.Literals.NAMED_COMP_DECL,GhostValidator.RES_UNSPECIFIED_VALUE);
+	}
+	
+	@Test
+	def void testUnspecifiedResValue2() {
+		val model = '''
+type A = resource(_,_);
+comp B : A(10);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.NAMED_COMP_DECL,GhostValidator.RES_UNSPECIFIED_VALUE);
+	}
+	
+	@Test
+	def void testUnspecifiedResValue3() {
+		val model = '''
+type A = resource(_,_);
+comp B : A(10,_);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.NAMED_COMP_DECL,GhostValidator.RES_UNSPECIFIED_VALUE);
+	}
+	
+	@Test
+	def void testUnspecifiedResValue4() {
+		val model = '''
+type A = resource(_,_);
+comp B : A(_,10);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.NAMED_COMP_DECL,GhostValidator.RES_UNSPECIFIED_VALUE);
+	}
+	
+	@Test
+	def void testUnspecifiedResValue5() {
+		val model = '''
+type A = resource(_,_);
+type B = resource(_,10);
+comp C : B;
+		'''.parse;
+		model.assertError(GhostPackage.Literals.NAMED_COMP_DECL,GhostValidator.RES_UNSPECIFIED_VALUE);
+	}
+	
+	@Test
+	def void testUnspecifiedResValueOk1() {
+		val model = '''
+type A = resource(_,_);
+type B = resource(_,10);
+comp C : B(10,_);
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testUnspecifiedResValue6() {
+		val model = '''
+type A = resource(_,_);
+type B = resource A;
+comp C : B;
+		'''.parse;
+		model.assertError(GhostPackage.Literals.NAMED_COMP_DECL,GhostValidator.RES_UNSPECIFIED_VALUE);
+	}
+	
+	@Test
+	def void testUnspecifiedResValue7() {
+		val model = '''
+type A = resource(_);
+type B = resource A;
+comp C : B;
+		'''.parse;
+		model.assertError(GhostPackage.Literals.NAMED_COMP_DECL,GhostValidator.RES_UNSPECIFIED_VALUE);
+	}
+	
+	@Test
+	def void testUnspecifiedResValueOk2() {
+		val model = '''
+type A = resource(_);
+type B = resource A;
+comp C : B(10);
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
 	
 }
