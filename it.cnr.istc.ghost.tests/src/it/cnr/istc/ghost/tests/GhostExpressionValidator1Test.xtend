@@ -28,7 +28,7 @@ import org.eclipse.xtext.testing.validation.ValidationTestHelper
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
-class GhostExpressionValidatorTest1{
+class GhostExpressionValidator1Test{
 
 	@Inject extension ParseHelper<Ghost>
 	@Inject extension ValidationTestHelper

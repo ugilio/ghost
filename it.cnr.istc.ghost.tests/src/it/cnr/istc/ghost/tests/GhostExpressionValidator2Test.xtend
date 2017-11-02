@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
-class GhostExpressionValidatorTest2{
+class GhostExpressionValidator2Test{
 
 	@Inject extension ParseHelper<Ghost>
 	@Inject extension ValidationTestHelper
