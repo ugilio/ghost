@@ -1175,6 +1175,25 @@ comp COMP : t;
 		);
 	}
 	
+	@Test
+	def void testThisRes() {
+		'''
+comp C : sv(A);
+comp R : resource(10
+synchronize:
+	require(x) -> this equals C.A;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE REQUIREMENT(?x)
+		{
+			EQUALS instval2;
+			?amount1 = ?x;
+			instval2 C.timeline.A();
+		}
+'''			
+		);
+	}
 	
 	@Test
 	def void testResActionMissingArgs() {
