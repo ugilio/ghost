@@ -15,6 +15,7 @@ import java.util.HashMap
 import java.util.function.Function
 import it.cnr.istc.timeline.lang.Interval
 import it.cnr.istc.ghost.conversion.NumberValueConverter
+import it.cnr.istc.ghost.ghost.ResourceDecl
 
 public class Utils {
 	public static def <T> List<T> toRegularList(Iterable<T> it) {
@@ -41,7 +42,21 @@ public class Utils {
 	protected static def boolean isUnnamed(Object name) {
 		return (name === null || "_" == name);
 	}
-
+	
+	protected static def boolean isConsumable(ResourceDecl res) {
+		if (res?.body?.val2!==null)
+			return true;
+		if (res?.parent===null)
+			return false;
+		return isConsumable(res.parent);
+	}
+	
+	protected static def boolean isConsumable(CompResBody body) {
+		if (body?.val2!==null)
+			return true;
+		return false;
+	}
+	
 	protected static def boolean needsSyntheticType(CompDecl decl) {
 		return switch (decl) {
 			AnonSVDecl:
@@ -69,20 +84,20 @@ public class Utils {
 			AnonSVDecl:
 				return new SVTypeProxy(decl, register)
 			AnonResDecl:
-				return if (decl?.body?.val2 === null)
-					new RenewableResourceTypeProxy(decl,register)
-				else
+				return if (isConsumable(decl.body))
 					new ConsumableResourceTypeProxy(decl,register)
+				else
+					new RenewableResourceTypeProxy(decl,register)
 			NamedCompDecl: {
 				val body = decl?.body;
 				switch (body) {
 					CompSVBody:
 						return new SVTypeProxy(decl,register)
 					CompResBody:
-						return if (body?.val2 === null)
-							new RenewableResourceTypeProxy(decl,register)
-						else
+						return if (isConsumable(body))
 							new ConsumableResourceTypeProxy(decl,register)
+						else
+							new RenewableResourceTypeProxy(decl,register)
 				}
 			}
 		}

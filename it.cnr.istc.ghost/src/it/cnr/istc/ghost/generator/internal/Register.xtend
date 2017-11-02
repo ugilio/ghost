@@ -87,10 +87,10 @@ class Register {
 	}
 	
 	protected def dispatch ResourceType createProxy(ResourceDecl real) {
-		if (real?.body?.val2===null)
-			return new RenewableResourceTypeProxy(real,this)
+		if (Utils.isConsumable(real))
+			return new ConsumableResourceTypeProxy(real,this)
 		else
-			return new ConsumableResourceTypeProxy(real,this);
+			return new RenewableResourceTypeProxy(real,this);
 	}
 	
 	protected def dispatch IntType createProxy(IntDecl real) {

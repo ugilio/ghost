@@ -22,6 +22,18 @@ abstract class ResourceTypeProxy extends AbstractCompTypeProxy implements Resour
 	override isRenewable() {
 		return false;
 	}
+	
+	protected def long getValue1() {
+		if (real?.val1 !== null)
+			return getAValue(real?.val1);
+		return (parent as ResourceTypeProxy).getValue1();
+	}
+
+	protected def long getValue2() {
+		if (real?.val2 !== null)
+			return getAValue(real?.val2);
+		return (parent as ResourceTypeProxy).getValue2();
+	}
 
 	protected def getAValue(Object theValue) {
 		if (theValue === null)

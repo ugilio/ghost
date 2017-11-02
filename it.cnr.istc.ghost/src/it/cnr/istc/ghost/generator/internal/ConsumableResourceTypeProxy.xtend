@@ -13,11 +13,11 @@ class ConsumableResourceTypeProxy extends ResourceTypeProxy implements Consumabl
 	}
 
 	override getMin() {
-		return getAValue(real?.val1);
+		return getValue1();
 	}
 
 	override getMax() {
-		return getAValue(real?.val2);
+		return getValue2();
 	}
 
 	override isConsumable() {

@@ -13,7 +13,7 @@ class RenewableResourceTypeProxy extends ResourceTypeProxy implements RenewableR
 	}
 
 	override getValue() {
-		return getAValue(real?.val1);
+		return getValue1();
 	}
 
 	override isRenewable() {

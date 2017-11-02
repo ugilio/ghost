@@ -16,11 +16,11 @@ class StandardResCompTypeAdapter extends StandardCompTypeAdapter implements ResC
 	}
 
 	override getDeclaredSynchronizations() {
-		return real?.body?.synchronizations.map[values].flatten.toRegularList;
+		return real?.body?.synchronizations?.map[values]?.flatten.toRegularList;
 	}
 
 	override getDeclaredVariables() {
-		return real?.body?.variables.map[values].flatten.toRegularList;
+		return real?.body?.variables?.map[values]?.flatten.toRegularList;
 	}
 
 	override getVal1() {

@@ -657,6 +657,36 @@ comp C : T2;
 	}
 	
 	@Test
+	def void testResInheritance1() {
+		'''
+type T1 = resource (10);
+type T2 = resource T1;
+
+comp C : T2;
+	'''.assertCompiledContains(
+'''
+	COMP_TYPE RenewableResource T1 (10)
+	COMP_TYPE RenewableResource T2 (10)
+'''		
+		);
+	}
+	
+	@Test
+	def void testResInheritance2() {
+		'''
+type T1 = resource (10,20);
+type T2 = resource T1;
+
+comp C : T2;
+	'''.assertCompiledContains(
+'''
+	COMP_TYPE ConsumableResource T1 (10, 20)
+	COMP_TYPE ConsumableResource T2 (10, 20)
+'''		
+		);
+	}
+	
+	@Test
 	def void testTCOverride1() {
 		'''
 type T1 = sv (A -> B, B);
@@ -896,6 +926,62 @@ comp C : T2;
 		);
 	}
 	
+	@Test
+	def void testResSyncInherited1() {
+		'''
+type T1 = resource (10
+synchronize:
+	require(x) -> x < 10;
+);
+
+type T2 = resource T1 (
+synchronize:
+	require(x) -> (inherited; x > 5) 
+);
+
+comp C : T2;
+		'''.assertCompiledContains(
+'''
+	SYNCHRONIZE C.timeline
+	{
+		VALUE REQUIREMENT(?x)
+		{
+			?x > 5;
+			?x < 10;
+		}
+	}
+'''
+		);
+	}	
+	
+	@Test
+	def void testResSyncInherited2() {
+		'''
+type T1 = resource (10,20
+synchronize:
+	produce(x) -> x < 10;
+);
+
+type T2 = resource T1 (
+synchronize:
+	produce(x) -> (inherited; x > 5) 
+);
+
+comp C : T2;
+		'''.assertCompiledContains(
+'''
+	SYNCHRONIZE C.timeline
+	{
+		VALUE PRODUCTION(?x)
+		{
+			?x > 5;
+			?x < 10;
+		}
+	}
+'''
+		);
+	}	
+
 	@Test
 	def void testThis01() {
 		'''
