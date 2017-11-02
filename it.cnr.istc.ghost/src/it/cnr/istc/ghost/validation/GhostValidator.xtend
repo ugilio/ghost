@@ -309,8 +309,8 @@ class GhostValidator extends AbstractGhostValidator {
 			return;
 		val type = 
 			switch (res) {
-				NamedCompDecl: (res as NamedCompDecl).type
-				ObjVarDecl: (res as ObjVarDecl).type
+				NamedCompDecl: res.type
+				ObjVarDecl: res.type
 				default : null
 			}
 		if (type instanceof ResourceDecl)

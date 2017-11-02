@@ -13,7 +13,6 @@ import org.junit.runner.RunWith
 
 import static org.junit.Assert.*
 import static org.hamcrest.CoreMatchers.*
-import it.cnr.istc.ghost.preprocessor.DefaultsProvider
 import org.eclipse.xtext.testing.validation.ValidationTestHelper
 import it.cnr.istc.ghost.ghost.GhostPackage
 import it.cnr.istc.ghost.linking.GhostLinker

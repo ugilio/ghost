@@ -38,7 +38,7 @@ class ConstCalculator {
 			return expr.computed;
 		val result = 
 		if (expr instanceof ConstSumExp)
-			calcSumExp(expr as ConstSumExp)
+			calcSumExp(expr)
 		else if (expr instanceof ConstPlaceHolder)
 			CONST_PLACEHOLDER
 		else 		
@@ -52,7 +52,7 @@ class ConstCalculator {
 		if (expr.ops.size==0)
 			return left;
 		checkOperatorCompat(left,expr.ops.get(0));
-		var value = left as Object;
+		var value = left;
 		for (var i = 0; i < expr.ops.size; i++) {
 			val op = expr.ops.get(i);
 			val right = calcTerm(expr.right.get(i));

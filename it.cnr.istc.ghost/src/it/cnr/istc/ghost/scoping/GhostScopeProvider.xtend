@@ -83,7 +83,7 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 		val comp = EcoreUtil2.getContainerOfType(v,CompDecl);
 		if (comp !== null) {
 			val pScope = if (comp instanceof NamedCompDecl)
-					getScopeForBindName((comp as NamedCompDecl).type)
+					getScopeForBindName(comp.type)
 				else
 					IScope.NULLSCOPE;
 			return Scopes.scopeFor(EcoreUtil2.eAllOfType(comp,ObjVarDecl),pScope);
@@ -92,8 +92,8 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 		if (type !== null) {
 			val pScope = switch(type)
 				{
-					SvDecl: getScopeForBindName((type as SvDecl).parent)
-					ResourceDecl: getScopeForBindName((type as ResourceDecl).parent)
+					SvDecl: getScopeForBindName(type.parent)
+					ResourceDecl: getScopeForBindName(type.parent)
 					default: IScope.NULLSCOPE
 				}
 			return Scopes.scopeFor(EcoreUtil2.eAllOfType(type,ObjVarDecl),pScope);
