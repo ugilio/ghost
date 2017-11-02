@@ -601,6 +601,28 @@ comp C2 : sv(B(n));
 	}	
 	
 	@Test
+	def void testResSync1() {
+		'''
+type R = resource(10
+synchronize:
+	require(x) -> x < 10;
+);
+
+comp C : R;
+		'''.assertCompiledContains(
+'''
+	SYNCHRONIZE C.timeline
+	{
+		VALUE REQUIREMENT(?x)
+		{
+			?x < 10;
+		}
+	}
+'''			
+		);
+	}
+
+	@Test
 	def void testInheritance1() {
 		'''
 type T1 = sv(A,B);
