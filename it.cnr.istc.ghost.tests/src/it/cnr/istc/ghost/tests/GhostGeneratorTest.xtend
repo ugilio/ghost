@@ -854,6 +854,38 @@ comp C : T2;
 	}
 	
 	@Test
+	def void testResInheritance3() {
+		'''
+type A = resource(_,_);
+type B = resource(_,20);
+comp C : B(10,_);
+	'''.assertCompiledContains(
+'''
+	COMP_TYPE ConsumableResource A (0, 0)
+	COMP_TYPE ConsumableResource B (0, 20)
+	COMP_TYPE ConsumableResource CType1 (10, 20)
+	COMPONENT C {FLEXIBLE timeline()} : CType1;
+'''		
+		);
+	}
+	
+	@Test
+	def void testResInheritance4() {
+		'''
+type A = resource(_);
+type B = resource A;
+comp C : B(10);
+	'''.assertCompiledContains(
+'''
+	COMP_TYPE RenewableResource A (0)
+	COMP_TYPE RenewableResource B (0)
+	COMP_TYPE RenewableResource CType1 (10)
+	COMPONENT C {FLEXIBLE timeline()} : CType1;
+'''		
+		);
+	}
+	
+	@Test
 	def void testTCOverride1() {
 		'''
 type T1 = sv (A -> B, B);
