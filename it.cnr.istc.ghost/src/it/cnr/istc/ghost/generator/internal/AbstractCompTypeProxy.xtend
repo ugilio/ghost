@@ -33,7 +33,11 @@ abstract class AbstractCompTypeProxy extends ProxyObject implements CompType {
 			ResourceDecl : new StandardResCompTypeAdapter(o)
 			AnonSVDecl : new SyntheticSVCompTypeAdapter(o)
 			AnonResDecl : new SyntheticResCompTypeAdapter(o)
-			NamedCompDecl : getCompTypeAdapter(o.type)
+			NamedCompDecl : switch (o.type) {
+								SvDecl : new SyntheticSVCompTypeAdapter(o)
+								ResourceDecl : new SyntheticResCompTypeAdapter(o)
+								default : throw new IllegalArgumentException("Don't know how to create adapter for "+o.type)
+							}
 			default : throw new IllegalArgumentException("Don't know how to create adapter for "+o)
 		}
 	}

@@ -180,6 +180,24 @@ DOMAIN domain
 	}
 	
 	@Test
+	def void testUnspecifiedRenewableResType() {
+		'''
+type A = resource(_);
+		'''.assertCompiledContains(
+'''COMP_TYPE RenewableResource A (0)'''			
+		);
+	}
+	
+	@Test
+	def void testUnspecifiedConsumableResType() {
+		'''
+type A = resource(_,_);
+		'''.assertCompiledContains(
+'''COMP_TYPE ConsumableResource A (0, 0)'''			
+		);
+	}
+	
+	@Test
 	def void testIntType() {
 		'''
 type t = int 10;
@@ -408,7 +426,156 @@ type T = sv(A(n,n,n) -> B, B);
 '''			
 		);
 	}
-		
+	
+	@Test
+	def void testCompSV1() {
+		'''
+comp C : sv(A);
+		'''.assertCompilesTo(
+'''
+DOMAIN domain
+{
+	TEMPORAL_MODULE module = [0, 1000], 1000;
+	
+	COMP_TYPE SingletonStateVariable CType (A())
+	{
+	}
+	
+	COMPONENT C {FLEXIBLE timeline()} : CType;
+}
+'''			
+		);
+	}
+	
+	@Test
+	def void testCompSV2() {
+		'''
+comp C : sv(A, B);
+		'''.assertCompilesTo(
+'''
+DOMAIN domain
+{
+	TEMPORAL_MODULE module = [0, 1000], 1000;
+	
+	COMP_TYPE SingletonStateVariable CType (A(), B())
+	{
+	}
+	
+	COMPONENT C {FLEXIBLE timeline()} : CType;
+}
+'''			
+		);
+	}
+	
+	@Test
+	def void testCompSV3() {
+		'''
+type T = sv(A, B);
+comp C1 : T(transition: C);
+		'''.assertCompiledContains(
+'''
+	COMP_TYPE SingletonStateVariable T (A(), B())
+	{
+	}
+	
+	COMP_TYPE SingletonStateVariable C1Type (A(), B(), C())
+	{
+	}
+	
+	COMPONENT C1 {FLEXIBLE timeline()} : C1Type;
+'''			
+		);
+	}
+	
+	@Test
+	def void testCompSVTC1() {
+		'''
+comp C : sv(A -> B, B);
+		'''.assertCompilesTo(
+'''
+DOMAIN domain
+{
+	TEMPORAL_MODULE module = [0, 1000], 1000;
+	
+	COMP_TYPE SingletonStateVariable CType (A(), B())
+	{
+		VALUE A() [0, +INF]
+		MEETS
+		{
+			B();
+		}
+	}
+	
+	COMPONENT C {FLEXIBLE timeline()} : CType;
+}
+'''			
+		);
+	}
+	
+	@Test
+	def void testCompRes1() {
+		'''
+comp C : resource(10);
+		'''.assertCompilesTo(
+'''
+DOMAIN domain
+{
+	TEMPORAL_MODULE module = [0, 1000], 1000;
+	
+	COMP_TYPE RenewableResource CType (10)
+	
+	COMPONENT C {FLEXIBLE timeline()} : CType;
+}
+'''
+		);
+	}
+
+	@Test
+	def void testCompRes2() {
+		'''
+comp C : resource(10, 20);
+		'''.assertCompilesTo(
+'''
+DOMAIN domain
+{
+	TEMPORAL_MODULE module = [0, 1000], 1000;
+	
+	COMP_TYPE ConsumableResource CType (10, 20)
+	
+	COMPONENT C {FLEXIBLE timeline()} : CType;
+}
+'''
+		);
+	}
+	
+	@Test
+	def void testCompRes3() {
+		'''
+type T = resource(_);
+comp C : T(10);
+		'''.assertCompiledContains(
+'''
+	COMP_TYPE RenewableResource T (0)
+	COMP_TYPE RenewableResource CType1 (10)
+	COMPONENT C {FLEXIBLE timeline()} : CType1;
+'''
+		);
+	}
+
+	@Test
+	def void testCompRes4() {
+		'''
+type T = resource(_,_);
+comp C : T(10,20);
+		'''.assertCompiledContains(
+'''
+	COMP_TYPE ConsumableResource T (0, 0)
+	COMP_TYPE ConsumableResource CType1 (10, 20)
+	COMPONENT C {FLEXIBLE timeline()} : CType1;
+'''
+		);
+	}
+
 	@Test
 	def void testSync1() {
 		'''

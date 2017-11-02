@@ -70,6 +70,8 @@ public class Utils {
 				switch (body) {
 					CompSVBody:
 						return (body.transitions !== null && body.transitions.size() > 0)
+					CompResBody:
+						return (body.val1 !== null || body.val2 !== null)
 					default:
 						false
 				}
