@@ -100,7 +100,7 @@ SumExp returns Expression: Term ({Expression.left=current} ops+=('+' | '-') righ
 CompExp returns Expression: SumExp ({Expression.left=current} ops+=('<' | '<=' | '>' | '>=') right+=SumExp)?;
 EqExp returns Expression: CompExp ({Expression.left=current} ops+=('=' | '!=') right+=CompExp)?;
 
-TemporalExp returns Expression: (EqExp ({Expression.left=current} op=TemporalRelation right+=SumExp)?) | (op=TemporalRelation right+=SumExp);
+TemporalExp returns Expression: (EqExp ({Expression.left=current} op=TemporalRelation right+=SumExp)?) | (op=TemporalRelationExt right+=SumExp);
 
 TemporalRelation: 
 //	'=' | '!=' | '<' | '>'
@@ -108,6 +108,7 @@ TemporalRelation:
 	(name=('before' | 'after') (=>'(' l=IntvOrDflt? ')')? ) |
 	( name=('contains'|'during') (=>'(' (l=IntvOrDflt (SEP r=IntvOrDflt)?)? ')')? ) 
 ;
+TemporalRelationExt returns TemporalRelation: name=('=' | '!=' | '<' | '>') | TemporalRelation;
 
 GenericExpression: EqExp;
 

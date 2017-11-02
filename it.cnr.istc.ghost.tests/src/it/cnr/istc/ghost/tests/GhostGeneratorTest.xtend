@@ -1418,6 +1418,25 @@ synchronize:
 	}	
 	
 	@Test
+	def void testTempExp2() {
+		'''
+comp C: sv(
+	A
+synchronize:
+	A -> = A;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			EQUALS instval1;
+			instval1 A();
+		}
+'''			
+		);
+	}	
+	
+	@Test
 	def void testExp1Optimized() {
 		if (BlockImpl.OPTIMIZE)
 		'''
