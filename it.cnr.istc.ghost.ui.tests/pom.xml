@@ -38,6 +38,7 @@
 				<configuration>
 					<useUIHarness>false</useUIHarness>
 					<useUIThread>false</useUIThread>
+					<failIfNoTests>false</failIfNoTests>
 				</configuration>
 			</plugin>			
 		</plugins>
