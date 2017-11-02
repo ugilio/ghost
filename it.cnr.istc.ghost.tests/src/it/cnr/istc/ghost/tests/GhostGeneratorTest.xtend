@@ -1179,6 +1179,31 @@ comp C : T2;
 	}
 '''
 		);
+	}
+	
+	@Test
+	def void testCompInherited() {
+		'''
+type t = resource(10
+synchronize:
+	require(x) -> x < 10
+);
+comp c : t(
+synchronize:
+	require(x) -> (inherited; x > 5)
+)
+		'''.assertCompiledContains(
+'''
+	SYNCHRONIZE c.timeline
+	{
+		VALUE REQUIREMENT(?x)
+		{
+			?x > 5;
+			?x < 10;
+		}
+	}
+'''
+		);
 	}	
 
 	@Test

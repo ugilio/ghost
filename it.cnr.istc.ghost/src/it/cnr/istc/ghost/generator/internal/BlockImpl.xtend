@@ -400,6 +400,7 @@ class BlockImpl extends ProxyObject implements StatementBlock, InitStatementBloc
 			}
 		} else if (iv.value instanceof ResourceAction) {
 			if (iv.arguments === null || iv.arguments.isEmpty()) {
+				//cannot happen according to grammar?
 				(iv as InstantiatedValueImpl).arguments = new ArrayList();
 				iv.arguments.add(null);
 			}
