@@ -19,6 +19,7 @@ import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.scoping.IScope
 import org.eclipse.xtext.scoping.Scopes
 import it.cnr.istc.ghost.ghost.BindPar
+import it.cnr.istc.ghost.ghost.ResConstr
 
 /**
  * This class contains custom scoping description.
@@ -110,6 +111,11 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 		
 		if (context instanceof QualifInstVal &&
 			reference == GhostPackage.Literals.QUALIF_INST_VAL__COMP) {
+				return new CompositeScope(
+					getScopeForBindName(context),super.getScope(context,reference));
+		}
+		if (context instanceof ResConstr &&
+			reference == GhostPackage.Literals.RES_CONSTR__RES) {
 				return new CompositeScope(
 					getScopeForBindName(context),super.getScope(context,reference));
 		}

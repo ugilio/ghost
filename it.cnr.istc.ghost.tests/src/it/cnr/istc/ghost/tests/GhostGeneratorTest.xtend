@@ -1734,6 +1734,53 @@ comp C2: T2[C1,C1];
 '''
 		);
 	}
+	
+	@Test
+	def void testObjVarDeclInherited5() {
+		'''
+type T1 = resource (10
+variable:
+	other : T2;
+);
+
+type T2 = resource T1(
+synchronize:
+	require(x) -> (require other(5); require var2(7));
+variable:
+	var2 : T2;
+);
+
+comp C1: T2[C2,C2];
+comp C2: T2[C1,C1];
+		'''.assertCompiledContains(
+'''
+	SYNCHRONIZE C1.timeline
+	{
+		VALUE REQUIREMENT(?x)
+		{
+			EQUALS instval1;
+			EQUALS instval2;
+			?amount1 = 5;
+			instval1 C2.timeline.REQUIREMENT(?amount1);
+			?amount2 = 7;
+			instval2 C2.timeline.REQUIREMENT(?amount2);
+		}
+	}
+	
+	SYNCHRONIZE C2.timeline
+	{
+		VALUE REQUIREMENT(?x)
+		{
+			EQUALS instval1;
+			EQUALS instval2;
+			?amount1 = 5;
+			instval1 C1.timeline.REQUIREMENT(?amount1);
+			?amount2 = 7;
+			instval2 C1.timeline.REQUIREMENT(?amount2);
+		}
+'''			
+		);
+	}
 
 	@Test
 	def void testInit1() {
