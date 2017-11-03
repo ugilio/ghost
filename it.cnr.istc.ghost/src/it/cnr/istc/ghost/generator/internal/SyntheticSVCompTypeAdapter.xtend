@@ -21,7 +21,7 @@ class SyntheticSVCompTypeAdapter extends SyntheticCompTypeAdapter implements SVC
 	}
 
 	override getDeclaredSynchronizations() {
-		return body?.synchronizations.map[values].flatten.toRegularList;
+		return body?.synchronizations?.map[values]?.flatten.toRegularList;
 	}
 
 	override getDeclaredVariables() {
@@ -29,10 +29,10 @@ class SyntheticSVCompTypeAdapter extends SyntheticCompTypeAdapter implements SVC
 	}
 
 	override getDeclaredValues() {
-		return body?.transitions.map[values].flatten.map[head].toRegularList;
+		return body?.transitions?.map[values]?.flatten?.map[head].toRegularList;
 	}
 
 	override getDeclaredTransitionConstraints() {
-		return body?.transitions.map[values].flatten.toRegularList;
+		return body?.transitions?.map[values]?.flatten.toRegularList;
 	}
 }

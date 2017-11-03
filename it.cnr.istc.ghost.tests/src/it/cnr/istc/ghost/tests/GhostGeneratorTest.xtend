@@ -847,7 +847,7 @@ external comp C2 : T;
 		'''.assertCompiledContains(
 '''
 COMPONENT C1 {FLEXIBLE timeline()} : T;
-COMPONENT C2 {FLEXIBLE timeline(external)} : T;
+COMPONENT C2 {FLEXIBLE timeline(external)} : C2Type1;
 '''			
 		);
 	}

@@ -16,6 +16,8 @@ import java.util.function.Function
 import it.cnr.istc.timeline.lang.Interval
 import it.cnr.istc.ghost.conversion.NumberValueConverter
 import it.cnr.istc.ghost.ghost.ResourceDecl
+import it.cnr.istc.ghost.ghost.Externality
+import it.cnr.istc.ghost.ghost.SvDecl
 
 public class Utils {
 	public static def <T> List<T> toRegularList(Iterable<T> it) {
@@ -64,6 +66,8 @@ public class Utils {
 			AnonResDecl:
 				true
 			NamedCompDecl: {
+				if (decl.externality != Externality.UNSPECIFIED)
+					return true;
 				val body = decl?.body;
 				if (body?.synchronizations !== null && body.synchronizations.size() > 0)
 					return true;
@@ -91,12 +95,12 @@ public class Utils {
 				else
 					new RenewableResourceTypeProxy(decl,register)
 			NamedCompDecl: {
-				val body = decl?.body;
-				switch (body) {
-					CompSVBody:
+				val type = decl?.type;
+				switch (type) {
+					SvDecl:
 						return new SVTypeProxy(decl,register)
-					CompResBody:
-						return if (isConsumable(body))
+					ResourceDecl:
+						return if (isConsumable(type))
 							new ConsumableResourceTypeProxy(decl,register)
 						else
 							new RenewableResourceTypeProxy(decl,register)

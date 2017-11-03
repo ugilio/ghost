@@ -46,19 +46,21 @@ abstract class AbstractCompTypeProxy extends ProxyObject implements CompType {
 		this.real = getCompTypeAdapter(real);
 	}
 
-	override isExternal() {
-		if (externality === null) {
-			val p = getParent();
+	protected def Externality getExternality() {
+		var tmp = real?.externality;
+		if (tmp == Externality.UNSPECIFIED) {
+			val p = getParent() as AbstractCompTypeProxy;
 			if (p !== null)
-				externality = p.isExternal()
-			else {
-				val tmp = if (real?.externality == Externality.UNSPECIFIED)
-						getDefaultExternality(real.real)
-					else
-						real?.externality;
-				externality = tmp == Externality.EXTERNAL;
-			}
+				tmp = p.getExternality();
 		}
+		if (tmp == Externality.UNSPECIFIED)
+			tmp = getDefaultExternality(real.real);
+		return tmp;
+	}
+
+	override isExternal() {
+		if (externality === null)
+			externality = getExternality() == Externality.EXTERNAL;
 		return (externality == true);
 	}
 
