@@ -23,6 +23,7 @@ import org.junit.runner.RunWith
 
 import static org.hamcrest.Matchers.*
 import static org.junit.Assert.*
+import it.cnr.istc.ghost.ghost.QualifInstVal
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -131,6 +132,49 @@ comp c : T(C,D,E);
 		assertThat(E.eIsProxy(),is(notNullValue));
 	}	
 		
+	@Test
+	def void testNamedCompDecl7() {
+		val result = parseHelper.parse('''
+type T = sv(A,B);
+comp c : T(C
+synchronize:
+	C -> A
+);
+		''');
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		assertThat(result.eResource.errors,is(equalTo(emptyList)));
+		val comp = EcoreUtil2.eAllOfType(result,NamedCompDecl).head;
+		assertThat(comp.body,is(instanceOf(CompSVBody)));
+		val sync = EcoreUtil2.eAllOfType(result,Synchronization).head;
+		val qiv = EcoreUtil2.eAllOfType(sync,QualifInstVal).head;
+		assertThat(qiv,is(notNullValue));
+		val A = qiv.value;
+		assertThat(A,is(notNullValue));
+		assertThat(A.eIsProxy,is(false));
+	}	
+	
+	@Test
+	def void testNamedCompDecl8() {
+		val result = parseHelper.parse('''
+type t = sv(A,B
+synchronize:
+        A -> B
+);
+comp c : t(
+synchronize:
+        A -> inherited
+)
+		''');
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		assertThat(result.eResource.errors,is(equalTo(emptyList)));
+		val comp = EcoreUtil2.eAllOfType(result,NamedCompDecl).head;
+		assertThat(comp.body,is(instanceOf(CompSVBody)));
+		val sync = EcoreUtil2.eAllOfType(result,Synchronization).head;
+		assertThat(sync,is(notNullValue));
+	}	
+	
 	@Test
 	def void testNamedCompDeclRes1() {
 		val result = parseHelper.parse('''
