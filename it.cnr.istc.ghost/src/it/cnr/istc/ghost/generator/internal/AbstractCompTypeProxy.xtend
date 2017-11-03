@@ -8,7 +8,6 @@ import it.cnr.istc.ghost.ghost.NamedCompDecl
 import it.cnr.istc.ghost.ghost.ResourceDecl
 import it.cnr.istc.ghost.ghost.SvDecl
 import it.cnr.istc.timeline.lang.CompType
-import it.cnr.istc.timeline.lang.Component
 import it.cnr.istc.timeline.lang.ComponentVariable
 import it.cnr.istc.timeline.lang.ResSyncTrigger
 import it.cnr.istc.timeline.lang.SVSyncTrigger
@@ -80,10 +79,6 @@ abstract class AbstractCompTypeProxy extends ProxyObject implements CompType {
 
 	def dispatch boolean sameName(Synchronization s1, Synchronization s2) {
 		return sameName(s1?.trigger, s2?.trigger);
-	}
-
-	def dispatch sameName(Component c1, Component c2) {
-		return c1.name == c2.name;
 	}
 
 	def dispatch sameName(Value v1, Value v2) {
