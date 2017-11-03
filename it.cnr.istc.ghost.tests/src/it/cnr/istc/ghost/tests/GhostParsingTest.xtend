@@ -19,6 +19,8 @@ import it.cnr.istc.ghost.ghost.TransConstraint
 import it.cnr.istc.ghost.ghost.Controllability
 import it.cnr.istc.ghost.ghost.Externality
 import it.cnr.istc.ghost.ghost.TypeDecl
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.xtext.resource.XtextSyntaxDiagnostic
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -28,6 +30,14 @@ class GhostParsingTest{
 	ParseHelper<Ghost> parseHelper
 
 
+	private def void assertNoParsingErrors(EObject obj) {
+		val err = obj?.eResource?.errors?.filter(XtextSyntaxDiagnostic);
+		if (err === null || err.size() == 0)
+			return;
+		val errStr = err.join(",");
+		assertTrue(String.format("Expected no parsing errors but got '%s'",errStr),false);
+	}
+
 	@Test
 	def void test00() {
 		val result = parseHelper.parse('''
@@ -36,7 +46,7 @@ domain TrafficLightDomain;
 type TrafficLight = sv(Red, Green, Yellow);
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -52,7 +62,7 @@ type TrafficLight = sv
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -66,7 +76,7 @@ type TrafficLight = sv
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -80,7 +90,7 @@ type TrafficLight = sv
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -94,7 +104,7 @@ type TrafficLight = sv
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -104,7 +114,7 @@ comp TL1 : TrafficLight;
 comp TL2 : TrafficLight;
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -118,7 +128,7 @@ type TrafficLight = sv
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -127,7 +137,7 @@ type TrafficLight = sv
 type angle = int [-360, 360];
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -136,7 +146,7 @@ type angle = int [-360, 360];
 type speed = enum(Slow, Moderate, Fast);
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -146,7 +156,7 @@ type bag = resource(10); //a renewable resource type
 type tank = resource(0,100); //a consumable resource type
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -159,7 +169,7 @@ type aType = sv(
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -172,7 +182,7 @@ type aType = sv(
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -188,7 +198,7 @@ type ComplexType = sv
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -200,7 +210,7 @@ type SomeType = sv (
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -213,7 +223,7 @@ synchronize:
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -227,7 +237,7 @@ synchronize:
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -247,7 +257,7 @@ synchronize:
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -274,7 +284,7 @@ synchronize:
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -287,7 +297,7 @@ synchronize:
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -299,7 +309,7 @@ synchronize:
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -321,7 +331,7 @@ comp TL1 : TrafficLight[TL2];
 comp TL2 : TrafficLight[TL1];
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -331,7 +341,7 @@ comp TL1 : TrafficLight[other = TL2];
 comp TL2 : TrafficLight[other = TL1];
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -344,7 +354,7 @@ type child = sv parent (
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -357,7 +367,7 @@ type child = sv (
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -370,7 +380,7 @@ type child = sv parent (
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -380,7 +390,7 @@ external type parent = sv (A -> B, B -> A);
 planned type child = sv parent;
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -395,7 +405,7 @@ type child = sv parent(
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -409,7 +419,7 @@ type bigBag = resource bag(20);
 type smallBag = resource bag(6);
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -423,7 +433,7 @@ type bigBag = resource bag(20);
 type smallBag = resource bag(6);
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -436,7 +446,7 @@ synchronize:
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -446,7 +456,7 @@ type tank = resource (0,10);
 type bigTank = resource tank(_,15);
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -463,7 +473,7 @@ synchronize:
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -475,7 +485,7 @@ synchronize:
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -487,7 +497,7 @@ comp firstChild : parent(C, A -> (B,C) );
 external comp secondChild : parent;
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -510,7 +520,7 @@ comp SwissTL : TrafficLight[other = TL1](
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -524,7 +534,7 @@ comp bigBag : bag(20);
 comp smallBag : bag(6);
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -546,7 +556,7 @@ synchronize:
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -555,7 +565,7 @@ synchronize:
 init fact ActivityLed.Off at 0;
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -569,7 +579,7 @@ init (
 )
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -579,7 +589,7 @@ const MAX = 100;
 type halfTank = resource(0,MAX/2);
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -588,7 +598,7 @@ type halfTank = resource(0,MAX/2);
 type halfTank = resource(0,50);
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -602,7 +612,7 @@ synchronize:
 )
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -621,7 +631,7 @@ synchronize:
 )
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -631,7 +641,7 @@ synchronize:
 comp PointingMode : PointingModeType;
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -643,7 +653,7 @@ type aType = sv(
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -652,7 +662,7 @@ type aType = sv(
 @(!) before PointingMode.Comm;
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -671,7 +681,7 @@ $unit hours 1 hrs
 $unit d 1 days
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -681,7 +691,7 @@ $unit sec 1
 $unit ms
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -751,7 +761,7 @@ synchronize:
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -787,7 +797,7 @@ external comp GroundStationVisibility : sv (
 comp EnergyTrace : EnergyConsumptionTraceType;
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 
 	@Test
@@ -822,7 +832,7 @@ init (
 )
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}
 	
 	@Test
@@ -833,7 +843,7 @@ type c = sv (
 )
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 		val tc = EcoreUtil2.eAllOfType(result,TransConstraint).head;
 		assertThat(tc.controllability,is(Controllability.CONTROLLABLE));
 	}
@@ -846,7 +856,7 @@ type c = sv (
 )
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 		val tc = EcoreUtil2.eAllOfType(result,TransConstraint).head;
 		assertThat(tc.controllability,is(Controllability.UNCONTROLLABLE));
 	}
@@ -881,7 +891,7 @@ type c = sv (
 )
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 		val tc = EcoreUtil2.eAllOfType(result,TransConstraint).head;
 		assertThat(tc.controllability,is(Controllability.UNSPECIFIED));
 	}
@@ -892,7 +902,7 @@ type c = sv (
 planned type c = sv;
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 		val c = EcoreUtil2.eAllOfType(result,TypeDecl).head;
 		assertThat(c.externality,is(Externality.PLANNED));
 	}
@@ -903,7 +913,7 @@ planned type c = sv;
 external type c = sv;
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 		val c = EcoreUtil2.eAllOfType(result,TypeDecl).head;
 		assertThat(c.externality,is(Externality.EXTERNAL));
 	}
@@ -914,7 +924,7 @@ external type c = sv;
 type c = sv;
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 		val c = EcoreUtil2.eAllOfType(result,TypeDecl).head;
 		assertThat(c.externality,is(Externality.UNSPECIFIED));
 	}
@@ -939,6 +949,6 @@ synchronize:
 );
 		''')
 		assertNotNull(result)
-		assertThat(result.eResource.errors,is(equalTo(emptyList)))
+		result.assertNoParsingErrors();
 	}	
 }
