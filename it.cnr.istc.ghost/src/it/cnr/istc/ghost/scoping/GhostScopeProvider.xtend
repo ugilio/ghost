@@ -109,9 +109,14 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 	override IScope getScope(EObject context, EReference reference) {
 		
 		if (context instanceof QualifInstVal &&
+			reference == GhostPackage.Literals.QUALIF_INST_VAL__COMP) {
+				return new CompositeScope(
+					getScopeForBindName(context),super.getScope(context,reference));
+		}
+		if (context instanceof QualifInstVal &&
 			reference == GhostPackage.Literals.QUALIF_INST_VAL__VALUE) {
 				val comp = (context as QualifInstVal).comp;
-				if (comp === null) {
+				if (comp === null || comp.eIsProxy()) {
 					return getScopeForBlock(context,super.getScope(context,reference));
 				}
 				//component.value: scope is the values defined in component

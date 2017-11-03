@@ -509,4 +509,111 @@ synchronize:
 		assertThat(ref,is(origVal));
 	}
 		
+	@Test
+	def void testCompValueRefInherited5() {
+		val result = parseHelper.parse('''
+type T = sv (A,B);
+
+type T1 = sv (
+	C
+synchronize:
+	C -> meets other.A
+variable:
+	other : T;
+);
+''')
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val sync = EcoreUtil2.eAllOfType(result,Synchronization).head;
+		val qiv = EcoreUtil2.eAllOfType(sync,QualifInstVal).head;
+		val compRef = qiv.comp;
+		assertNotNull(compRef);
+		assertThat(compRef.eIsProxy,is(false));
+		val varDecl = EcoreUtil2.eAllOfType(result,ObjVarDecl).head;
+		assertThat(varDecl,is(compRef));
+		
+		val valRef = qiv.value;
+		assertNotNull(valRef);
+		assertThat(valRef.eIsProxy,is(false));
+		val valDecl = EcoreUtil2.eAllOfType(result,ValueDecl).head;
+		assertThat(valDecl,is(valRef));
+	}
+	
+	@Test
+	def void testCompValueRefInherited6() {
+		val result = parseHelper.parse('''
+type T1 = sv (
+	A
+synchronize:
+	A -> meets other.A
+variable:
+	other : T2;
+);
+
+type T2 = sv T1;
+''')
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val sync = EcoreUtil2.eAllOfType(result,Synchronization).head;
+		val qiv = EcoreUtil2.eAllOfType(sync,QualifInstVal).head;
+		val compRef = qiv.comp;
+		assertNotNull(compRef);
+		assertThat(compRef.eIsProxy,is(false));
+		val varDecl = EcoreUtil2.eAllOfType(result,ObjVarDecl).head;
+		assertThat(varDecl,is(compRef));
+		
+		val valRef = qiv.value;
+		assertNotNull(valRef);
+		assertThat(valRef.eIsProxy,is(false));
+		val valDecl = EcoreUtil2.eAllOfType(result,ValueDecl).head;
+		assertThat(valDecl,is(valRef));
+	}
+	
+	
+	@Test
+	def void testCompValueRefInherited7() {
+		val result = parseHelper.parse('''
+type T1 = sv (
+	A
+variable:
+	other : T2;
+);
+
+type T2 = sv T1(
+synchronize:
+	A -> (meets other.A; meets var2.A);
+variable:
+	var2 : T2;
+);
+''')
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val sync = EcoreUtil2.eAllOfType(result,Synchronization).head;
+		val qiv1 = EcoreUtil2.eAllOfType(sync,QualifInstVal).get(0);
+		val qiv2 = EcoreUtil2.eAllOfType(sync,QualifInstVal).get(1);
+
+		val compRef1 = qiv1.comp;
+		assertNotNull(compRef1);
+		assertThat(compRef1.eIsProxy,is(false));
+		val varDecl1 = EcoreUtil2.eAllOfType(result,ObjVarDecl).get(0);
+		assertThat(varDecl1,is(compRef1));
+		
+		val compRef2 = qiv2.comp;
+		assertNotNull(compRef2);
+		assertThat(compRef2.eIsProxy,is(false));
+		val varDecl2 = EcoreUtil2.eAllOfType(result,ObjVarDecl).get(1);
+		assertThat(varDecl2,is(compRef2));
+		
+		val valRef1 = qiv1.value;
+		assertNotNull(valRef1);
+		assertThat(valRef1.eIsProxy,is(false));
+		val valDecl = EcoreUtil2.eAllOfType(result,ValueDecl).head;
+		assertThat(valDecl,is(valRef1));
+		
+		val valRef2 = qiv2.value;
+		assertNotNull(valRef2);
+		assertThat(valRef2.eIsProxy,is(false));
+		assertThat(valDecl,is(valRef2));
+	}	
+
 }
