@@ -140,7 +140,7 @@ NamedCompDecl : (externality=ExternalityRule)? 'comp' name=ID ':' type=[Componen
 AnonSVDecl : (externality=ExternalityRule)? 'comp' name=ID ':' 'sv' body=CompSVBody;
 AnonResDecl : (externality=ExternalityRule)? 'comp' name=ID ':' 'resource' body=CompResBody;
 
-CompBody : (=> CompResBody) | CompSVBody;
+CompBody : (=> CompSVBody) | CompResBody;
 
 CompSVBody : (bindings=BindList)?('('
 	transitions+=UnnamedTransitionSection

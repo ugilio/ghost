@@ -25,6 +25,18 @@ import org.eclipse.xtext.util.concurrent.IUnitOfWork
 import org.eclipse.emf.ecore.resource.Resource
 import it.cnr.istc.ghost.ghost.NameOnlyParList
 import it.cnr.istc.ghost.ghost.SimpleInstVal
+import it.cnr.istc.ghost.ghost.NamedCompDecl
+import it.cnr.istc.ghost.ghost.CompSVBody
+import it.cnr.istc.ghost.ghost.GhostFactory
+import it.cnr.istc.ghost.ghost.GhostPackage
+import java.util.ArrayList
+import org.eclipse.emf.common.notify.Adapter
+import it.cnr.istc.ghost.ghost.CompResBody
+import org.eclipse.emf.ecore.EReference
+import it.cnr.istc.ghost.ghost.ValueDecl
+import it.cnr.istc.ghost.ghost.ResourceDecl
+import it.cnr.istc.ghost.ghost.Controllability
+import it.cnr.istc.ghost.ghost.TransConstraint
 
 class GhostLinker extends LazyLinker {
 	
@@ -40,17 +52,90 @@ class GhostLinker extends LazyLinker {
 	public static val PREPROCESSOR_ERROR = 'preprocError';
 	public static val NUMERIC_CONV_ERROR = 'numConvError';
 	public static val CONST_EVAL_ERROR = 'constEvalError';
+	public static val RES_TOO_MANY_ARGS = 'resTooManyArgs';
 	
 	override protected afterModelLinked(EObject model, IDiagnosticConsumer diagnosticsConsumer) {
 		super.afterModelLinked(model, diagnosticsConsumer);
 		val p = new LinkingDiagnosticProducer(diagnosticsConsumer);
 		cache.execWithoutCacheClear(model.eResource,new IUnitOfWork.Void<Resource>(){
 			override process(Resource state) throws Exception {
+				fixNamedDeclBodies(model,p);
 				runPreprocessor(model,p);
 				resolveAllNumbers(model,p);
 				resolveAllConstants(model,p);
 				linkNamedPars(model,p);
 		}});
+	}
+	
+	private def boolean checkSVValueIsCompatible(TransConstraint tc) {
+		if ((tc.body !== null) || (tc.interval !== null)
+			|| (tc.controllability !== Controllability.UNSPECIFIED))
+			return false;
+		if (tc.head === null)
+			return false;
+		if (tc.head.parlist === null)
+			return true;
+		return false;		
+	}
+	
+	private def boolean checkSVValuesAreCompatible(CompSVBody oldBody) {
+		val l = new ArrayList(oldBody.transitions?.map[t|t.values]?.flatten?.toList);
+		for (tc : l)
+			if (!checkSVValueIsCompatible(tc))
+				return false;
+		return true;
+	}
+	
+	private def sv2resCompBody(NamedCompDecl decl, IDiagnosticProducer p) {
+		val oldBody = decl.body as CompSVBody;
+		if (!checkSVValuesAreCompatible(oldBody))
+			return;
+		val newBody = GhostFactory.eINSTANCE.createCompResBody();
+		newBody.eSet(GhostPackage.Literals.COMP_BODY__BINDINGS,oldBody.bindings);
+		newBody.eSet(GhostPackage.Literals.COMP_BODY__SYNCHRONIZATIONS,oldBody.synchronizations);
+		val values = new ArrayList(oldBody.transitions?.map[t|t.values]?.flatten?.map[tc|tc.head].toList);
+		val node = NodeModelUtils.getNode(oldBody);
+		newBody.eAdapters.add(node as Adapter);
+		decl.eSet(GhostPackage.Literals.NAMED_COMP_DECL__BODY,newBody);
+		if (values !== null && values.size()>0) {
+			setResValue(newBody, GhostPackage.Literals.COMP_RES_BODY__VAL1, values.get(0));
+			if (values.size()>1)
+				setResValue(newBody, GhostPackage.Literals.COMP_RES_BODY__VAL2, values.get(1));
+			if (values.size()>2) {
+				p.setNode(NodeModelUtils.getNode(values.get(2)));
+				p.addDiagnostic(new DiagnosticMessage(
+					"Too many arguments in resource declaration",Severity.ERROR,RES_TOO_MANY_ARGS));
+			}
+		}
+	}
+	
+	private def void setResValue(CompResBody body, EReference reference, ValueDecl v) {
+		val node = NodeModelUtils.getNode(v);
+		
+		val litUsage = GhostFactory.eINSTANCE.createConstLiteralUsage();
+		val term = GhostFactory.eINSTANCE.createConstTerm();
+		term.eSet(GhostPackage.Literals.CONST_TERM__LEFT,litUsage);
+		val sum = GhostFactory.eINSTANCE.createConstSumExp();
+		sum.eSet(GhostPackage.Literals.CONST_SUM_EXP__LEFT,term);
+		
+		body.eSet(reference,sum);
+		
+		litUsage.eAdapters.add(node as Adapter);
+		createAndSetProxy(litUsage,node,GhostPackage.Literals.CONST_LITERAL_USAGE__VALUE);
+	}
+	
+	private def fixNamedDeclBody(NamedCompDecl decl, IDiagnosticProducer p) {
+		val type = decl?.type;
+		val needChange = !type.eIsProxy() && (type instanceof ResourceDecl)
+			&& (decl.body instanceof CompSVBody); 
+		if (needChange) {
+			sv2resCompBody(decl,p);
+		}
+	}
+	
+	private def fixNamedDeclBodies(EObject model, IDiagnosticProducer p) {
+		EcoreUtil2.getAllContentsOfType(model,NamedCompDecl).
+			forEach(d|fixNamedDeclBody(d,p));
 	}
 	
 	private def runPreprocessor(EObject model, IDiagnosticProducer p) {
