@@ -1582,7 +1582,159 @@ comp C2: T[C1];
 '''	
 		);
 	}
+
+	@Test
+	def void testObjVarDeclInherited1() {
+		'''
+type T = sv (A,B);
+
+type T1 = sv (
+	C
+synchronize:
+	C -> meets other.A
+variable:
+	other : T;
+);
+
+type T2 = sv T1;
+
+comp C1: T;
+comp C2: T2[C1];
+		'''.assertCompiledContains(
+'''
+	SYNCHRONIZE C2.timeline
+	{
+		VALUE C()
+		{
+			MEETS instval1;
+			instval1 C1.timeline.A();
+		}
+	}
+'''			
+		);
+	}
 	
+	@Test
+	def void testObjVarDeclInherited2() {
+		'''
+type T1 = sv (
+	A
+synchronize:
+	A -> meets other.A
+variable:
+	other : T2;
+);
+
+type T2 = sv T1;
+
+comp C1: T2[C2];
+comp C2: T2[C1];
+		'''.assertCompiledContains(
+'''
+	SYNCHRONIZE C1.timeline
+	{
+		VALUE A()
+		{
+			MEETS instval1;
+			instval1 C2.timeline.A();
+		}
+	}
+	
+	SYNCHRONIZE C2.timeline
+	{
+		VALUE A()
+		{
+			MEETS instval1;
+			instval1 C1.timeline.A();
+		}
+	}
+'''
+		);
+	}
+	
+	@Test
+	def void testObjVarDeclInherited3() {
+		'''
+type T1 = sv (
+	A
+synchronize:
+	A -> meets other.A
+variable:
+	other : T1;
+);
+
+type T2 = sv T1;
+
+comp C1: T2[C2];
+comp C2: T2[C1];
+		'''.assertCompiledContains(
+'''
+	SYNCHRONIZE C1.timeline
+	{
+		VALUE A()
+		{
+			MEETS instval1;
+			instval1 C2.timeline.A();
+		}
+	}
+	
+	SYNCHRONIZE C2.timeline
+	{
+		VALUE A()
+		{
+			MEETS instval1;
+			instval1 C1.timeline.A();
+		}
+	}
+'''
+		);
+	}	
+	
+	@Test
+	def void testObjVarDeclInherited4() {
+		'''
+type T1 = sv (
+	A
+variable:
+	other : T2;
+);
+
+type T2 = sv T1(
+synchronize:
+	A -> (meets other.A; meets var2.A);
+variable:
+	var2 : T2;
+);
+
+comp C1: T2[C2,C2];
+comp C2: T2[C1,C1];
+		'''.assertCompiledContains(
+'''
+	SYNCHRONIZE C1.timeline
+	{
+		VALUE A()
+		{
+			MEETS instval1;
+			MEETS instval2;
+			instval1 C2.timeline.A();
+			instval2 C2.timeline.A();
+		}
+	}
+	
+	SYNCHRONIZE C2.timeline
+	{
+		VALUE A()
+		{
+			MEETS instval1;
+			MEETS instval2;
+			instval1 C1.timeline.A();
+			instval2 C1.timeline.A();
+		}
+	}
+'''
+		);
+	}
+
 	@Test
 	def void testInit1() {
 		'''
