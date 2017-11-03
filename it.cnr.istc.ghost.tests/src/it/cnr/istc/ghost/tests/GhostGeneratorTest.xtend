@@ -788,6 +788,84 @@ comp C : R;
 '''			
 		);
 	}
+	
+	@Test
+	def void testExternal1() {
+		'''
+external type T = sv(A);
+
+comp C : T;
+		'''.assertCompiledContains(
+'''
+COMPONENT C {FLEXIBLE timeline(external)} : T;
+'''			
+		);
+	}
+	
+	@Test
+	def void testExternal2() {
+		'''
+external type T = resource(10);
+
+comp C : T;
+		'''.assertCompiledContains(
+'''
+COMPONENT C {FLEXIBLE timeline(external)} : T;
+'''			
+		);
+	}
+	
+	@Test
+	def void testExternal3() {
+		'''
+external comp C : sv(A);
+		'''.assertCompiledContains(
+'''
+COMPONENT C {FLEXIBLE timeline(external)} : CType;
+'''			
+		);
+	}
+	
+	@Test
+	def void testExternal4() {
+		'''
+external comp C : resource(10);
+		'''.assertCompiledContains(
+'''
+COMPONENT C {FLEXIBLE timeline(external)} : CType;
+'''			
+		);
+	}
+	
+	@Test
+	def void testExternal5() {
+		'''
+type T = sv(A);
+
+comp C1 : T;
+external comp C2 : T;
+		'''.assertCompiledContains(
+'''
+COMPONENT C1 {FLEXIBLE timeline()} : T;
+COMPONENT C2 {FLEXIBLE timeline(external)} : T;
+'''			
+		);
+	}
+	
+	@Test
+	def void testExternalOverride1() {
+		'''
+external type T = sv(A);
+planned type T2 = sv T;
+
+comp C : T2;
+		'''.assertCompiledContains(
+'''
+COMPONENT C {FLEXIBLE timeline()} : T2;
+'''			
+		);
+	}
+	
 
 	@Test
 	def void testInheritance1() {
