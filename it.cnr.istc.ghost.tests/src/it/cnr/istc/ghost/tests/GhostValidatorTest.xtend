@@ -1319,5 +1319,23 @@ comp C : B(10);
 		model.assertNoErrors;
 	}
 	
+	@Test
+	def void testWrongResBody1() {
+		val model = '''
+type T = resource(10);
+comp C : T(
+	A -> B, B
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.NAMED_COMP_DECL,GhostValidator.RES_WRONG_BODY);
+	}
 	
+	@Test
+	def void testWrongResBody2() {
+		val model = '''
+type T = sv(A,B);
+comp C : T(10);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.NAMED_COMP_DECL,GhostValidator.RES_WRONG_BODY);
+	}	
 }

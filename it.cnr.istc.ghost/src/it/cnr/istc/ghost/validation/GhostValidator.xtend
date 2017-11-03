@@ -75,6 +75,7 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val RENEWABLE_CONSUMABLE_MIX = "renewableConsumableMix";
 	public static val AMBIGUOUS_RESOURCE_DECL = "ambiguousResourceDecl";
 	public static val RES_UNSPECIFIED_VALUE = "resUnspecifiedValue";
+	public static val RES_WRONG_BODY = "resWrongBody";
 	public static val BINDLIST_MULTIPLEVAR = "bindlistMultiplevar";
 	public static val BINDLIST_SOME_UNBOUND = "bindlistSomeUnbound"; 
 	public static val BINDLIST_TOO_LARGE = "bindlistTooLarge"; 
@@ -443,7 +444,10 @@ class GhostValidator extends AbstractGhostValidator {
 		val name = o?.name;
 		if (name === null || o === null)
 			return null;
-		var type = getParentType(o) as SvDecl;
+		val tmp = getParentType(o);
+		if (! (tmp instanceof SvDecl))
+			return null;
+		var type = tmp as SvDecl;
 
 		while (type !== null) {
 			val parentVal = EcoreUtil2.eAllOfType(type,ValueDecl).filter[v|v.name==name].head;
@@ -585,6 +589,8 @@ class GhostValidator extends AbstractGhostValidator {
 	}
 	
 	private def Object getVal1(NamedCompDecl decl) {
+		if (! (decl.body instanceof CompResBody))
+			return getVal1(decl.type as ResourceDecl);
 		val body = decl.body as CompResBody;
 		if (isUnspecified(body?.val1))
 			return getVal1(decl.type as ResourceDecl);
@@ -600,6 +606,8 @@ class GhostValidator extends AbstractGhostValidator {
 	}
 	
 	private def Object getVal2(NamedCompDecl decl) {
+		if (! (decl.body instanceof CompResBody))
+			return getVal2(decl.type as ResourceDecl);
 		val body = decl.body as CompResBody;
 		if (isUnspecified(body?.val2))
 			return getVal2(decl.type as ResourceDecl);
@@ -630,11 +638,32 @@ class GhostValidator extends AbstractGhostValidator {
 	}
 	
 	@Check
+	def checkWrongNamedDeclBody(NamedCompDecl decl) {
+		val String err = 
+		switch (decl.type) {
+			SvDecl: if (decl.body instanceof CompResBody)
+				"Got resource component body, but component is a state variable"
+				else null
+			ResourceDecl: if (decl.body instanceof CompSVBody)
+				"Got state variable component body, but component is a resource"
+				else null
+			default: null
+		}
+		if (err !== null)
+			error(err,NAMED_COMP_DECL__BODY,-1,RES_WRONG_BODY);
+	}
+	
+	@Check
 	def checkRenewableConsumableHierarchy(NamedCompDecl decl) {
-		if (decl.type instanceof ResourceDecl)
-			doCheckRenewableConsumableHierarchy(decl,
-				(decl.body as CompResBody)?.val2,decl.name,NAMED_COMP_DECL__TYPE
-			);
+		if (decl.type instanceof ResourceDecl) {
+			val body = decl.body;
+			val val2 = switch (body) {
+				CompResBody: body.val2
+				default: null
+			}
+			doCheckRenewableConsumableHierarchy(decl,val2,decl.name,
+				NAMED_COMP_DECL__TYPE);
+		}
 	}
 	
 	private def contains(List<ObjVarDecl> vars, String name) {
