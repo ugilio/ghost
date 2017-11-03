@@ -483,5 +483,30 @@ comp C2 : T2;
 		val origVal = origType.body.transitions.get(0).values.get(1).head;
 		assertThat(ref,is(origVal));
 	}	
+
+	@Test
+	def void testCompValueRefFromType() {
+		val result = parseHelper.parse('''
+type T = sv(A,B);
+
+comp c : T(
+transition:
+	C
+synchronize:
+	C -> A
+);
+''')
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		val syncs = EcoreUtil2.eAllOfType(result,NamedCompDecl).head?.body?.synchronizations;
+		val qiv = EcoreUtil2.eAllOfType(syncs.get(0),QualifInstVal).head;
+		val ref = qiv?.value;
+		assertNotNull(ref);
+		assertThat(ref.eIsProxy,is(false));
+
+		val t = EcoreUtil2.eAllOfType(result,SvDecl).head;
+		val origVal = EcoreUtil2.eAllOfType(t,ValueDecl).filter[v|v.name=='A'].head;
+		assertThat(ref,is(origVal));
+	}
 		
 }

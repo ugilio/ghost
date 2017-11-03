@@ -54,8 +54,12 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 	}
 	
 	private def getScopeForBlock(EObject context, IScope parent) {
+		var EObject cont = EcoreUtil2.getContainerOfType(context,ComponentType);
+		if (cont === null)
+			cont = EcoreUtil2.getContainerOfType(context,CompDecl);
+		val compScope = new CompositeScope(getScopeFor(cont),parent);
 		val itr = Utils.getSymbolsForBlock(context);
-		return if (itr === null) parent else return Scopes.scopeFor(itr,parent);
+		return if (itr === null) compScope else return Scopes.scopeFor(itr,compScope);
 	}
 	
 	/**
