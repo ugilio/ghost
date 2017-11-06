@@ -2,7 +2,6 @@ package it.cnr.istc.ghost.generator
 
 import static extension it.cnr.istc.ghost.generator.internal.Utils.*;
 import com.google.inject.Inject
-import it.cnr.istc.ghost.conversion.NumberValueConverter
 import it.cnr.istc.ghost.generator.internal.BlockImpl
 import it.cnr.istc.ghost.generator.internal.MultiBlockAdapterImpl
 import it.cnr.istc.ghost.generator.internal.Register
@@ -15,17 +14,12 @@ import it.cnr.istc.ghost.ghost.TypeDecl
 import it.cnr.istc.ghost.preprocessor.DefaultsProvider
 import it.cnr.istc.timeline.lang.CompType
 import it.cnr.istc.timeline.lang.Component
-import it.cnr.istc.timeline.lang.ComponentVariable
 import it.cnr.istc.timeline.lang.ConsumableResourceType
 import it.cnr.istc.timeline.lang.Controllability
-import it.cnr.istc.timeline.lang.EnumLiteral
 import it.cnr.istc.timeline.lang.EnumType
-import it.cnr.istc.timeline.lang.Expression
-import it.cnr.istc.timeline.lang.Fact
 import it.cnr.istc.timeline.lang.InstantiatedValue
 import it.cnr.istc.timeline.lang.IntType
 import it.cnr.istc.timeline.lang.Interval
-import it.cnr.istc.timeline.lang.Parameter
 import it.cnr.istc.timeline.lang.RenewableResourceType
 import it.cnr.istc.timeline.lang.ResSyncTrigger
 import it.cnr.istc.timeline.lang.ResourceAction
@@ -62,7 +56,7 @@ class DdlProducer {
 	@Inject
 	DefaultsProvider defProvider;
 	@Inject
-	NumberValueConverter numConv;
+	DdlExpressionFormatter expFormatter;
 	
 	List<Component> components;
 	List<InitSection> inits;
@@ -74,6 +68,10 @@ class DdlProducer {
 		Long start = null;
 		Long horizon = null;
 		Long resolution = null;
+	}
+	
+	private def String formatExpression(Object obj, Component comp) {
+		return expFormatter.formatExpression(obj, comp);
 	}
 	
 	private def formatParListWithTypes(Value value) {
@@ -89,12 +87,7 @@ class DdlProducer {
 	}
 	
 	private def formatResourceAction(ResourceAction action) {
-		return
-		switch (action) {
-			case REQUIRE : "REQUIREMENT"
-			case PRODUCE : "PRODUCTION"
-			case CONSUME : "CONSUMPTION"
-		}
+		return expFormatter.formatResourceAction(action);
 	}
 	
 	private def formatParListWithNames(SyncTrigger trigger) {
@@ -110,11 +103,7 @@ class DdlProducer {
 	}
 	
 	private def formatInterval(Interval intv) {
-		val i = if (intv === null) Utils.ZeroInterval else intv;
-		val lb = numConv.toString(i.lb);
-		val ub = numConv.toString(i.ub);
-		
-		return '''[«lb», «ub»]''';
+		return expFormatter.formatInterval(intv);
 	}
 	
 	private def boolean isTimeOp(Object obj) {
@@ -279,40 +268,6 @@ class DdlProducer {
 		return formatTempExpCanonical(e);
 	}
 	
-	private def int getOpDegree(String op) {
-		return
-		switch (op) {
-			case '*', case '/', case '%': 1
-			case '+', case '-': 2
-			case '<', case '<=', case '>', case '>=' : 3
-			case '=', case '!=' : 4
-			default: 0
-		}
-	}
-	
-	private def getExpDegree(Object exp) {
-		switch (exp) {
-			Expression: if (exp.operators.size()>0) return getOpDegree(exp.operators.get(0))
-		}
-		return 0;
-	}
-	
-	private def dispatch String formatExpression(Expression e, Component comp) {
-		var s = formatExpression(e.operands.get(0),comp)+" ";
-		val len = if (e.operators === null) 0 else e.operators.size();
-		for (var i = 0; i < len; i++) {
-			val op = e.operators.get(i);
-			val r = e.operands.get(i+1);
-			val needParens = getOpDegree(op) <= getExpDegree(r);
-			var sub = formatExpression(r,comp);
-			if (needParens)
-				sub = "("+sub+")";
-			s += op+" "+sub+" ";
-		}
-		s = s.trim();
-		return s
-	}
-	
 	private def boolean isThis(Object obj) {
 		switch(obj) {
 			InstantiatedValue: return obj.isThisSync()
@@ -322,69 +277,9 @@ class DdlProducer {
 		return false;
 	}
 	
-	private def dispatch String formatExpression(Long l, Component comp) {
-		if (l == Long.MAX_VALUE) return "INF"
-		else if (l == Long.MIN_VALUE) return "-INF"
-		else return ""+l; 
-	}
-	
 	private def boolean isInstCompVariable(Variable v) {
-		return (v.getValue instanceof InstantiatedValue) || (v.getValue instanceof TimePointOperation);
+		return expFormatter.isInstCompVariable(v);
 	}
-	
-	private def dispatch String formatExpression(Variable v, Component comp) {
-		return if (isInstCompVariable(v)) v.name else "?"+v.name;
-	}
-	
-	private def dispatch String formatExpression(Parameter p, Component comp) {
-		return "?"+p.name;
-	}
-	
-	private def dispatch String formatExpression(EnumLiteral l, Component comp) {
-		return l.name;
-	}
-	
-	private def Component resolveComponent(Object obj, Component context) {
-		return
-		switch (obj) {
-			Component: obj
-			ComponentVariable: if (context !== null) context.getVariableMapping.get(obj) else null
-			default: null
-		}
-	}
-	
-	private def dispatch String formatExpression(InstantiatedValue iv, Component comp) {
-		val c = resolveComponent(iv?.component,comp);
-		var s = if (c !== null) c.name+".timeline." else "";
-		var value = 
-		switch (iv.value) {
-			Value: (iv.value as Value).name
-			ResourceAction: formatResourceAction(iv.value as ResourceAction)
-			default: ""+iv.value
-		}
-		s+=value+"(";
-		if (iv.arguments !== null)
-			s+=iv.arguments.map[a|formatExpression(a,comp)].join(", ")
-		s+=")";
-		return s;
-	}
-	
-	private def dispatch String formatExpression(TimePointOperation op, Component comp) {
-		return formatExpression(op.getInstValue(),comp);
-	}
-	
-	private def dispatch String formatExpression(Fact fact, Component comp) {
-		val type = if (fact.isGoal()) "<goal>" else "<fact>";
-		val instval = formatExpression(fact.value,comp);
-		val at = String.format("AT %s %s %s",
-			formatInterval(fact.start),
-			formatInterval(fact.duration),
-			formatInterval(fact.end));
-		return String.format("%s %s %s",type,instval,at);
-	}
-	
-	private def dispatch String formatExpression(Object e, Component comp) { "<ERROR:>"+e}
-	private def dispatch String formatExpression(Void e, Component comp) { ""}
 	
 	private def String formatVariableDecl(Variable v, Component comp) {
 		val fmtString = 
