@@ -1784,6 +1784,70 @@ comp COMP : t;
 	}
 	
 	@Test
+	def void testThis13a() {
+		'''
+type t = sv (
+	A, B
+synchronize:
+	A -> this > start(B)
+);
+
+comp COMP : t;
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval2 START-START [1, +INF] instval1;
+			instval2 A();
+			instval2 B();
+		}
+'''	
+		);
+	}
+	
+	@Test
+	def void testThis13b() {
+		'''
+type t = sv (
+	A, B
+synchronize:
+	A -> this starts start(B)
+);
+
+comp COMP : t;
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			START-START [0, 0] instval2;
+			instval2 B();
+		}
+'''	
+		);
+	}
+	
+	@Test
+	def void testThis14() {
+		'''
+type t = sv (
+	A, B
+synchronize:
+	A -> B before this;
+);
+
+comp COMP : t;
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			AFTER [1, +INF] instval1;
+			instval1 B();
+		}
+'''	
+		);
+	}
+	
+	@Test
 	def void testThisRes() {
 		'''
 comp C : sv(A);
@@ -2279,6 +2343,428 @@ synchronize:
 		{
 			EQUALS instval1;
 			instval1 A();
+		}
+'''			
+		);
+	}	
+	
+	@Test
+	def void testTempExpIntInt1() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> A equals B;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 EQUALS instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpIntInt2() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> A meets B;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 MEETS instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpIntInt3() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> A starts B;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 START-START [0, 0] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpIntInt4() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> A finishes B;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 END-END [0, 0] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpIntInt5() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> A before([10,20]) B;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 BEFORE [10, 20] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpIntInt6() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> A after([10,20]) B;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 AFTER [10, 20] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpIntInt7() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> A contains([10,20],[30, 40]) B;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 CONTAINS [10, 20] [30, 40] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpIntInt8() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> A during([10,20],[30, 40]) B;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 DURING [10, 20] [30, 40] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpIntPoint1() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> A starts end(B);
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 START-END [0, 0] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpIntPoint2() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> A finishes start(B);
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 END-START [0, 0] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpIntPoint3() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> A before([10,20]) start(B);
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 END-START [10, 20] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpIntPoint4() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> A after([10,20]) end(B);
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval2 END-START [10, 20] instval1;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpIntPoint5() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> A contains([10,20],[30, 40]) start(B);
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 CONTAINS-START [10, 20] [30, 40] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	
+	
+	@Test
+	def void testTempExpPointInt1() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> end(A) starts B;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 END-START [0, 0] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpPointInt2() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> start(A) finishes B;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 START-END [0, 0] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpPointInt3() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> end(A) before([10,20]) B;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 END-START [10, 20] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpPointInt4() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> start(A) after([10,20]) B;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval2 END-START [10, 20] instval1;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}
+	
+	@Test
+	def void testTempExpPointInt5() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> end(A) during([10,20],[30, 40]) B;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 ENDS-DURING [10, 20] [30, 40] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}	
+	
+	@Test
+	def void testTempExpPointPoint1() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> start(A) equals end(B);
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 START-END [0, 0] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}	
+	
+	@Test
+	def void testTempExpPointPoint2() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> start(A) before([10,20]) end(B);
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval1 START-END [10, 20] instval2;
+			instval1 A();
+			instval2 B();
+		}
+'''			
+		);
+	}	
+	
+	@Test
+	def void testTempExpPointPoint3() {
+		'''
+comp C: sv(
+	A, B
+synchronize:
+	A -> start(A) after([10,20]) end(B);
+);
+		'''.assertCompiledContains(
+'''
+		VALUE A()
+		{
+			instval2 END-START [10, 20] instval1;
+			instval1 A();
+			instval2 B();
 		}
 '''			
 		);
