@@ -12,10 +12,6 @@ abstract class ResourceTypeProxy extends AbstractCompTypeProxy implements Resour
 		this.real = super.real as ResCompTypeAdapter;
 	}
 
-	override ResourceType getParent() {
-		return (getProxy(real?.parent) as ResourceType);
-	}
-
 	override isConsumable() {
 		return false;
 	}

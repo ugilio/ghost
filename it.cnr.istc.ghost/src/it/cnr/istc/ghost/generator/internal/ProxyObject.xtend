@@ -21,10 +21,6 @@ class ProxyObject {
 		register?.replaceProxy(real,proxy);
 	} 
 	
-	protected def Object createProxy(Object real) {
-		return register?.createProxy(real);
-	}
-	
 	protected def TemporalOperator getTemporalOperator(String name) {
 		return register?.getTemporalOperator(name);
 	}	
@@ -39,9 +35,5 @@ class ProxyObject {
 	
 	protected def Controllability getDefaultControllability(EObject obj) {
 		return register?.getDefaultControllability(obj);
-	}
-	
-	protected def LexicalScope getGlobalScope() {
-		return register?.getGlobalScope();
 	}
 }
