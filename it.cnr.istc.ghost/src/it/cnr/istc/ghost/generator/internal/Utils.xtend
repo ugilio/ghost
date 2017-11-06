@@ -59,7 +59,7 @@ public class Utils {
 		return false;
 	}
 	
-	protected static def boolean needsSyntheticType(CompDecl decl) {
+	public static def boolean needsSyntheticType(CompDecl decl) {
 		return switch (decl) {
 			AnonSVDecl:
 				true

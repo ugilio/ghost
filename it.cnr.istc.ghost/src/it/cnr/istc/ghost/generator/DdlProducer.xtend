@@ -7,14 +7,10 @@ import it.cnr.istc.ghost.generator.internal.BlockImpl
 import it.cnr.istc.ghost.generator.internal.MultiBlockAdapterImpl
 import it.cnr.istc.ghost.generator.internal.Register
 import it.cnr.istc.ghost.generator.internal.TemporalExpressionImpl
-import it.cnr.istc.ghost.ghost.AnonResDecl
-import it.cnr.istc.ghost.ghost.AnonSVDecl
 import it.cnr.istc.ghost.ghost.CompDecl
-import it.cnr.istc.ghost.ghost.CompSVBody
 import it.cnr.istc.ghost.ghost.ComponentType
 import it.cnr.istc.ghost.ghost.Ghost
 import it.cnr.istc.ghost.ghost.InitSection
-import it.cnr.istc.ghost.ghost.NamedCompDecl
 import it.cnr.istc.ghost.ghost.TypeDecl
 import it.cnr.istc.ghost.preprocessor.DefaultsProvider
 import it.cnr.istc.timeline.lang.CompType
@@ -324,26 +320,6 @@ class DdlProducer {
 			Variable: return isThis(obj.value)
 		}
 		return false;
-	}
-	
-	private def boolean needsSyntheticType(CompDecl decl) {
-		return
-		switch (decl) {
-			AnonSVDecl: true
-			AnonResDecl: true
-			NamedCompDecl: {
-				val body = decl?.body;
-				if (body?.synchronizations !== null &&
-					body.synchronizations.size()>0)
-					return true;
-				switch (body) {
-					CompSVBody : return (body.transitions !== null && 
-									body.transitions.size()>0)
-					default: false 
-				}
-			}
-			default: false
-		}
 	}
 	
 	private def dispatch String formatExpression(Long l, Component comp) {
@@ -680,11 +656,10 @@ class DdlProducer {
 		//Local components
 		components = ghost.decls.filter(CompDecl).
 			map[t|register.getProxy(t) as Component].toRegularList;
-			
 		//Add also local synthetic types (added to the global scope on their own)
 		types.addAll(
 		ghost.decls.filter(CompDecl).
-			filter[needsSyntheticType].
+			filter[cd|Utils.needsSyntheticType(cd)].
 			map[c|register.getProxy(c) as Component].map[c|c.type].toList);
 			
 		//Collect all components and init sections everywhere 
