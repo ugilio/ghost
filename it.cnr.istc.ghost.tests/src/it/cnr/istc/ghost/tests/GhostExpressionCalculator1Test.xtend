@@ -481,6 +481,14 @@ class GhostExpressionCalculator1Test{
 	}
 	
 	@Test
+	def void testMod5() {
+		// 4 % x * 3
+		val e = exp(4L,'%',x,'*',3L);
+		val r = c.evaluate(e);
+		assertThat(printExp(r),is(equalTo("4 % x * 3")));
+	}
+	
+	@Test
 	def void testBool1() {
 		// 1 > 0
 		val e = exp(1L,'>',0L);
