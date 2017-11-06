@@ -1452,6 +1452,34 @@ comp C : T2;
 	}
 	
 	@Test
+	def void testResSyncInherited3() {
+		'''
+type T1 = resource (10,20
+synchronize:
+	consume(x) -> x < 10;
+);
+
+type T2 = resource T1 (
+synchronize:
+	consume(x) -> (inherited; x > 5) 
+);
+
+comp C : T2;
+		'''.assertCompiledContains(
+'''
+	SYNCHRONIZE C.timeline
+	{
+		VALUE CONSUMPTION(?x)
+		{
+			?x > 5;
+			?x < 10;
+		}
+	}
+'''
+		);
+	}
+
+	@Test
 	def void testCompInherited() {
 		'''
 type t = resource(10
