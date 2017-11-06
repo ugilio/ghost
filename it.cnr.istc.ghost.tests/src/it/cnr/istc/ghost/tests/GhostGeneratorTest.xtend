@@ -1946,6 +1946,41 @@ comp C2: T[C1];
 	}
 
 	@Test
+	def void testObjVarDecl2() {
+		'''
+type T = sv (
+	A
+synchronize:
+	A -> meets other.A
+variable:
+	other : T;
+);
+comp C1: T[other=C2];
+comp C2: T[other=C1];
+		'''.assertCompiledContains(
+'''
+	SYNCHRONIZE C1.timeline
+	{
+		VALUE A()
+		{
+			MEETS instval1;
+			instval1 C2.timeline.A();
+		}
+	}
+	
+	SYNCHRONIZE C2.timeline
+	{
+		VALUE A()
+		{
+			MEETS instval1;
+			instval1 C1.timeline.A();
+		}
+	}
+'''	
+		);
+	}
+
+	@Test
 	def void testObjVarDeclInherited1() {
 		'''
 type T = sv (A,B);
