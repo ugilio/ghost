@@ -1360,6 +1360,42 @@ comp C : T2;
 	}
 	
 	@Test
+	def void testSyncInherited5() {
+		'''
+type n = int [0, 100];
+
+type T1 = sv (
+	A(n x), B(n x1, n x2, n x3)
+synchronize:
+	A(x) -> (
+		start(this) = end(B(1,2,3));
+	)
+);
+
+type T2 = sv T1 (
+synchronize:
+	A(y) -> (inherited; y > 10) 
+);
+
+comp C : T2;
+		'''.assertCompiledContains(
+'''
+		VALUE A(?y)
+		{
+			instval1 START-END [0, 0] instval2;
+			?y > 10;
+			?x1 = ?y;
+			?x2 = 1;
+			?x3 = 2;
+			?x4 = 3;
+			instval1 A(?x1);
+			instval2 B(?x2, ?x3, ?x4);
+		}
+'''			
+		);
+	}
+
+	@Test
 	def void testResSyncInherited1() {
 		'''
 type T1 = resource (10
