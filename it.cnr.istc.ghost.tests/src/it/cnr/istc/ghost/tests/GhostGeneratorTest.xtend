@@ -28,6 +28,8 @@ class GhostGeneratorTest{
 	private def printCompiled(CharSequence source) {
 		source.compile(new IAcceptor<CompilationTestHelper.Result>() {
 			override accept(Result r) {
+				for (e : r.errorsAndWarnings)
+					println(e);
 				println(r.getSingleGeneratedCode());
 			}
 		});
@@ -40,6 +42,8 @@ class GhostGeneratorTest{
 		val lastName = resources.get(len-1).key.replaceAll("\\.ghost",".ddl");
 		resourceSet(resources).compile(new IAcceptor<CompilationTestHelper.Result>() {
 			override accept(Result r) {
+				for (e : r.errorsAndWarnings)
+					println(e);
 				for (e : r.allGeneratedResources.entrySet)
 					if (e.key.endsWith(lastName)) {
 						println(e.value);
