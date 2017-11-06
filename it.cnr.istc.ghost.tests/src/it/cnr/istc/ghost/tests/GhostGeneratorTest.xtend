@@ -560,8 +560,8 @@ comp C : T(10);
 		'''.assertCompiledContains(
 '''
 	COMP_TYPE RenewableResource T (0)
-	COMP_TYPE RenewableResource CType1 (10)
-	COMPONENT C {FLEXIBLE timeline()} : CType1;
+	COMP_TYPE RenewableResource CType (10)
+	COMPONENT C {FLEXIBLE timeline()} : CType;
 '''
 		);
 	}
@@ -574,8 +574,8 @@ comp C : T(10,20);
 		'''.assertCompiledContains(
 '''
 	COMP_TYPE ConsumableResource T (0, 0)
-	COMP_TYPE ConsumableResource CType1 (10, 20)
-	COMPONENT C {FLEXIBLE timeline()} : CType1;
+	COMP_TYPE ConsumableResource CType (10, 20)
+	COMPONENT C {FLEXIBLE timeline()} : CType;
 '''
 		);
 	}
@@ -851,7 +851,7 @@ external comp C2 : T;
 		'''.assertCompiledContains(
 '''
 COMPONENT C1 {FLEXIBLE timeline()} : T;
-COMPONENT C2 {FLEXIBLE timeline(external)} : C2Type1;
+COMPONENT C2 {FLEXIBLE timeline(external)} : C2Type;
 '''			
 		);
 	}
@@ -1097,8 +1097,8 @@ comp C : B(10,_);
 '''
 	COMP_TYPE ConsumableResource A (0, 0)
 	COMP_TYPE ConsumableResource B (0, 20)
-	COMP_TYPE ConsumableResource CType1 (10, 20)
-	COMPONENT C {FLEXIBLE timeline()} : CType1;
+	COMP_TYPE ConsumableResource CType (10, 20)
+	COMPONENT C {FLEXIBLE timeline()} : CType;
 '''		
 		);
 	}
@@ -1113,8 +1113,8 @@ comp C : B(10);
 '''
 	COMP_TYPE RenewableResource A (0)
 	COMP_TYPE RenewableResource B (0)
-	COMP_TYPE RenewableResource CType1 (10)
-	COMPONENT C {FLEXIBLE timeline()} : CType1;
+	COMP_TYPE RenewableResource CType (10)
+	COMPONENT C {FLEXIBLE timeline()} : CType;
 '''		
 		);
 	}
