@@ -1888,6 +1888,25 @@ synchronize:
 	}
 	
 	@Test
+	def void testResActionMissingArgs2() {
+		'''
+comp c : sv(A);
+comp r : resource(10
+synchronize:
+	require(_) -> starts c.A;
+);
+		'''.assertCompiledContains(
+'''
+		VALUE REQUIREMENT(?amount1)
+		{
+			START-START [0, 0] instval1;
+			instval1 c.timeline.A();
+		}
+'''	
+		);
+	}	
+	
+	@Test
 	def void testGeneratedTypeName1() {
 		'''
 comp AComp : sv(A);
