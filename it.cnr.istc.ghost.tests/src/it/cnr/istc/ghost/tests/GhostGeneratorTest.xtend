@@ -1798,7 +1798,7 @@ comp COMP : t;
 		VALUE A()
 		{
 			instval2 START-START [1, +INF] instval1;
-			instval2 A();
+			instval1 A();
 			instval2 B();
 		}
 '''	

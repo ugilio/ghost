@@ -174,13 +174,13 @@ class DdlProducer {
 		var i2 = e.intv2;
 		val rSel = r.selector.toString();
 		
-		if (isThis(e.left))
+		if (isThis(e.left) && e.operator != TemporalOperator.AFTER)
 			unsetVariable(e.left as Variable);
 
 		return
 		switch (e.operator) {
 			case TemporalOperator.BEFORE : formatTempExpGeneric(left,'END-'+rSel,i1,null,1,right)
-			case TemporalOperator.AFTER : formatTempExpGeneric(right,rSel+'-START',i1,null,1,left)
+			case TemporalOperator.AFTER : formatTempExpGeneric(right,rSel+'-START',i1,null,1,(e.left as Variable).name)
 			case TemporalOperator.STARTS : formatTempExpGeneric(left,'START-'+rSel,ZeroInterval,null,1,right)
 			case TemporalOperator.FINISHES : formatTempExpGeneric(left,'END-'+rSel,ZeroInterval,null,1,right)
 			case TemporalOperator.CONTAINS : formatTempExpGeneric(left,'CONTAINS-'+rSel,i1,i2,2,right)
@@ -196,13 +196,13 @@ class DdlProducer {
 		var i2 = e.intv2;
 		val lSel = l.selector.toString();
 		
-		if (isThis(e.left))
+		if (isThis(e.left) && e.operator != TemporalOperator.AFTER)
 			unsetVariable(e.left as Variable);
 
 		return
 		switch (e.operator) {
 			case TemporalOperator.BEFORE : formatTempExpGeneric(left,lSel+'-START',i1,null,1,right)
-			case TemporalOperator.AFTER : formatTempExpGeneric(right,'END-'+lSel,i1,null,1,left)
+			case TemporalOperator.AFTER : formatTempExpGeneric(right,'END-'+lSel,i1,null,1,(e.left as Variable).name)
 			case TemporalOperator.STARTS : formatTempExpGeneric(left,lSel+'-START',ZeroInterval,null,1,right)
 			case TemporalOperator.FINISHES : formatTempExpGeneric(left,lSel+'-END',ZeroInterval,null,1,right)
 			case TemporalOperator.DURING : formatTempExpGeneric(left,lSel+'S-DURING',i1,i2,2,right)
