@@ -866,6 +866,158 @@ COMPONENT C {FLEXIBLE timeline()} : T2;
 		);
 	}
 	
+	@Test
+	def void testControllable1() {
+		'''
+type T = sv(
+	contr A -> B,
+	B
+);
+		'''.assertCompiledContains(
+'''
+	COMP_TYPE SingletonStateVariable T (A(), B())
+	{
+		VALUE <c> A() [0, +INF]
+		MEETS
+		{
+			B();
+		}
+	}
+'''			
+		);
+	}
+
+	@Test
+	def void testControllable2() {
+		'''
+type T = sv(
+	uncontr A -> B,
+	B
+);
+		'''.assertCompiledContains(
+'''
+	COMP_TYPE SingletonStateVariable T (A(), B())
+	{
+		VALUE <u> A() [0, +INF]
+		MEETS
+		{
+			B();
+		}
+	}
+'''			
+		);
+	}
+
+	@Test
+	def void testControllable3() {
+		'''
+comp C : sv(
+	contr A -> B,
+	B
+);
+		'''.assertCompiledContains(
+'''
+	COMP_TYPE SingletonStateVariable CType (A(), B())
+	{
+		VALUE <c> A() [0, +INF]
+		MEETS
+		{
+			B();
+		}
+	}
+'''			
+		);
+	}
+
+	@Test
+	def void testControllable4() {
+		'''
+comp C : sv(
+	uncontr A -> B,
+	B
+);
+		'''.assertCompiledContains(
+'''
+	COMP_TYPE SingletonStateVariable CType (A(), B())
+	{
+		VALUE <u> A() [0, +INF]
+		MEETS
+		{
+			B();
+		}
+	}
+'''			
+		);
+	}
+
+	@Test
+	def void testControllable5() {
+		'''
+type T = sv(
+	contr A -> B,
+	B
+);
+
+type T2 = sv T;
+		'''.assertCompiledContains(
+'''
+	COMP_TYPE SingletonStateVariable T2 (A(), B())
+	{
+		VALUE <c> A() [0, +INF]
+		MEETS
+		{
+			B();
+		}
+	}
+'''			
+		);
+	}
+
+	@Test
+	def void testControllableOverride1() {
+		'''
+type T = sv(
+	contr A -> B,
+	B
+);
+
+type T2 = sv T(uncontr A -> inherited);
+		'''.assertCompiledContains(
+'''
+	COMP_TYPE SingletonStateVariable T2 (B(), A())
+	{
+		VALUE <u> A() [0, +INF]
+		MEETS
+		{
+			B();
+		}
+	}
+'''			
+		);
+	}
+	
+	@Test
+	def void testControllableOverride2() {
+		'''
+type T = sv(
+	contr A -> B,
+	B
+);
+
+comp C : T (uncontr A -> inherited);
+		'''.assertCompiledContains(
+'''
+	COMP_TYPE SingletonStateVariable CType (B(), A())
+	{
+		VALUE <u> A() [0, +INF]
+		MEETS
+		{
+			B();
+		}
+	}
+'''			
+		);
+	}
 
 	@Test
 	def void testInheritance1() {
