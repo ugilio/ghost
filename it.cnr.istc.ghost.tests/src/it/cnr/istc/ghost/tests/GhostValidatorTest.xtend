@@ -1337,5 +1337,46 @@ type T = sv(A,B);
 comp C : T(10);
 		'''.parse;
 		model.assertError(GhostPackage.Literals.NAMED_COMP_DECL,GhostValidator.RES_WRONG_BODY);
-	}	
+	}
+	
+	@Test
+	def void testWrongObjVarDeclType1(){
+		val model = '''
+type T1 = sv(A,B);
+type T2 = sv(C,D
+variable:
+	other: T1
+);
+comp C2 : T2[other=C2];
+		'''.parse;
+		model.assertError(GhostPackage.Literals.BIND_LIST,GhostValidator.BINDLIST_INCOMP_TYPES);
+	}
+	
+	@Test
+	def void testInheritedObjVarDeclType1(){
+		val model = '''
+type T1 = sv(A,B);
+type T2 = sv T1(C,D
+variable:
+	other: T1
+);
+comp C2 : T2[other=C2];
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testWrongObjVarDeclType2(){
+		val model = '''
+type T1 = sv(A,B);
+type T2 = sv T1(C,D
+variable:
+	other: T2
+);
+comp C1 : T1;
+comp C2 : T2[other=C1];
+		'''.parse;
+		model.assertError(GhostPackage.Literals.BIND_LIST,GhostValidator.BINDLIST_INCOMP_TYPES);
+	}
+	
 }

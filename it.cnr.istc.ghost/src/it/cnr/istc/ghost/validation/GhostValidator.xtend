@@ -50,6 +50,7 @@ import java.util.ArrayList
 import it.cnr.istc.ghost.ghost.InitSection
 import it.cnr.istc.ghost.ghost.ThisKwd
 import it.cnr.istc.ghost.ghost.ConstPlaceHolder
+import it.cnr.istc.ghost.ghost.CompDecl
 
 /**
  * This class contains custom validation rules. 
@@ -78,7 +79,8 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val RES_WRONG_BODY = "resWrongBody";
 	public static val BINDLIST_MULTIPLEVAR = "bindlistMultiplevar";
 	public static val BINDLIST_SOME_UNBOUND = "bindlistSomeUnbound"; 
-	public static val BINDLIST_TOO_LARGE = "bindlistTooLarge"; 
+	public static val BINDLIST_TOO_LARGE = "bindlistTooLarge";
+	public static val BINDLIST_INCOMP_TYPES = "bindlistIncompTypes"; 
 	public static val RECURSIVE_VARDECL = "recursiveVarDecl";
 	public static val EXPECTED_TYPE = "expectedType";
 	public static val INIT_VAR_NOT_NUMBER = "initVarNotNumber"
@@ -92,16 +94,24 @@ class GhostValidator extends AbstractGhostValidator {
 
 	// Checks for type hierarchy
 
-	private def dispatch EObject getParent(SvDecl decl) {
+	private def dispatch ComponentType getParent(SvDecl decl) {
 		return decl.parent;
 	}
 
-	private def dispatch EObject getParent(ResourceDecl decl) {
+	private def dispatch ComponentType getParent(ResourceDecl decl) {
 		return decl.parent;
 	}
 	
-	private def dispatch EObject getParent(Object o) {
+	private def dispatch ComponentType getParent(Object o) {
 		return null;
+	}
+	
+	private def ComponentType getType(CompDecl decl) {
+		return
+		switch (decl) {
+			NamedCompDecl: decl.type
+			default : null			
+		}
 	}
 	
 	protected def checkHierarcyCycles(EObject decl, EReference feature) {
@@ -691,6 +701,14 @@ class GhostValidator extends AbstractGhostValidator {
 		return result;
 	}
 	
+	private def boolean areTypesCompatible(ComponentType requestedType,
+		ComponentType actualType) {
+		var t = actualType;
+		while (t !== null && t !== requestedType)
+			t = t.parent;
+		return (t === requestedType); 
+	}
+	
 	@Check
 	def void checkBindListCollisions(BindList bl) {
 		val cd = EcoreUtil2.getContainerOfType(bl,NamedCompDecl);
@@ -729,6 +747,29 @@ class GhostValidator extends AbstractGhostValidator {
 			error("Too many elements in bind list",
 				BIND_LIST__VALUES,BINDLIST_TOO_LARGE)
 	}
+	
+	@Check
+	def void checkBindListType(BindList bl) {
+		val cd = EcoreUtil2.getContainerOfType(bl,NamedCompDecl);
+		if (cd !== null) {
+			var vars = getVariables(cd?.type);
+			for (var i = 0; i < bl.values.size(); i++) {
+				val b = bl.values.get(i);
+
+				val v = 
+				if (b.name !== null) b.name
+				else if (i<vars.size()) vars.get(i)
+				else null;
+				
+				if (v !== null && !areTypesCompatible(v.type,b.value.type))
+					error(String.format("Component '%s' is not of type '%s'",
+						b.value.name,v.type.name),BIND_LIST__VALUES,i,BINDLIST_INCOMP_TYPES);
+			}
+		}
+	}	
+	
+	
+	
 	
 	private def doCheckRenewableConsumableHierarchy(EObject decl, ConstExpr v2,
 		String name, EReference ref) {
