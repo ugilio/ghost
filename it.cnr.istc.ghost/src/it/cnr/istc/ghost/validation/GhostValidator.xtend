@@ -388,7 +388,7 @@ class GhostValidator extends AbstractGhostValidator {
 	}
 	
 	@Check
-	def checkR(ResSimpleInstVal v) {
+	def checkResConstrActionTypeCompat(ResSimpleInstVal v) {
 		checkResActionComp(v.type,v.eContainer?.eContainer?.eContainer?.eContainer,RES_SIMPLE_INST_VAL__TYPE);
 	}
 	
