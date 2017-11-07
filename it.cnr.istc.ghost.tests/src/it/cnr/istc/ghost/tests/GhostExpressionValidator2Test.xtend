@@ -178,12 +178,12 @@ synchronize:
 	}
 	
 	@Test
-	def void testIncompTempOp1() {
+	def void testIncompTempOpPointPoint1() {
 		val model = '''
 comp c : sv (
-	A
+	A,B
 synchronize:
-	A -> A meets start(A)
+	A -> start(A) meets start(B)
 )
 		'''.parse;
 		model.assertError(GhostPackage.Literals.EXPRESSION,
@@ -191,12 +191,12 @@ synchronize:
 	}
 	
 	@Test
-	def void testIncompTempOp2() {
+	def void testIncompTempOpPointPoint2() {
 		val model = '''
 comp c : sv (
-	A
+	A,B
 synchronize:
-	A -> start(A) meets A
+	A -> start(A) |= start(B)
 )
 		'''.parse;
 		model.assertError(GhostPackage.Literals.EXPRESSION,
@@ -204,12 +204,181 @@ synchronize:
 	}
 	
 	@Test
-	def void testIncompTempOp3() {
+	def void testIncompTempOpPointPoint3() {
 		val model = '''
 comp c : sv (
-	A
+	A,B
 synchronize:
-	A -> start(A) meets start(A)
+	A -> start(A) starts start(B)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOpPointPoint4() {
+		val model = '''
+comp c : sv (
+	A,B
+synchronize:
+	A -> start(A) finishes start(B)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOpPointPoint5() {
+		val model = '''
+comp c : sv (
+	A,B
+synchronize:
+	A -> start(A) contains start(B)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOpPointPoint6() {
+		val model = '''
+comp c : sv (
+	A,B
+synchronize:
+	A -> start(A) during start(B)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOpIntvPoint1() {
+		val model = '''
+comp c : sv (
+	A,B
+synchronize:
+	A -> A = start(B)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOpIntvPoint2() {
+		val model = '''
+comp c : sv (
+	A,B
+synchronize:
+	A -> A equals start(B)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOpIntvPoint3() {
+		val model = '''
+comp c : sv (
+	A,B
+synchronize:
+	A -> A meets start(B)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOpIntvPoint4() {
+		val model = '''
+comp c : sv (
+	A,B
+synchronize:
+	A -> A |= start(B)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOpIntvPoint5() {
+		val model = '''
+comp c : sv (
+	A,B
+synchronize:
+	A -> A during start(B)
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOpPointIntv1() {
+		val model = '''
+comp c : sv (
+	A,B
+synchronize:
+	A -> start(A) = B
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOpPointIntv2() {
+		val model = '''
+comp c : sv (
+	A,B
+synchronize:
+	A -> start(A) equals B
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOpPointIntv3() {
+		val model = '''
+comp c : sv (
+	A,B
+synchronize:
+	A -> start(A) meets B
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOpPointIntv4() {
+		val model = '''
+comp c : sv (
+	A,B
+synchronize:
+	A -> start(A) |= B
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION,
+			GhostValidator.TEMPOP_INCOMPATIBLE);
+	}
+	
+	@Test
+	def void testIncompTempOpPointIntv5() {
+		val model = '''
+comp c : sv (
+	A,B
+synchronize:
+	A -> start(A) contains B
 )
 		'''.parse;
 		model.assertError(GhostPackage.Literals.EXPRESSION,

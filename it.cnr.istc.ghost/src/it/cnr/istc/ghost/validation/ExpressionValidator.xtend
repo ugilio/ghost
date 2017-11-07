@@ -169,12 +169,17 @@ class ExpressionValidator extends AbstractExpressionValidator {
 		else checkType(ResultType.NUMERIC,type,exp);
 		return ResultType.NUMERIC;
 	}
+
+	private def boolean shouldBeInTemporalExpression(ResultType rt) {
+		return
+		switch (rt) {
+			case INSTVAL, case TIMEPOINT : true
+			default : false
+		}
+	}
 	
 	private def checkCompCompat(ResultType left, Expression leftExp, ResultType right, Expression rightExp) {
-		if (right == ResultType.INSTVAL)
-			if (left == ResultType.INSTVAL || isUnknown(left))
-				return ResultType.TEMPORALEXP;
-		if (left == ResultType.TIMEPOINT && left == right)
+		if (shouldBeInTemporalExpression(left) || shouldBeInTemporalExpression(right))
 			return ResultType.TEMPORALEXP;
 
 		checkCompCompatNoTempExp(left,leftExp,right,rightExp);
@@ -253,13 +258,16 @@ class ExpressionValidator extends AbstractExpressionValidator {
 		if (exp.op !== null) {
 			val rightExp = exp.right.get(0);
 			val right = eval(rightExp);
-			return doOperator(exp.op, left, right, leftExp, rightExp);
+			return doTempOperator(exp.op, left, right, leftExp, rightExp);
 		}
 		val oplen = if(exp.right === null) 0 else exp.right.size;
 		for (var i = 0; i < oplen; i++) {
 			val rightExp = exp.right.get(i);
 			val right = eval(rightExp);
-			left = doOperator(exp.ops.get(i), left, right, leftExp, rightExp);
+			if (shouldBeInTemporalExpression(left) || shouldBeInTemporalExpression(right))
+				left = doTempOperator(exp.ops.get(i), left, right, leftExp, rightExp, rightExp)
+			else
+				left = doOperator(exp.ops.get(i), left, right, leftExp, rightExp);
 			leftExp = rightExp;
 		}
 		return left;
@@ -291,21 +299,26 @@ class ExpressionValidator extends AbstractExpressionValidator {
 			return ResultType.UNKNOWN;
 	}
 	
-	private def doOperator(TemporalRelation op, ResultType l, ResultType right,
+	private def doTempOperator(TemporalRelation op, ResultType l, ResultType right,
 		Expression leftExp, Expression rightExp) {
+		return doTempOperator(op.name,l,right,leftExp,rightExp, op);
+	}
+		
+	private def doTempOperator(String opname, ResultType l, ResultType right,
+		Expression leftExp, Expression rightExp, EObject context) {
 			
 		val left = if (leftExp === null) ResultType.INSTVAL else l; 
 			
 		var ok = 
-		if (left == ResultType.TIMEPOINT)
-			switch(op.name) {
+		if (left == ResultType.TIMEPOINT && right == ResultType.TIMEPOINT)
+			switch(opname) {
 				case '=', case 'equals',
 				case '<', case 'before',
 				case '>', case 'after' : true
 				default: false
 			}
 		else if (left == ResultType.INSTVAL && right == ResultType.TIMEPOINT)
-			switch(op.name) {
+			switch(opname) {
 				case '<', case 'before',
 				case '>', case 'after',
 				case 'starts',
@@ -314,7 +327,7 @@ class ExpressionValidator extends AbstractExpressionValidator {
 				default: false
 			}
 		else if (left == ResultType.TIMEPOINT && right == ResultType.INSTVAL)
-			switch(op.name) {
+			switch(opname) {
 				case '<', case 'before',
 				case '>', case 'after',
 				case 'starts',
@@ -330,7 +343,7 @@ class ExpressionValidator extends AbstractExpressionValidator {
 		}
 		if (!ok)
 			error(String.format("Incompatible operator '%s' between '%s' and '%s'",
-				op.name,formatType(left),formatType(right)),op,
+				opname,formatType(left),formatType(right)),context,
 				GhostValidator.TEMPOP_INCOMPATIBLE);
 		return ResultType.TEMPORALEXP;
 	}	
