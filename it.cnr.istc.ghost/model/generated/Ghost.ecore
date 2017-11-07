@@ -167,12 +167,11 @@
         eType="#//BindPar" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="LocVarDecl" eSuperTypes="#//SingleTransConstr #//SingleSyncConstr #//SymbolReference #//InitConstr">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//RValue"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//Expression"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="RValue"/>
   <eClassifiers xsi:type="ecore:EClass" name="PlaceHolder" eSuperTypes="#//Expression"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Expression" eSuperTypes="#//SingleSyncConstr #//RValue #//GenericExpression">
+  <eClassifiers xsi:type="ecore:EClass" name="Expression" eSuperTypes="#//SingleSyncConstr #//GenericExpression">
     <eStructuralFeatures xsi:type="ecore:EReference" name="left" eType="#//Expression"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="ops" unique="false" upperBound="-1"

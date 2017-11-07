@@ -90,8 +90,7 @@ ArgList: '(' (values+=GenericExpression (SEP+ values+=GenericExpression)* SEP* )
 BindPar: (name=[ObjVarDecl] '=')? value=[CompDecl|QUALID];
 BindList: '['values+=BindPar (SEP+ values+=BindPar )* SEP* ']';
 
-LocVarDecl: 'var' name=VARNAMEID '=' value=RValue;
-RValue: TemporalExp;
+LocVarDecl: 'var' name=VARNAMEID '=' value=EqExp;
 
 PlaceHolder: {PlaceHolder} '_';
 BasicExp returns Expression: '(' EqExp ')' | PlaceHolder | TimePointOp | InstVal | NumAndUnit;

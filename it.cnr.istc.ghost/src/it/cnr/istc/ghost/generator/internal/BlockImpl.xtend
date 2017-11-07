@@ -97,11 +97,6 @@ class BlockImpl extends ProxyObject implements StatementBlock, InitStatementBloc
 		return new TemporalExpressionImpl(e.operands.get(0), theOp, e.operands.get(1),register);
 	}
 
-	private def convertToTemporalExpressions() {
-		convertExpsToTemporalExpressions();
-		convertVarDeclsToTemporalExpressions();
-	}
-
 	private def shouldBeTemporalExpression(Object o) {
 		if (!(o instanceof Expression))
 			return false;
@@ -125,15 +120,6 @@ class BlockImpl extends ProxyObject implements StatementBlock, InitStatementBloc
 				replaceProxy((e as ExpressionImpl).real, tmpE);
 				tempExps.add(tmpE);
 				it.remove();
-			}
-		}
-	}
-
-	private def convertVarDeclsToTemporalExpressions() {
-		for (v : vars) {
-			if (shouldBeTemporalExpression(v.value)) {
-				val tmpE = toTempExp(v.value as Expression);
-				replaceProxy((v.value as ExpressionImpl).real, tmpE);
 			}
 		}
 	}
@@ -306,7 +292,7 @@ class BlockImpl extends ProxyObject implements StatementBlock, InitStatementBloc
 
 	def process() {
 		build();
-		convertToTemporalExpressions();
+		convertExpsToTemporalExpressions();
 		removeUnusedVariables();
 		addVariableNames();
 		for (e : exps) {

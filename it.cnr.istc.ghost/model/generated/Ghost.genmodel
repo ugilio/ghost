@@ -164,7 +164,6 @@
     <genClasses ecoreClass="Ghost.ecore#//LocVarDecl">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//LocVarDecl/value"/>
     </genClasses>
-    <genClasses ecoreClass="Ghost.ecore#//RValue"/>
     <genClasses ecoreClass="Ghost.ecore#//PlaceHolder"/>
     <genClasses ecoreClass="Ghost.ecore#//Expression">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Ghost.ecore#//Expression/left"/>

@@ -950,5 +950,18 @@ synchronize:
 		''')
 		assertNotNull(result)
 		result.assertNoParsingErrors();
+	}
+	
+	@Test
+	def void testTempExpVar() {
+		val result = parseHelper.parse('''
+comp C: sv(
+	A
+synchronize:
+	A -> var v = A equals A;
+);
+		''')
+		assertNotNull(result)
+		assertThat(result.eResource.errors.size,is(greaterThan(0)));
 	}	
 }

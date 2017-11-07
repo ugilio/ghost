@@ -56,7 +56,7 @@ type ASVType = sv(
 synchronize:
 	StateB -> ( 
 		var a = 12;
-		var b = StateA meets StateB;
+		StateA meets StateB;
 		var c = start(StateA);
 		7 = 12;
 		15 ms;
