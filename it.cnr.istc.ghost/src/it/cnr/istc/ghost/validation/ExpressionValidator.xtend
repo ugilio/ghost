@@ -213,6 +213,13 @@ class ExpressionValidator extends AbstractExpressionValidator {
 		return ResultType.BOOLEAN;
 	}
 	
+	private def void checkFactGoalValue(FactGoal fact, ResultType type) {
+		if (type != ResultType.INSTVAL)
+			error(String.format("Expected operand of type '%s' but got '%s'",
+				formatType(ResultType.INSTVAL),formatType(type)),
+				fact,GhostPackage.Literals.FACT_GOAL__VALUE,-1,GhostValidator.EXPECTED_TYPE);
+	}
+	
 	private def isUnknown(ResultType type) {
 		return (type === null || type == ResultType.UNKNOWN);
 	}
@@ -392,7 +399,9 @@ class ExpressionValidator extends AbstractExpressionValidator {
 	}
 	
 	protected def dispatch ResultType eval(FactGoal fact) {
-		return eval(fact.value);
+		val type = eval(fact.value);
+		checkFactGoalValue(fact,type);
+		return type;
 	}
 	
 	protected def dispatch ResultType eval(InheritedKwd kwd) {

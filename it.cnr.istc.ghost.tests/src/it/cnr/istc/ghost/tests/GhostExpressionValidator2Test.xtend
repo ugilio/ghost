@@ -477,5 +477,30 @@ type T = sv(C ->  var horizon = A;
 		model.assertNoErrors;
 	}
 	
+	@Test
+	def void testFactValueType1(){
+		val model = '''
+const C = 10;
+init (fact C)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.FACT_GOAL,GhostValidator.EXPECTED_TYPE);
+	}
 	
+	@Test
+	def void testFactValueType2(){
+		val model = '''
+type E = enum(E1, E2);
+init (fact E1)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.FACT_GOAL,GhostValidator.EXPECTED_TYPE);
+	}
+	
+	@Test
+	def void testFactValueTypeOk(){
+		val model = '''
+comp C : sv(A, B);
+init (fact C.A)
+		'''.parse;
+		model.assertNoErrors;
+	}
 }
