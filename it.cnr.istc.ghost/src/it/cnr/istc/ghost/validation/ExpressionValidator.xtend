@@ -109,6 +109,14 @@ class ExpressionValidator extends AbstractExpressionValidator {
 		}
 	}
 	
+	private def checkInvalidVarType(ResultType type, LocVarDecl locVar) {
+		if (type == ResultType.TEMPORALEXP)
+			error(String.format("Cannot create a local variable of type '%s'",
+				formatType(type)),locVar,
+				GhostPackage.Literals.LOC_VAR_DECL__VALUE,-1,
+				GhostValidator.LOCVAR_TEMPORAL_EXP);
+	}
+	
 	private def reportUnusedVars() {
 		for (v : unusedVars)
 			warning(String.format(
@@ -378,6 +386,7 @@ class ExpressionValidator extends AbstractExpressionValidator {
 		val type = eval(decl?.value);
 		//this should not be necessary, shouldn't it?
 		addType(decl?.name,type);
+		checkInvalidVarType(type,decl);
 		checkSpecialInitValues(decl,type);
 		return type;
 	}

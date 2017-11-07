@@ -86,6 +86,7 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val INIT_VAR_NOT_NUMBER = "initVarNotNumber"
 	public static val INIT_VAR_NOT_CONSTANT = "initVarNotConstant"
 	public static val TEMPOP_INCOMPATIBLE = "tempopIncompatible";
+	public static val LOCVAR_TEMPORAL_EXP = "locvarTemporalExp";
 	
 	public static val BOOLEAN_TO_NUMERIC = "booleanToNumeric";
 	public static val COMPARISON_DIFFERENT_TYPES = "comparisonDifferentTypes";

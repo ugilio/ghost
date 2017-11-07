@@ -88,6 +88,18 @@ comp c : sv (
 		model.assertNoIssues();
 	}
 	
+	@Test
+	def void testLocVarInvalidType() {
+		val model = '''
+comp C: sv(
+	A
+synchronize:
+	A -> (var constraint = this = A; constraint);
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.LOC_VAR_DECL, GhostValidator.LOCVAR_TEMPORAL_EXP);
+	}	
+	
 	//Useless expressions
 	@Test
 	def void testUselessExp1() {
