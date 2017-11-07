@@ -3058,5 +3058,127 @@ DOMAIN domain
 			d1,main
 		);
 	}
+
+	@Test
+	def void testImports7() {
+		val d1 = 'd1.ghost' -> '''
+domain d1;
+
+type e = enum(E1,E2);
+		''';  
+		val main = 'main.ghost' -> '''
+import d1;
+
+comp C : sv(A
+synchronize:
+	A -> var aValue = E1;
+);
+		''';
+		assertCompilesTo(
+'''
+DOMAIN domain
+{
+	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
+	PAR_TYPE EnumerationParameterType e = {E1, E2};
+	
+	COMP_TYPE SingletonStateVariable CType (A())
+	{
+	}
+	
+	COMPONENT C {FLEXIBLE timeline()} : CType;
+	
+	SYNCHRONIZE C.timeline
+	{
+		VALUE A()
+		{
+			?aValue = E1;
+		}
+	}
+}
+''',
+			d1,main
+		);
+	}
+	
+	@Test
+	def void testImports8() {
+		val d1 = 'd1.ghost' -> '''
+domain d1;
+
+type e = enum(E1,E2);
+		''';  
+		val main = 'main.ghost' -> '''
+import d1;
+
+comp C : sv(A
+synchronize:
+	A -> (var aValue = _; aValue = E1);
+);
+		''';
+		assertCompilesTo(
+'''
+DOMAIN domain
+{
+	TEMPORAL_MODULE module = [0, 1000], 1000;
+	
+	PAR_TYPE EnumerationParameterType e = {E1, E2};
+	
+	COMP_TYPE SingletonStateVariable CType (A())
+	{
+	}
+	
+	COMPONENT C {FLEXIBLE timeline()} : CType;
+	
+	SYNCHRONIZE C.timeline
+	{
+		VALUE A()
+		{
+			?aValue = E1;
+		}
+	}
+}
+''',
+			d1,main
+		);
+	}
+	
+	@Test
+	def void testImports9() {
+		val d1 = 'd1.ghost' -> '''
+domain d1;
+
+type e = enum(E1,E2);
+		''';  
+		val main = 'main.ghost' -> '''
+import d1;
+
+comp C : sv(A);
+
+init (
+	var aValue = E1;
+);
+		''';
+		assertCompilesTo(
+'''
+DOMAIN domain
+{
+	TEMPORAL_MODULE module = [0, 1000], 1000;
+	
+	PAR_TYPE EnumerationParameterType e = {E1, E2};
+	
+	COMP_TYPE SingletonStateVariable CType (A())
+	{
+	}
+	
+	COMPONENT C {FLEXIBLE timeline()} : CType;
+}
+PROBLEM problem (DOMAIN domain)
+{
+	?aValue = E1;
+}
+''',
+			d1,main
+		);
+	}
 }

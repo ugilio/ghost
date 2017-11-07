@@ -48,6 +48,7 @@ import org.eclipse.xtext.xbase.lib.Procedures.Procedure2
 import java.util.ArrayList
 import it.cnr.istc.timeline.lang.StatementBlock
 import it.cnr.istc.ghost.generator.internal.VariableProxy
+import com.google.common.collect.Iterables
 
 class DdlProducer {
 	@Inject
@@ -57,6 +58,8 @@ class DdlProducer {
 	DefaultsProvider defProvider;
 	@Inject
 	DdlExpressionFormatter expFormatter;
+	@Inject
+	DdlEnumScanner enumScanner;
 	
 	List<Component> components;
 	List<InitSection> inits;
@@ -506,8 +509,13 @@ class DdlProducer {
 			map[t|t.transitionConstraints].flatten.
 			map[tc|tc.head.formalParameters].flatten.
 			map[p|p.type];
+			
+		val allReferencedEnums =
+			Iterables.concat(
+				compTypes.map[t|enumScanner.scanSimpleTypeUsage(t)].flatten,
+				enumScanner.scanSimpleTypeUsage(initBlock));
 		
-		for (t : allTypes)
+		for (t : Iterables.concat(allTypes,allReferencedEnums))
 			if (addedTypes.add(t)) {
 				addToLexicalScope(gScope,t);
 				newTypes.add(t);
