@@ -2866,6 +2866,24 @@ comp C: sv(
 	}	
 	
 	@Test
+	def void testVarAlone() {
+		'''
+type n = int[0,100];
+comp C: sv(A(n)
+synchronize:
+	A(x) -> (var y = x+2; y)
+);
+		'''.assertCompiledContains(
+'''
+VALUE A(?x)
+{
+	?y1 = ?x + 2;
+}
+'''			
+		);
+	}	
+	
+	@Test
 	def void testImports1() {
 		val d1 = 'd1.ghost' -> '''
 domain d1;

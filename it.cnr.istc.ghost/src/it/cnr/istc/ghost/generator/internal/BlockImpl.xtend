@@ -53,6 +53,17 @@ class BlockImpl extends ProxyObject implements StatementBlock, InitStatementBloc
 		this.calc = new ExpressionCalculator(this);
 	}
 
+	private def <T> void removeDuplicates(List<T> list) {
+		for (var i = 0; i < list.size(); i++) {
+			var left = list.get(i);
+			for (var j = i+1; j < list.size(); j++)
+				if (list.get(j) === left) {
+					list.remove(j);
+					j--;
+				}
+		}
+	}
+	
 	private def build() {
 		val size = block.getContents().size();
 		vars = new ArrayList(size);
@@ -310,6 +321,7 @@ class BlockImpl extends ProxyObject implements StatementBlock, InitStatementBloc
 			if (OPTIMIZE)
 				(theVar as VariableProxy).value=simplify(theVar.value);
 		}
+		removeDuplicates(vars);
 		
 		if (OPTIMIZE)
 			calc.handleDivisions();
