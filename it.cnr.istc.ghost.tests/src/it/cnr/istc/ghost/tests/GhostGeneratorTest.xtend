@@ -17,6 +17,7 @@ import org.eclipse.xtext.junit4.TemporaryFolder
 import org.eclipse.xtext.util.IAcceptor
 import org.eclipse.xtext.xbase.testing.CompilationTestHelper.Result
 import it.cnr.istc.ghost.generator.internal.BlockImpl
+import org.eclipse.xtext.diagnostics.Severity
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -53,11 +54,17 @@ class GhostGeneratorTest{
 		});
 	}
 	
+	private def void assertNoErrors(CompilationTestHelper.Result result) {
+		val hasErr = result.errorsAndWarnings.exists[i|i.severity==Severity.ERROR];
+		assertFalse(result.errorsAndWarnings.join(", "),hasErr);
+	}
+	
 	private def void assertCompiledContains(CharSequence source, CharSequence expected) {
 		val boolean[] called = #[false];
 		source.compile(new IAcceptor<CompilationTestHelper.Result>() {
 			override accept(Result r) {
 				called.set(0,true);
+				assertNoErrors(r);
 				val out = r.getSingleGeneratedCode().replaceAll('\\s+',' ');
 				val exp = expected.toString().replaceAll('\\s+',' ');
 				assertThat(out,containsString(exp));
@@ -76,6 +83,7 @@ class GhostGeneratorTest{
 		resourceSet(resources).compile(new IAcceptor<CompilationTestHelper.Result>() {
 			override accept(Result r) {
 				called.set(0,true);
+				assertNoErrors(r);
 				for (e : r.allGeneratedResources.entrySet)
 					if (e.key.endsWith(lastName)) {
 						val out = e.value.toString().replaceAll('\\s+',' ');
@@ -97,6 +105,7 @@ class GhostGeneratorTest{
 		resourceSet(resources).compile(new IAcceptor<CompilationTestHelper.Result>() {
 			override accept(Result r) {
 				called.set(0,true);
+				assertNoErrors(r);
 				for (e : r.allGeneratedResources.entrySet)
 					if (e.key.endsWith(lastName)) {
 						assertThat(expected.toString(), is(equalTo(e.value.toString())));
