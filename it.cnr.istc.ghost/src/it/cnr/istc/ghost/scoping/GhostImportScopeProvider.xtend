@@ -16,6 +16,8 @@ import com.google.inject.Provider
 import java.util.HashSet
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.resource.IEObjectDescription
+import it.cnr.istc.ghost.ghost.Ghost
+import it.cnr.istc.ghost.ghost.GhostPackage
 
 class GhostImportScopeProvider extends ImportedNamespaceAwareLocalScopeProvider {
 	//consider wildcards always on
@@ -37,6 +39,14 @@ class GhostImportScopeProvider extends ImportedNamespaceAwareLocalScopeProvider 
 		return null;
 	}
 	
+	override getLocalElementsScope(IScope parent, EObject context, EReference reference) {
+		val scope = super.getLocalElementsScope(parent,context,reference);
+		//local resource contents have higher precedence than imported stuff!
+		if (context instanceof Ghost && reference != GhostPackage.Literals.IMPORT_DECL__IMPORTED_NAMESPACE)
+			return getResourceScope(scope, context, reference);
+		return scope;
+	}
+
 	//Filter out elements from global scope that don't belong to imported domains
 	@Inject
 	private IResourceScopeCache cache = IResourceScopeCache.NullImpl.INSTANCE;

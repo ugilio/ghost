@@ -24,6 +24,9 @@ import org.junit.runner.RunWith
 import static org.hamcrest.Matchers.*
 import static org.junit.Assert.*
 import it.cnr.istc.ghost.ghost.QualifInstVal
+import it.cnr.istc.ghost.ghost.IntDecl
+import it.cnr.istc.ghost.ghost.ImportDecl
+import it.cnr.istc.ghost.ghost.FormalPar
 
 @RunWith(XtextRunner)
 @InjectWith(GhostInjectorProvider)
@@ -38,6 +41,14 @@ class GhostLinkerTest{
 			return;
 		val errStr = obj?.eResource?.errors?.join(",");
 		assertTrue(String.format("Expected error of type '%s' but got '%s'",code,errStr),false);
+	}
+	
+	private def Ghost multiparse(CharSequence ...sources) {
+		var tmp = parseHelper.parse(sources.get(0));
+		val rs = tmp.eResource.resourceSet;
+		for (var i = 1; i < sources.size(); i++)
+			tmp = parseHelper.parse(sources.get(i),rs);
+		return tmp;
 	}
 	
 	@Test
@@ -307,5 +318,31 @@ comp R : T(12+7);
 		assertThat(result.eResource.errors,is(equalTo(emptyList)));
 		val comp = EcoreUtil2.eAllOfType(result,NamedCompDecl).head;
 		assertThat(comp.body,is(instanceOf(CompResBody)));
+	}
+	
+	@Test
+	def void testTypeShadowing1() {
+		val result = multiparse(
+'''
+domain d1;
+
+type I = int [10, 20];
+		''',
+'''
+import d1;
+
+type I = int [20, 40];
+comp C : sv(A(I));
+		''');
+		assertNotNull(result);
+		EcoreUtil2.resolveAll(result);
+		assertThat(result.eResource.errors,is(equalTo(emptyList)));
+		val d1 = EcoreUtil2.eAllOfType(result,ImportDecl).head.importedNamespace;
+		val g1 = EcoreUtil2.getContainerOfType(d1,Ghost);
+		val i1 = EcoreUtil2.eAllOfType(g1,IntDecl).head;
+		val i2 = EcoreUtil2.eAllOfType(result,IntDecl).head;
+		val p1 = EcoreUtil2.eAllOfType(result,FormalPar).head;
+		assertThat(i1,is(not(sameInstance(p1.type))));
+		assertThat(p1.type,is(i2));
 	}	
 }
