@@ -120,7 +120,7 @@ class GhostGeneratorTest{
 		'''
 		'''.assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN MyFile
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 }
@@ -148,7 +148,7 @@ DOMAIN theDomain
 		type A = sv;
 		'''.assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN MyFile
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -166,7 +166,7 @@ DOMAIN domain
 type A = resource(10);
 		'''.assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN MyFile
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -182,7 +182,7 @@ DOMAIN domain
 type A = resource(10,20);
 		'''.assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN MyFile
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -216,7 +216,7 @@ type A = resource(_,_);
 type t = int 10;
 		'''.assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN MyFile
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -232,7 +232,7 @@ DOMAIN domain
 type t = enum (E1, E2);
 		'''.assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN MyFile
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -248,7 +248,7 @@ DOMAIN domain
 type T = sv(A);
 		'''.assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN MyFile
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -266,7 +266,7 @@ DOMAIN domain
 type T = sv(A, B);
 		'''.assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN MyFile
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -284,7 +284,7 @@ DOMAIN domain
 type T = sv(A -> B, B);
 		'''.assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN MyFile
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -307,7 +307,7 @@ DOMAIN domain
 type T = sv(A 12 -> B, B);
 		'''.assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN MyFile
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -446,7 +446,7 @@ type T = sv(A(n,n,n) -> B, B);
 comp C : sv(A);
 		'''.assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN MyFile
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -466,7 +466,7 @@ DOMAIN domain
 comp C : sv(A, B);
 		'''.assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN MyFile
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -506,7 +506,7 @@ comp C1 : T(transition: C);
 comp C : sv(A -> B, B);
 		'''.assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN MyFile
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -531,7 +531,7 @@ DOMAIN domain
 comp C : resource(10);
 		'''.assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN MyFile
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -549,7 +549,7 @@ DOMAIN domain
 comp C : resource(10, 20);
 		'''.assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN MyFile
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -2896,7 +2896,7 @@ import d1;
 comp C : T;
 		''';
 		assertCompilesTo('''
-DOMAIN domain
+DOMAIN main
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -2924,7 +2924,7 @@ import d1;
 comp C : sv(C,D);
 		''';
 		assertCompilesTo('''
-DOMAIN domain
+DOMAIN main
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -2954,7 +2954,7 @@ import d1;
 comp C2 : sv(C,D);
 		''';
 		assertCompilesTo('''
-DOMAIN domain
+DOMAIN main
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -3013,7 +3013,7 @@ comp C : sv(A(n));
 		''';
 		assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN main
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -3044,7 +3044,7 @@ comp C : sv(A());
 		''';
 		assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN main
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -3076,7 +3076,7 @@ synchronize:
 		''';
 		assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN main
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -3118,7 +3118,7 @@ synchronize:
 		''';
 		assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN main
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -3161,7 +3161,7 @@ init (
 		''';
 		assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN main
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -3173,7 +3173,7 @@ DOMAIN domain
 	
 	COMPONENT C {FLEXIBLE timeline()} : CType;
 }
-PROBLEM problem (DOMAIN domain)
+PROBLEM main_prob (DOMAIN main)
 {
 	?aValue = E1;
 }
@@ -3198,7 +3198,7 @@ comp C2 : sv(B(I));
 		''';
 		assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN main
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -3237,7 +3237,7 @@ comp C : sv(F(E), G(E));
 		''';
 		assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN main
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	
@@ -3276,7 +3276,7 @@ comp C : sv(F(E), G(E));
 		''';
 		assertCompilesTo(
 '''
-DOMAIN domain
+DOMAIN main
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 	

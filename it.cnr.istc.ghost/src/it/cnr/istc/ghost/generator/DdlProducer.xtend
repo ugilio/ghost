@@ -400,10 +400,19 @@ class DdlProducer {
 		'''
 	}
 	
-	private def getDomainName(Ghost ghost) {
+	private def getDomainName(Ghost ghost, String suggestion) {
 		val baseName = if (ghost?.domain?.name !== null) ghost.domain.name
 			else if (ghost?.problem?.name !== null) ghost?.problem?.name
+			else if ("" != suggestion && suggestion !== null) suggestion
 			else "domain";
+		val name = genName(baseName,register.getGlobalScope(),false);
+		register.getGlobalScope().add(name,ghost);
+		return name;
+	}
+	
+	private def getProblemName(Ghost ghost, String suggestion) {
+		val baseName = if ("" != suggestion && suggestion !== null) suggestion +"_prob"
+		else "problem";
 		val name = genName(baseName,register.getGlobalScope(),false);
 		register.getGlobalScope().add(name,ghost);
 		return name;
@@ -552,7 +561,7 @@ class DdlProducer {
 			}
 	}
 	
-	def String doGenerate(Ghost ghost) {
+	def String doGenerate(Ghost ghost, String baseName) {
 		val gScope = register.getGlobalScope();
 		inits = new ArrayList();
 		initData = new InitData();
@@ -597,15 +606,15 @@ class DdlProducer {
 		
 		evalInitData();
 		
-		var String output = produce(ghost,simpleTypes,types);
+		var String output = produce(ghost,simpleTypes,types,baseName);
 		
 		return output;
 	}
 	
 	protected def String produce(Ghost ghost, List<SimpleType> simpleTypes,
-		List<CompType> types) {
-		val domainName = getDomainName(ghost);
-		val problemName = "problem";
+		List<CompType> types, String baseName) {
+		val domainName = getDomainName(ghost,baseName);
+		val problemName = getProblemName(ghost,domainName);
 		val syncs = components.filter[t|t.type?.synchronizations.size>0];
 		val hasInits = inits.size>0;
 			

@@ -19,6 +19,10 @@ class GhostGenerator extends AbstractGenerator {
 	@Inject
 	DdlProducer generator;
 	
+	private def String getBaseFileName(Resource res) {
+		return res.URI.trimFileExtension.lastSegment();
+	}
+	
 	private def String getOutFileName(Resource res) {
 		return res.URI.trimFileExtension.appendFileExtension("ddl").lastSegment();
 	}
@@ -29,8 +33,9 @@ class GhostGenerator extends AbstractGenerator {
 			return;
 
 		val ghost = resource.contents.get(0) as Ghost;
+		val baseName = getBaseFileName(resource);
 
-		val String output = generator.doGenerate(ghost);
+		val String output = generator.doGenerate(ghost,baseName);
 		
 		val outName = getOutFileName(resource);
 		fsa.generateFile(outName, output);
