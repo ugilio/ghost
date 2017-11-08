@@ -38,10 +38,6 @@ class TemporalExpressionImpl extends ProxyObject implements InternalTemporalExpr
 		this(left, op, null, null, right, register);
 	}
 
-	new(Object left, TemporalOperator op, Interval int1, Object right, Register register) {
-		this(left, op, int1, null, right, register);
-	}
-
 	new(Object left, TemporalOperator op, Interval int1, Interval int2, Object right, Register register) {
 		super(register);
 		this.left = left;
