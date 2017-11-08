@@ -3260,4 +3260,43 @@ DOMAIN domain
 		);
 	}
 	
+	@Test
+	def void testImportsRename3() {
+		val d1 = 'd1.ghost' -> '''
+domain d1;
+
+type E = enum(E1,E2);
+comp C : sv(A(E), B(E));
+		''';  
+		val main = 'main.ghost' -> '''
+import d1;
+
+type E = enum(E1,E2);
+comp C : sv(F(E), G(E));
+		''';
+		assertCompilesTo(
+'''
+DOMAIN domain
+{
+	TEMPORAL_MODULE module = [0, 1000], 1000;
+	
+	PAR_TYPE EnumerationParameterType E = {E1, E2};
+	PAR_TYPE EnumerationParameterType E5 = {E3, E4};
+	
+	COMP_TYPE SingletonStateVariable CType2 (F(E), G(E))
+	{
+	}
+	
+	COMP_TYPE SingletonStateVariable CType1 (A(E5), B(E5))
+	{
+	}
+	
+	COMPONENT C {FLEXIBLE timeline()} : CType2;
+	COMPONENT C1 {FLEXIBLE timeline()} : CType1;
+}
+''',
+			d1,main
+		);
+	}
+	
 }
