@@ -49,6 +49,9 @@ import java.util.ArrayList
 import it.cnr.istc.timeline.lang.StatementBlock
 import it.cnr.istc.ghost.generator.internal.VariableProxy
 import com.google.common.collect.Iterables
+import it.cnr.istc.timeline.lang.EnumLiteral
+import it.cnr.istc.ghost.generator.internal.EnumLiteralProxy
+import it.cnr.istc.ghost.ghost.EnumDecl
 
 class DdlProducer {
 	@Inject
@@ -447,9 +450,22 @@ class DdlProducer {
 	}
 	
 	private def void addToLexicalScope(LexicalScope scope, SimpleType type) {
+		if (type instanceof EnumType)
+			addLiteralsToLexicalScope(scope,type);
 		addToLexicalScope(scope,type,
 			[t|t.name], //getName
 			[t,n|(t as InternalSimpleType).name = n] //setName
+		);
+	}
+	
+	private def void addLiteralsToLexicalScope(LexicalScope scope, EnumType type) {
+		type.values.forEach[l|addToLexicalScope(scope,l)];
+	}
+	
+	private def void addToLexicalScope(LexicalScope scope, EnumLiteral lit) {
+		addToLexicalScope(scope,lit,
+			[l|l.name], //getName
+			[l,n|(l as EnumLiteralProxy).name = n] //setName
 		);
 	}
 	
@@ -546,6 +562,9 @@ class DdlProducer {
 		//Add local types to the global scope
 		ghost.decls.filter(TypeDecl).forEach[d|gScope.add(d.name,d)];
 		ghost.decls.filter(CompDecl).forEach[d|gScope.add(d.name,d)];
+		//Add also local enum literals
+		ghost.decls.filter(EnumDecl).
+			map[d|d.values].flatten.forEach[l|gScope.add(l.name,l)];
 		
 		//Local simple types
 		val simpleTypes = 
