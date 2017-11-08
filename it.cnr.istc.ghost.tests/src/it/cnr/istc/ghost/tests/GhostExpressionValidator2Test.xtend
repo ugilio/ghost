@@ -503,4 +503,29 @@ init (fact C.A)
 		'''.parse;
 		model.assertNoErrors;
 	}
+	
+	@Test
+	def void testFactValueTypeVar1(){
+		val model = '''
+comp C : sv(A, B);
+init (
+	var x = C.A;
+	fact x;
+)
+		'''.parse;
+		model.assertNoErrors;
+	}
+	
+	@Test
+	def void testFactValueTypeVar2(){
+		val model = '''
+type E = enum(E1, E2);
+init (
+	var x = E1;
+	fact x;
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.FACT_GOAL,GhostValidator.EXPECTED_TYPE);
+	}
+	
 }

@@ -11,6 +11,7 @@ import it.cnr.istc.ghost.ghost.SyncBody
 import it.cnr.istc.ghost.ghost.TransConstrBody
 import it.cnr.istc.ghost.ghost.TransConstraint
 import it.cnr.istc.ghost.ghost.FormalPar
+import it.cnr.istc.ghost.ghost.InitSection
 
 class Utils {
 	
@@ -32,6 +33,11 @@ class Utils {
 						else Collections.emptyList;
 			val locVars = EcoreUtil2.eAllOfType(tcbody,LocVarDecl);
 			return Iterables.concat(args,locVars);
+		}
+		//Inside a init section
+		val initSection = EcoreUtil2.getContainerOfType(context,InitSection);
+		if (initSection !== null) {
+			return EcoreUtil2.eAllOfType(initSection,LocVarDecl);
 		}
 		return null;
 	}
