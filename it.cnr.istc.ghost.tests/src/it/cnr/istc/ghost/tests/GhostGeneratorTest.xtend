@@ -3181,4 +3181,43 @@ PROBLEM problem (DOMAIN domain)
 			d1,main
 		);
 	}
+	
+	@Test
+	def void testImportsRename1() {
+		val d1 = 'd1.ghost' -> '''
+domain d1;
+
+type I = int [10, 20];
+comp C1 : sv(A(I));
+		''';  
+		val main = 'main.ghost' -> '''
+import d1;
+
+type I = int [20, 40];
+comp C2 : sv(B(I));
+		''';
+		assertCompilesTo(
+'''
+DOMAIN domain
+{
+	TEMPORAL_MODULE module = [0, 1000], 1000;
+	
+	PAR_TYPE NumericParameterType I = [20, 40];
+	PAR_TYPE NumericParameterType I1 = [10, 20];
+	
+	COMP_TYPE SingletonStateVariable C2Type (B(I))
+	{
+	}
+	
+	COMP_TYPE SingletonStateVariable C1Type1 (A(I1))
+	{
+	}
+	
+	COMPONENT C2 {FLEXIBLE timeline()} : C2Type;
+	COMPONENT C1 {FLEXIBLE timeline()} : C1Type1;
+}
+''',
+			d1,main
+		);
+	}	
 }
