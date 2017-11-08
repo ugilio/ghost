@@ -426,9 +426,6 @@ class DdlProducer {
 	«FOR f : b.facts»
 		«formatExpression(f,null)»;
 	«ENDFOR»
-	«FOR e : b.expressions»
-		«formatExpression(e,null)»;
-	«ENDFOR»
 	«FOR v : vars»
 		«formatVariableDecl(v,null)»;
 	«ENDFOR»
