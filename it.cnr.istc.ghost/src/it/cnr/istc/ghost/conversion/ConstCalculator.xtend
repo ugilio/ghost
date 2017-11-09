@@ -135,11 +135,11 @@ class ConstCalculator {
 	
 	private def String getTypeName(Object o) {
 		return
-		switch o.class {
-			case Long: "Number"
-			case EnumLiteral: "Enumeration Literal"
-			case Interval: "Interval"
-			case ConstPlaceHolder: "_"
+		switch o {
+			Long: "Number"
+			EnumLiteral: "Enumeration Literal"
+			Interval: "Interval"
+			ConstPlaceHolder: "_"
 			default: "<unknown type "+o.class.simpleName+">" 
 		}
 	}
