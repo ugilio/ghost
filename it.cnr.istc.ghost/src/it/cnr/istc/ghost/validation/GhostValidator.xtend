@@ -66,7 +66,6 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val RESACTION_NONRES = 'resactionNonRes';
 	public static val RESACTION_WRONGRES = 'resactionWrongRes';
 	public static val SYNCH_INVALID_PARNUM = "synchInvalidParNum";
-	public static val QUALIFINSTVAL_INCOMPATIBLE_COMP = "qualifInstValIncompatibleComp";
 	public static val QUALIFINSTVAL_INCOMPATIBLE_ARGS = "qualifInstValIncompatibleArgs";
 	public static val RESCONSTR_INCOMPATIBLE_COMP = "resConstrIncompatibleComp";
 	public static val INHERITANCE_INCOMPATIBLE_PARAMS = "inheritanceIncompatibleParams";
@@ -306,9 +305,6 @@ class GhostValidator extends AbstractGhostValidator {
 	@Check
 	def checkQualifInstValCompat(QualifInstVal v) {
 		if (! (v.value instanceof ValueDecl) && (v?.value?.name !== null)) {
-			if (v.comp !== null)
-				error(String.format("Cannot find value '%s' in '%s'",v.value.name,v.comp.name),
-					 QUALIF_INST_VAL__VALUE,QUALIFINSTVAL_INCOMPATIBLE_COMP);
 			if (v.arglist !== null)
 				error(String.format("'%s' cannot have arguments since it is not a value",v.value.name),
 					 QUALIF_INST_VAL__ARGLIST,QUALIFINSTVAL_INCOMPATIBLE_ARGS);
