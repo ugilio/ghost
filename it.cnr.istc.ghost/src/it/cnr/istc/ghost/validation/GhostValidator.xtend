@@ -681,7 +681,7 @@ class GhostValidator extends AbstractGhostValidator {
 	private def List<ObjVarDecl> getVariables(ComponentType type) {
 		if (type === null)
 			return Collections.emptyList;
-		val fromParent = getVariables(type.parent as ComponentType);
+		val fromParent = getVariables(type.parent);
 		val secs = 
 		switch (type) {
 			SvDecl: type.body?.variables
