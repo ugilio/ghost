@@ -102,9 +102,8 @@ class GhostValidator extends AbstractGhostValidator {
 		return decl.parent;
 	}
 	
-	private def dispatch ComponentType getParent(Object o) {
-		return null;
-	}
+	private def dispatch ComponentType getParent(Object o) { null }
+	private def dispatch ComponentType getParent(Void o) { null }
 	
 	private def ComponentType getType(CompDecl decl) {
 		return
@@ -360,9 +359,8 @@ class GhostValidator extends AbstractGhostValidator {
 		return false;
 	}
 	
-	private def dispatch boolean isConsumable(EObject decl) {
-		return false;
-	}
+	private def dispatch boolean isConsumable(Object decl) { false }
+	private def dispatch boolean isConsumable(Void decl) { false }
 	
 	private def checkResActionComp(ResourceAction action, EObject resource,
 		EStructuralFeature feature) {
