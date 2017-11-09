@@ -514,7 +514,22 @@ comp c : sv(
 	A
 synchronize:
 	A -> require r(10); 
-)
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.RES_CONSTR,
+			GhostValidator.RESCONSTR_INCOMPATIBLE_COMP);
+	}
+	
+	@Test
+	def void testResourceConstrErr1b() {
+		val model = '''
+type t = sv;
+comp r : t;
+comp c : sv(
+	A
+synchronize:
+	A -> require r(10); 
+);
 		'''.parse;
 		model.assertError(GhostPackage.Literals.RES_CONSTR,
 			GhostValidator.RESCONSTR_INCOMPATIBLE_COMP);
