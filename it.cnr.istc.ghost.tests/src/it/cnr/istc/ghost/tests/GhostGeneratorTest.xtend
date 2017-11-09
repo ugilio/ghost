@@ -129,12 +129,26 @@ DOMAIN MyFile
 	}
 	
 	@Test
-	def void testDomainName() {
+	def void testDomainName1() {
 		'''
 		domain theDomain;
 		'''.assertCompilesTo(
 '''
 DOMAIN theDomain
+{
+	TEMPORAL_MODULE module = [0, 1000], 1000;
+}
+'''			
+		);
+	}
+
+	@Test
+	def void testDomainName2() {
+		'''
+		problem theProblem;
+		'''.assertCompilesTo(
+'''
+DOMAIN theProblem
 {
 	TEMPORAL_MODULE module = [0, 1000], 1000;
 }
