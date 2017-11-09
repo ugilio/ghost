@@ -18,6 +18,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
 		<module>../it.cnr.istc.ghost.updatesite</module>
 		<module>../it.cnr.istc.ghost.target</module>
+
+		<module>../it.cnr.istc.ghost.standalonecompiler</module>
 	</modules>
 
 	<properties>
