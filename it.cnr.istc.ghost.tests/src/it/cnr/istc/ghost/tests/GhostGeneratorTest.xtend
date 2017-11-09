@@ -1011,7 +1011,7 @@ type T = sv(
 type T2 = sv T(uncontr A -> inherited);
 		'''.assertCompiledContains(
 '''
-	COMP_TYPE SingletonStateVariable T2 (B(), A())
+	COMP_TYPE SingletonStateVariable T2 (A(), B())
 	{
 		VALUE <u> A() [0, +INF]
 		MEETS
@@ -1034,7 +1034,7 @@ type T = sv(
 comp C : T (uncontr A -> inherited);
 		'''.assertCompiledContains(
 '''
-	COMP_TYPE SingletonStateVariable CType (B(), A())
+	COMP_TYPE SingletonStateVariable CType (A(), B())
 	{
 		VALUE <u> A() [0, +INF]
 		MEETS
@@ -1149,7 +1149,7 @@ type T1 = sv (A -> B, B);
 type T2 = sv T1 (A -> ())
 		'''.assertCompiledContains(
 '''
-	COMP_TYPE SingletonStateVariable T2 (B(), A())
+	COMP_TYPE SingletonStateVariable T2 (A(), B())
 	{
 	}
 '''			
@@ -1163,7 +1163,7 @@ type T1 = sv (A -> B, B);
 type T2 = sv T1 (A -> C, C)
 		'''.assertCompiledContains(
 '''
-	COMP_TYPE SingletonStateVariable T2 (B(), A(), C())
+	COMP_TYPE SingletonStateVariable T2 (A(), B(), C())
 	{
 		VALUE A() [0, +INF]
 		MEETS
@@ -1182,7 +1182,7 @@ type T1 = sv (A -> B, B);
 type T2 = sv T1 (A -> (inherited; C), C)
 		'''.assertCompiledContains(
 '''
-	COMP_TYPE SingletonStateVariable T2 (B(), A(), C())
+	COMP_TYPE SingletonStateVariable T2 (A(), B(), C())
 	{
 		VALUE A() [0, +INF]
 		MEETS

@@ -35,8 +35,11 @@ public class Utils {
 		list.forEach[e|
 			val name = getName.apply(e);
 			val old = map.put(name,e);
-			if (old !== null)
-				newList.remove(old);
+			if (old !== null) {
+				newList.remove(e);
+				val idx = newList.indexOf(old);
+				newList.set(idx,e);
+			}
 		]
 		return newList;
 	}

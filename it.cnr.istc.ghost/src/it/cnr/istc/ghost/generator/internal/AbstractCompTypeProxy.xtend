@@ -63,47 +63,41 @@ abstract class AbstractCompTypeProxy extends ProxyObject implements CompType {
 			externality = getExternality() == Externality.EXTERNAL;
 		return (externality == true);
 	}
-
-	def <T> contains(List<T> list, T element) {
-		for (T t : list)
-			if (sameName(t, element))
-				return true;
-		return false;
+	
+	def dispatch String getChildName(SVSyncTrigger t1) {
+		return t1?.value?.name;
 	}
 
-	def dispatch sameName(SVSyncTrigger t1, SVSyncTrigger t2) {
-		return t1?.value?.name == t2?.value?.name
+	def dispatch String getChildName(ResSyncTrigger t1) {
+		return t1?.action.toString();
 	}
 
-	def dispatch sameName(ResSyncTrigger t1, ResSyncTrigger t2) {
-		return t1?.action == t2?.action;
+	def dispatch String getChildName(Synchronization s1) {
+		return getChildName(s1?.trigger);
 	}
 
-	def dispatch boolean sameName(Synchronization s1, Synchronization s2) {
-		return sameName(s1?.trigger, s2?.trigger);
+	def dispatch String getChildName(Value v1) {
+		return v1.name;
 	}
 
-	def dispatch sameName(Value v1, Value v2) {
-		return v1.name == v2.name;
+	def dispatch String getChildName(TransitionConstraint tc1) {
+		return tc1?.head?.name;
 	}
 
-	def dispatch sameName(TransitionConstraint tc1, TransitionConstraint tc2) {
-		return tc1?.head?.name == tc2?.head?.name;
+	def dispatch String getChildName(ComponentVariable v1) {
+		return v1?.name;
 	}
 
-	def dispatch sameName(ComponentVariable v1, ComponentVariable v2) {
-		return v1?.name == v2?.name;
-	}
-
-	def dispatch sameName(Object o1, Object o2) {
-		return false;
-	}
+	def dispatch String getChildName(Object o1) { o1.toString() }
+	def dispatch String getChildName(Void o1) { null }
+	
+	
 
 	def <T> List<T> merge(List<T> parent, List<T> child) {
 		val l = new ArrayList(parent.size + child.size);
-		l.addAll(parent.filter[e|!contains(child, e)].toList);
+		l.addAll(parent);
 		l.addAll(child);
-		return l;
+		return Utils.retainRedef(l,[e|getChildName(e)]);
 	}
 
 	override getDeclaredSynchronizations() {
