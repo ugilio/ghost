@@ -25,7 +25,7 @@ EnumDecl : (externality=ExternalityRule)? 'type'name=ID '=' 'enum' '(' (values+=
 SvDecl :  (externality=ExternalityRule)? 'type'name=ID '=' 'sv' (parent=[SvDecl|QUALID])? body=SvBody;
 ResourceDecl :  (externality=ExternalityRule)? 'type'name=ID '=' 'resource' (parent=[ResourceDecl|QUALID])? body=ResourceBody;
 
-SvBody : ('('
+SvBody: {SvBody} ('('
 	transitions+=UnnamedTransitionSection
 	(transitions+=TransitionSection |
 		synchronizations+=SynchronizeSection |
@@ -33,10 +33,10 @@ SvBody : ('('
 	)*
 ')')?;
 
-TransitionSection: 'transition:' (values+=TransConstraint (SEP+ values+=TransConstraint)* SEP*)?;
-SynchronizeSection: 'synchronize:' (values+=Synchronization (SEP+ values+=Synchronization)* SEP*)?;
-VariableSection: 'variable:' (values+=ObjVarDecl (SEP+ values+=ObjVarDecl)* SEP*)?;
-UnnamedTransitionSection returns TransitionSection: (values+=TransConstraint (SEP+ values+=TransConstraint)* SEP*)?;
+TransitionSection: {TransitionSection} 'transition:' (values+=TransConstraint (SEP+ values+=TransConstraint)* SEP*)?;
+SynchronizeSection: {SynchronizeSection} 'synchronize:' (values+=Synchronization (SEP+ values+=Synchronization)* SEP*)?;
+VariableSection: {VariableSection} 'variable:' (values+=ObjVarDecl (SEP+ values+=ObjVarDecl)* SEP*)?;
+UnnamedTransitionSection returns TransitionSection: {TransitionSection} (values+=TransConstraint (SEP+ values+=TransConstraint)* SEP*)?;
 
 TransConstraint : (controllability=ControllabilityRule)? head=ValueDecl
 	(interval=IntvOrDflt)? ('->' body=TransConstrBody)?
@@ -53,13 +53,13 @@ SimpleInstVal: value=[ValueDecl|ID] arglist=NameOnlyParList?;
 QualifInstVal: (comp=[CompRef|ID]".")? value=[SymbolReference] arglist=ArgList?;
 InstVal: ThisKwd | QualifInstVal | ResConstr;
 
-TransConstrBody: (=>values+=SingleTransConstr) | ('('
-	(values+=SingleTransConstr (SEP+ values+=SingleTransConstr)* SEP*)? ')');
+TransConstrBody: {TransConstrBody} ((=>values+=SingleTransConstr) | ('('
+	(values+=SingleTransConstr (SEP+ values+=SingleTransConstr)* SEP*)? ')'));
 SingleTransConstr: InheritedKwd | LocVarDecl | GenericExpression;
 
 Synchronization : trigger=TriggerType '->' bodies+=SyncBody ('or' bodies+=SyncBody)*;
-SyncBody: (=>values+=SingleSyncConstr) | ('('
-	(values+=SingleSyncConstr (SEP+ values+=SingleSyncConstr)* SEP*)? ')');
+SyncBody: {SyncBody} ((=>values+=SingleSyncConstr) | ('('
+	(values+=SingleSyncConstr (SEP+ values+=SingleSyncConstr)* SEP*)? ')'));
 SingleSyncConstr:  InheritedKwd | TemporalExp | LocVarDecl;
 
 TriggerType : ResSimpleInstVal | SimpleInstVal;
@@ -69,7 +69,7 @@ ResConstr: type=ResourceAction res=[CompRef|QUALID] '(' amount=EqExp ')';
 ObjVarDecl : name=ID ':' type=[ComponentType|QUALID];
 
 
-ResourceBody : ('('(val1=ConstExpr (SEP+ val2=ConstExpr)? SEP*)?
+ResourceBody: {ResourceBody} ('('(val1=ConstExpr (SEP+ val2=ConstExpr)? SEP*)?
 	(synchronizations+=SynchronizeSection |
 		variables+=VariableSection
 	)*
@@ -83,10 +83,10 @@ SymbolReference: FormalPar | NamedPar | LocVarDecl | ValueDecl | ConstLiteral;
 AbstractNamedPar: (NamedPar) type=[SimpleType];
 
 FormalPar: type=[SimpleType|QUALID] (name=ID_)?;
-FormalParList: '(' (values+=FormalPar (SEP+ values+=FormalPar )* SEP* )? ')';
+FormalParList: {FormalParList} '(' (values+=FormalPar (SEP+ values+=FormalPar )* SEP* )? ')';
 NamedPar: name=ID_;
-NameOnlyParList: '(' (values+=NamedPar (SEP+ values+=NamedPar )* SEP* )? ')';
-ArgList: '(' (values+=GenericExpression (SEP+ values+=GenericExpression)* SEP* )? ')';
+NameOnlyParList: {NameOnlyParList} '(' (values+=NamedPar (SEP+ values+=NamedPar )* SEP* )? ')';
+ArgList: {ArgList} '(' (values+=GenericExpression (SEP+ values+=GenericExpression)* SEP* )? ')';
 BindPar: (name=[ObjVarDecl] '=')? value=[CompDecl|QUALID];
 BindList: '['values+=BindPar (SEP+ values+=BindPar )* SEP* ']';
 
@@ -141,14 +141,14 @@ AnonResDecl : (externality=ExternalityRule)? 'comp' name=ID ':' 'resource' body=
 
 CompBody : (=> CompSVBody) | CompResBody;
 
-CompSVBody : (bindings=BindList)?('('
+CompSVBody: {CompSVBody} (bindings=BindList)?('('
 	transitions+=UnnamedTransitionSection
 	(transitions+=TransitionSection |
 		synchronizations+=SynchronizeSection
 	)*
 ')')?;
 
-CompResBody : (bindings=BindList)?('(' (val1=ConstExpr (SEP+ val2=ConstExpr)? SEP*)?
+CompResBody: {CompResBody} (bindings=BindList)?('(' (val1=ConstExpr (SEP+ val2=ConstExpr)? SEP*)?
 	(synchronizations+=SynchronizeSection)*
 ')')?;
 
@@ -163,14 +163,14 @@ FactGoal: type=InitConstrType value=InstVal ('at' params=AtParams)?;
 ConstDecl: 'const' name=ID '=' value=ConstExpr;
 
 AtParams: AtParamsNamed | (=> AtParamsPos);
-AtParamsNamed returns AtParams:  ('start' '=' start=IntvOrDflt)? & ('duration' '=' duration=IntvOrDflt)? & ('end' '=' end=IntvOrDflt)?;
-AtParamsPos returns AtParams: (start=IntvOrDflt (duration=IntvOrDflt (end=IntvOrDflt)?)?)?;
+AtParamsNamed returns AtParams: {AtParams} (('start' '=' start=IntvOrDflt)? & ('duration' '=' duration=IntvOrDflt)? & ('end' '=' end=IntvOrDflt)?);
+AtParamsPos returns AtParams: {AtParams} (start=IntvOrDflt (duration=IntvOrDflt (end=IntvOrDflt)?)?)?;
 
 TimePointOp: ( selector=TimePointSelector '(' value=InstVal ')');
 
 EnumLiteral: name=ID;
 ConstLiteral: (ConstDecl | EnumLiteral);
-IntvOrDflt : ('_' | Interval);
+IntvOrDflt: ('_' | Interval);
 Interval : ( '[' lb=NumAndUnit SEP ub=NumAndUnit']') | lbub=NumAndUnit;
 StrictInterval returns Interval: '[' lb=NumAndUnit SEP ub=NumAndUnit']';
 
