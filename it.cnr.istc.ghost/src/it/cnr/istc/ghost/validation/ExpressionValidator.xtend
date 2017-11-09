@@ -413,8 +413,6 @@ class ExpressionValidator extends AbstractExpressionValidator {
 	}
 	
 	protected def dispatch ResultType evalRef(SimpleType type) {
-		if (type === null)
-			return ResultType.UNKNOWN;
 		if (type instanceof IntDecl)
 			return ResultType.NUMERIC;
 		if (type instanceof EnumDecl)
