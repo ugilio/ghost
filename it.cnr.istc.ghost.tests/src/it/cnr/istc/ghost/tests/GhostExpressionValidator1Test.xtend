@@ -515,6 +515,40 @@ synchronize:
 	}
 
 	@Test
+	def void testCompExp2() {
+		val model = '''
+comp c : sv(
+	A
+synchronize:
+	A -> 1 >= 0;
+)
+		'''.parse;
+		val body = EcoreUtil2.eAllOfType(model,SyncBody).head;
+		val exp = EcoreUtil2.eAllOfType(body,Expression).head;
+		v.checkExpressions(body);
+		val rt = v.eval(exp);
+		assertThat(rt,is(ResultType.BOOLEAN));
+		model.assertNoErrors;
+	}
+
+	@Test
+	def void testCompExp3() {
+		val model = '''
+comp c : sv(
+	A
+synchronize:
+	A -> 0 <= 1;
+)
+		'''.parse;
+		val body = EcoreUtil2.eAllOfType(model,SyncBody).head;
+		val exp = EcoreUtil2.eAllOfType(body,Expression).head;
+		v.checkExpressions(body);
+		val rt = v.eval(exp);
+		assertThat(rt,is(ResultType.BOOLEAN));
+		model.assertNoErrors;
+	}
+
+	@Test
 	def void testTempCompExp1() {
 		val model = '''
 comp c : sv(
