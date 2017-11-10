@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -133,6 +135,32 @@ public class Main {
 			forEach(f -> rs.createResource(URI.createFileURI(f.getPath()),"ghost"));
 	}
 	
+	private static List<Issue> sortIssues(List<Issue> list) {
+		PriorityQueue<Issue> q = 
+		new PriorityQueue<>(list.size(), new Comparator<Issue>() {
+			@Override
+			public int compare(Issue o1, Issue o2) {
+				String uri1 = o1.getUriToProblem().toFileString();
+				String uri2 = o2.getUriToProblem().toFileString();
+				int tmp = uri1.compareTo(uri2);
+				if (tmp != 0)
+					return tmp;
+				tmp = o1.getLineNumber()-o2.getLineNumber();
+				if (tmp != 0)
+					return tmp;
+				tmp = o1.getColumn()-o2.getColumn();
+				if (tmp != 0)
+					return tmp;
+				return o1.hashCode()-o2.hashCode();
+			}
+		});
+		q.addAll(list);
+		list = new ArrayList<>(list.size());
+		while (q.peek() != null)
+			list.add(q.poll());
+		return list;
+	}
+	
 	public static void main(String args[]) {
 		GhostCOptions opts = parseOptions(args);
 		if (opts.fnames.size()==0)
@@ -153,7 +181,7 @@ public class Main {
 		IResourceValidator validator = 
 				resource.getResourceServiceProvider().getResourceValidator();
 		List<Issue> issues = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
-		for (Issue issue : issues)
+		for (Issue issue : sortIssues(issues))
 			logger.log(issue);
 		
 		if (!issues.stream().anyMatch(p -> p.getSeverity()==Severity.ERROR))
