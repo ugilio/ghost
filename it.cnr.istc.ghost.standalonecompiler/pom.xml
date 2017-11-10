@@ -75,20 +75,20 @@
     </plugins>
   </build>
   <dependencies>
-  	<dependency>
-  		<groupId>it.cnr.istc.ghost</groupId>
-  		<artifactId>it.cnr.istc.ghost</artifactId>
-  		<version>1.0.0-SNAPSHOT</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>com.google.inject</groupId>
-  		<artifactId>guice</artifactId>
-  		<version>4.1.0</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.eclipse.xtext</groupId>
-  		<artifactId>org.eclipse.xtext</artifactId>
-  		<version>${xtext.version}</version>
-  	</dependency>
+    <dependency>
+      <groupId>it.cnr.istc.ghost</groupId>
+      <artifactId>it.cnr.istc.ghost</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>4.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.xtext</groupId>
+      <artifactId>org.eclipse.xtext</artifactId>
+      <version>${xtext.version}</version>
+    </dependency>
   </dependencies>
 </project>
