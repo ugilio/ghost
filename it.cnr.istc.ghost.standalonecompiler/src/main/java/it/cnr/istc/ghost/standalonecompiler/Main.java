@@ -2,7 +2,12 @@ package it.cnr.istc.ghost.standalonecompiler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
@@ -32,6 +37,7 @@ public class Main {
 	private static int ERR_NOFILES = 2;
 	private static int ERR_FILENOTFOUND = 3;
 	private static int ERR_IOERROR = 4;
+	private static int ERR_DIRERROR = 5;
 	
 	private static void printHelp() {
 		printVersion();
@@ -91,18 +97,57 @@ public class Main {
 		return null;
 	}
 	
+	private static Stream<File> getFiles(File dir) {
+		return Arrays.stream(
+				dir.listFiles(f -> f.getName().toLowerCase().endsWith(".ghost"))).
+				map(f -> f.getAbsoluteFile());
+	}
+	
+	private static void checkDir(String dir) {
+		File f = new File(dir);
+		if (!f.exists())
+			err(String.format("Directory '%s' on the search path does not exist",dir),
+					ERR_DIRERROR);
+		if (!f.isDirectory())
+			err(String.format("Search path entry '%s' is not a directory",dir),
+					ERR_DIRERROR);
+	}
+	
+	private static void scanSearchPath(GhostCOptions opts, XtextResourceSet rs) {
+		for (String d : opts.searchPaths)
+			checkDir(d);
+		
+		HashSet<File> alreadyAdded = new HashSet<>();
+		opts.fnames.stream().map(f -> new File(f).getAbsoluteFile()).
+			forEach(f -> alreadyAdded.add(f));
+		
+		ArrayList<String> allDirs = new ArrayList<>(opts.searchPaths.size()+opts.fnames.size());
+		allDirs.addAll(
+		opts.fnames.stream().
+			map(f -> new File(f).getAbsoluteFile().getParentFile().toString()).
+			distinct().collect(Collectors.toList()));
+		allDirs.addAll(opts.searchPaths);
+		allDirs.stream().
+			flatMap(p -> getFiles(new File(p))).
+			filter(f -> !alreadyAdded.contains(f)).
+			forEach(f -> rs.createResource(URI.createFileURI(f.getPath()),"ghost"));
+	}
+	
 	public static void main(String args[]) {
 		GhostCOptions opts = parseOptions(args);
 		if (opts.fnames.size()==0)
 			err("No source files specified",ERR_NOFILES);
-		String fname = opts.fnames.get(0);
 		
 		Logger logger = new Logger(new File("."));
 		
 		Injector injector = new GhostStandaloneSetup().createInjectorAndDoEMFRegistration();
 		XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
 
+		scanSearchPath(opts, rs);
+		
+		String fname = opts.fnames.get(0);
 		XtextResource resource = loadFile(rs,fname);
+		
 		//add dependent files...
 		
 		IResourceValidator validator = 
