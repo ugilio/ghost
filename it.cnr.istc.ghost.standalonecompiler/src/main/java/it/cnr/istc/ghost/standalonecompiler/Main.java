@@ -1,5 +1,6 @@
 package it.cnr.istc.ghost.standalonecompiler;
 
+import java.io.File;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
@@ -21,6 +22,7 @@ public class Main {
 	
 	public static void main(String args[]) {
 		String fname = args[0];
+		Logger logger = new Logger(new File("."));
 		
 		Injector injector = new GhostStandaloneSetup().createInjectorAndDoEMFRegistration();
 		XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
@@ -32,7 +34,7 @@ public class Main {
 				resource.getResourceServiceProvider().getResourceValidator();
 		List<Issue> issues = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
 		for (Issue issue : issues)
-			System.out.println(issue.getMessage());
+			logger.log(issue);
 		
 		if (!issues.stream().anyMatch(p -> p.getSeverity()==Severity.ERROR))
 		{
