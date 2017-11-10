@@ -1,9 +1,11 @@
 package it.cnr.istc.ghost.standalonecompiler;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.xtext.diagnostics.Severity;
 import org.eclipse.xtext.generator.GeneratorDelegate;
 import org.eclipse.xtext.generator.JavaIoFileSystemAccess;
@@ -28,6 +30,8 @@ public class Main {
 	private static int ERR_OK = 0;
 	private static int ERR_CMDLINE = 1;
 	private static int ERR_NOFILES = 2;
+	private static int ERR_FILENOTFOUND = 3;
+	private static int ERR_IOERROR = 4;
 	
 	private static void printHelp() {
 		printVersion();
@@ -71,6 +75,22 @@ public class Main {
 		System.exit(code);
 	}
 	
+	private static XtextResource loadFile(XtextResourceSet rs, String fname) {
+		URI uri = URI.createFileURI(fname);
+		rs.createResource(uri, "ghost");
+		try {
+			return (XtextResource)rs.getResource(uri, true);
+		}
+		catch (WrappedException w) {
+			Exception e = w.exception();
+			if (e instanceof FileNotFoundException)
+				err(String.format("File '%s' does not exist.",fname),ERR_FILENOTFOUND);
+			else
+				err(String.format("Cannot read file '%s': ", e.getMessage()),ERR_IOERROR);
+		}
+		return null;
+	}
+	
 	public static void main(String args[]) {
 		GhostCOptions opts = parseOptions(args);
 		if (opts.fnames.size()==0)
@@ -81,8 +101,8 @@ public class Main {
 		
 		Injector injector = new GhostStandaloneSetup().createInjectorAndDoEMFRegistration();
 		XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
-		
-		XtextResource resource = (XtextResource)rs.getResource(URI.createFileURI(fname),true);
+
+		XtextResource resource = loadFile(rs,fname);
 		//add dependent files...
 		
 		IResourceValidator validator = 
