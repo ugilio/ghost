@@ -1,7 +1,6 @@
 package it.cnr.istc.ghost.standalonecompiler;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
@@ -15,11 +14,10 @@ import org.eclipse.xtext.validation.CheckMode;
 import org.eclipse.xtext.validation.IResourceValidator;
 import org.eclipse.xtext.validation.Issue;
 
-import com.google.devtools.common.options.OptionsParser;
-import com.google.devtools.common.options.OptionsParsingException;
 import com.google.inject.Injector;
 
 import it.cnr.istc.ghost.GhostStandaloneSetup;
+import joptsimple.OptionException;
 
 public class Main {
 	
@@ -31,18 +29,15 @@ public class Main {
 	private static int ERR_CMDLINE = 1;
 	private static int ERR_NOFILES = 2;
 	
-	private static void printHelp(OptionsParser p) {
-		String help[] = new String[]{
-				VERSION_STR,
-				"",
-				"Usage: ghostc [options] source-files...",
-				p.describeOptions(Collections.emptyMap(),
-						OptionsParser.HelpVerbosity.LONG),
-				""
-		};
-		
-		for (String s : help)
+	private static void printHelp() {
+		printVersion();
+		for (String s : OptionParser.getHelpMessage())
 			System.out.println(s);
+	}
+	
+	private static void printHelpErr() {
+		for (String s : OptionParser.getHelpMessage())
+			System.err.println(s);
 	}
 	
 	private static void printVersion() {
@@ -51,19 +46,18 @@ public class Main {
 	}
 	
 	private static GhostCOptions parseOptions(String args[]) {
-		OptionsParser p = OptionsParser.newOptionsParser(GhostCOptions.class);
+		OptionParser p = new OptionParser();
+		GhostCOptions opts = null;;
 		try {
-			p.parse(args);
+			opts = p.parse(args);
 		}
-		catch (OptionsParsingException e) {
-			System.err.println("Cannot parse command line: "+e.getMessage());
-			printHelp(p);
+		catch (OptionException e) {
+			System.err.println("Wrong arguments: "+e.getMessage());
+			printHelpErr();
 			System.exit(ERR_CMDLINE);
 		}
-		GhostCOptions opts = p.getOptions(GhostCOptions.class);
-		opts.fnames=p.getResidue();
 		if (opts.help)
-			printHelp(p);
+			printHelp();
 		else if (opts.version)
 			printVersion();
 		else
