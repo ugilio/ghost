@@ -90,5 +90,10 @@
       <artifactId>org.eclipse.xtext</artifactId>
       <version>${xtext.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.github.pcj</groupId>
+      <artifactId>google-options</artifactId>
+      <version>1.0.0</version>
+    </dependency>
   </dependencies>
 </project>
