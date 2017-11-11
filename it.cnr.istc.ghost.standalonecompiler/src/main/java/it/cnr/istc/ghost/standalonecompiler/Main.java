@@ -190,7 +190,9 @@ public class Main {
 			{
 				GeneratorDelegate generator = injector.getInstance(GeneratorDelegate.class);
 				JavaIoFileSystemAccess fsa = injector.getInstance(JavaIoFileSystemAccess.class);
-				String path = new File(resource.getURI().toFileString()).getParent();
+				String path = opts.outputPath;
+				if (path == null)
+					path = new File(resource.getURI().toFileString()).getParent();
 				if (path == null) path = ".";
 				fsa.setOutputPath(path);
 				generator.doGenerate(resource, fsa);

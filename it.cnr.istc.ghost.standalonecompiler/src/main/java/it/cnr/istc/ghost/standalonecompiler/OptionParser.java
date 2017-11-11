@@ -12,6 +12,7 @@ public class OptionParser {
 	OptionSpec<Void> help;
 	OptionSpec<Void> version;
 	OptionSpec<String> searchPaths;
+	OptionSpec<String> outputPath;
 	OptionSpec<String> files;
 	
 	private static List<String> l(String... arg) {
@@ -24,6 +25,8 @@ public class OptionParser {
 		version = parser.acceptsAll(l("version","v"), "Shows the program version");
 		searchPaths = parser.acceptsAll(l("path","P")).withRequiredArg().ofType(String.class).
 				describedAs("Adds the specified directory to the search path for imported domains");
+		outputPath = parser.acceptsAll(l("output","O")).withRequiredArg().ofType(String.class).
+				describedAs("Sets the output path where to generate compiled files");
 		files = parser.nonOptions().ofType(String.class);
 	}
 	
@@ -33,6 +36,7 @@ public class OptionParser {
 		opts.help = set.has(help);
 		opts.version = set.has(version);
 		opts.searchPaths = set.valuesOf(searchPaths);
+		opts.outputPath = set.valueOf(outputPath);
 		opts.fnames = set.valuesOf(files);
 		return opts;
 	}
@@ -42,11 +46,12 @@ public class OptionParser {
 				"Usage: ghostc [options] source-files...",
 				"",
 				"Options:",
-				"-P, --path <path>  Adds the specified directory to the search path for",
-				"                   imported domains. This option can be specified multiple",
-				"                   times.",
-				"-h, --help         Prints this help.",
-				"-v, --version      Shows the program version.",
+				"-P, --path <path>   Adds the specified directory to the search path for",
+				"                    imported domains. This option can be specified multiple",
+				"                    times.",
+				"-O, --output <path> Sets the output path where to generate compiled files.",
+				"-h, --help          Prints this help.",
+				"-v, --version       Shows the program version.",
 				""
 		};
 		

@@ -5,11 +5,8 @@ import java.util.List;
 
 public class GhostCOptions {
 	public boolean help;
-
 	public boolean version;
-
 	public List<String> searchPaths = Collections.emptyList();
-	
+	public String outputPath = null;
 	public List<String> fnames = Collections.emptyList();
-
 }
