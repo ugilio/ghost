@@ -175,25 +175,27 @@ public class Main {
 
 		scanSearchPath(opts, rs);
 		
-		String fname = opts.fnames.get(0);
-		XtextResource resource = loadFile(rs,fname);
+		List<XtextResource> resources = 
+				opts.fnames.stream().map(f -> loadFile(rs,f)).
+				collect(Collectors.toList());
 		
-		//add dependent files...
-		
-		IResourceValidator validator = 
+		for (XtextResource resource : resources) {
+			IResourceValidator validator = 
 				resource.getResourceServiceProvider().getResourceValidator();
-		List<Issue> issues = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
-		for (Issue issue : sortIssues(issues))
-			logger.log(issue);
+			List<Issue> issues = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
+			for (Issue issue : sortIssues(issues))
+				logger.log(issue);
 		
-		if (!issues.stream().anyMatch(p -> p.getSeverity()==Severity.ERROR))
-		{
-			GeneratorDelegate generator = injector.getInstance(GeneratorDelegate.class);
-			JavaIoFileSystemAccess fsa = injector.getInstance(JavaIoFileSystemAccess.class);
-			fsa.setOutputPath(".");
-			generator.doGenerate(resource, fsa);
+			if (!issues.stream().anyMatch(p -> p.getSeverity()==Severity.ERROR))
+			{
+				GeneratorDelegate generator = injector.getInstance(GeneratorDelegate.class);
+				JavaIoFileSystemAccess fsa = injector.getInstance(JavaIoFileSystemAccess.class);
+				String path = new File(resource.getURI().toFileString()).getParent();
+				if (path == null) path = ".";
+				fsa.setOutputPath(path);
+				generator.doGenerate(resource, fsa);
+			}
 		}
-		
 	}
 
 }
