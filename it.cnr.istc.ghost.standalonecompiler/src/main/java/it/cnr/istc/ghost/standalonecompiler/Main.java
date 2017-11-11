@@ -136,6 +136,8 @@ public class Main {
 	}
 	
 	private static List<Issue> sortIssues(List<Issue> list) {
+		if (list.size()<=1)
+			return list;
 		PriorityQueue<Issue> q = 
 		new PriorityQueue<>(list.size(), new Comparator<Issue>() {
 			@Override
