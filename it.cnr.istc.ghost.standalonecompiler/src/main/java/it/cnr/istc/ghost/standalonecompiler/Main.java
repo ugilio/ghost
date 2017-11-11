@@ -19,6 +19,7 @@ import org.eclipse.xtext.generator.JavaIoFileSystemAccess;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextResourceSet;
 import org.eclipse.xtext.util.CancelIndicator;
+import org.eclipse.xtext.util.RuntimeIOException;
 import org.eclipse.xtext.validation.CheckMode;
 import org.eclipse.xtext.validation.IResourceValidator;
 import org.eclipse.xtext.validation.Issue;
@@ -164,6 +165,7 @@ public class Main {
 	}
 	
 	public static void main(String args[]) {
+		try {
 		GhostCOptions opts = parseOptions(args);
 		if (opts.fnames.size()==0)
 			err("No source files specified",ERR_NOFILES);
@@ -197,6 +199,13 @@ public class Main {
 				fsa.setOutputPath(path);
 				generator.doGenerate(resource, fsa);
 			}
+		}
+		}
+		catch (RuntimeIOException e) {
+			Throwable exc = e;
+			while (exc.getCause() != null)
+				exc = exc.getCause();
+			err("I/O error: "+exc.getMessage(),ERR_IOERROR);
 		}
 	}
 
