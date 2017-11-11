@@ -103,6 +103,7 @@ public class Main {
 	private static Stream<File> getFiles(File dir) {
 		return Arrays.stream(
 				dir.listFiles(f -> f.getName().toLowerCase().endsWith(".ghost"))).
+				filter(f -> f.canRead()).
 				map(f -> f.getAbsoluteFile());
 	}
 	
@@ -113,6 +114,9 @@ public class Main {
 					ERR_DIRERROR);
 		if (!f.isDirectory())
 			err(String.format("Search path entry '%s' is not a directory",dir),
+					ERR_DIRERROR);
+		if (!f.canRead() || !f.canExecute())
+			err(String.format("Cannot list directory '%s': permission denied",dir),
 					ERR_DIRERROR);
 	}
 	
@@ -127,7 +131,9 @@ public class Main {
 		ArrayList<String> allDirs = new ArrayList<>(opts.searchPaths.size()+opts.fnames.size());
 		allDirs.addAll(
 		opts.fnames.stream().
-			map(f -> new File(f).getAbsoluteFile().getParentFile().toString()).
+			map(f -> new File(f).getAbsoluteFile().getParentFile()).
+			filter(f -> f.canRead() && f.canExecute()).
+			map(f -> f.toString()).
 			distinct().collect(Collectors.toList()));
 		allDirs.addAll(opts.searchPaths);
 		allDirs.stream().
