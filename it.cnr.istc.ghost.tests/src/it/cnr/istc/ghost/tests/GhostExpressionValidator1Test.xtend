@@ -618,7 +618,7 @@ synchronize:
 	}
 	
 	@Test
-	def void testUndefSymbol() {
+	def void testUndefSymbol1() {
 		val model = '''
 comp c : sv(
 	A
@@ -627,6 +627,25 @@ synchronize:
 )
 		'''.parse;
 		val body = EcoreUtil2.eAllOfType(model,SyncBody).head;
+		val exp = EcoreUtil2.eAllOfType(body,Expression).head;
+		v.checkExpressions(body);
+		val rt = v.eval(exp);
+		assertThat(rt,is(ResultType.NUMERIC));
+	}
+	
+	@Test
+	def void testUndefSymbol2() {
+		val model = '''
+type ComplexType = sv
+(
+  A(atype x) -> (
+    var y = x+10;
+    B(y,x)
+  );
+  B(atype x,atype y)
+);
+		'''.parse;
+		val body = EcoreUtil2.eAllOfType(model,TransConstrBody).head;
 		val exp = EcoreUtil2.eAllOfType(body,Expression).head;
 		v.checkExpressions(body);
 		val rt = v.eval(exp);

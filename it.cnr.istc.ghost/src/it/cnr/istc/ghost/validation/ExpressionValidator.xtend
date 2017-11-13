@@ -430,6 +430,8 @@ class ExpressionValidator extends AbstractExpressionValidator {
 			return ResultType.NUMERIC;
 		if (type instanceof EnumDecl)
 			return ResultType.ENUM;
+		if (type.eIsProxy)
+			return ResultType.UNKNOWN;
 		throw new IllegalArgumentException("Unknown type: "+type);
 	}
 	
