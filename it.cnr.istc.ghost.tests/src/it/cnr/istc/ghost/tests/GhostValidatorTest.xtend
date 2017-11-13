@@ -1408,4 +1408,28 @@ comp C2 : T2[other=C1];
 		model.assertError(GhostPackage.Literals.BIND_LIST,GhostValidator.BINDLIST_INCOMP_TYPES);
 	}
 	
+	@Test
+	def void testWrongObjVarDeclType3(){
+		val model = '''
+type T = sv (A,B
+variable:
+	other: T
+);
+comp C : T[NonExistant];
+		'''.parse;
+		model.assertNoError(GhostValidator.BINDLIST_INCOMP_TYPES);
+	}
+	
+	@Test
+	def void testWrongObjVarDeclType4(){
+		val model = '''
+type T = sv (A,B
+variable:
+	other: WrongType
+);
+comp C : T[C];
+		'''.parse;
+		model.assertNoError(GhostValidator.BINDLIST_INCOMP_TYPES);
+	}
+	
 }

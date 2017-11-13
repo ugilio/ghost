@@ -698,6 +698,10 @@ class GhostValidator extends AbstractGhostValidator {
 	
 	private def boolean areTypesCompatible(ComponentType requestedType,
 		ComponentType actualType) {
+		//avoid errors on erroneous types 
+		if (requestedType === null || actualType === null
+			|| requestedType.eIsProxy || actualType.eIsProxy)
+			return true;
 		var t = actualType;
 		while (t !== null && t !== requestedType)
 			t = t.parent;
