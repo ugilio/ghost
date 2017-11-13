@@ -190,6 +190,24 @@ synchronize:
 	}
 	
 	@Test
+	def void testNotUselessExp6() {
+		val model = '''
+comp c : sv (A);
+init (fact c.A at 0)
+		'''.parse;
+		model.assertNoIssues();
+	}
+	
+	@Test
+	def void testNotUselessExp7() {
+		val model = '''
+comp c : sv (A);
+init (goal c.A)
+		'''.parse;
+		model.assertNoIssues();
+	}
+	
+	@Test
 	def void testIncompTempOpPointPoint1() {
 		val model = '''
 comp c : sv (

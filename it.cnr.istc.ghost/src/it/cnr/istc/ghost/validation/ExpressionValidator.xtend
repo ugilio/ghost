@@ -256,7 +256,7 @@ class ExpressionValidator extends AbstractExpressionValidator {
 				case UNKNOWN,
 				case BOOLEAN,
 				case TEMPORALEXP : true
-				case INSTVAL: inTransConstr || (exp instanceof ResConstr)
+				case INSTVAL: inTransConstr || (exp instanceof ResConstr) || (exp instanceof FactGoal)
 				default: false
 			}
 			if (!ok)
