@@ -80,7 +80,7 @@ class BlockImpl extends ProxyObject implements StatementBlock, InitStatementBloc
 				InstantiatedValue: wrapInstValueInExp(p)
 				InheritedKwd: inherits = true
 				Fact: facts.add(p)
-				default: throw new IllegalArgumentException("Unknown expression type: " + p)
+				default: {} //ignore
 			}
 		}
 	}
