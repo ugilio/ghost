@@ -107,6 +107,22 @@ init (var horizon = 100;)
 	}
 	
 	@Test
+	def void testUnusedVar5() {
+		val model = '''
+type n = int [0,100];
+type T = sv
+( 
+  A() -> (
+    var x = 10;
+    B(x)
+  );
+  B(n x)
+);
+		'''.parse;
+		model.assertNoIssues();
+	}
+	
+	@Test
 	def void testLocVarInvalidType() {
 		val model = '''
 comp C: sv(

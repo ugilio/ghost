@@ -383,6 +383,8 @@ class ExpressionValidator extends AbstractExpressionValidator {
 	}
 
 	protected def dispatch ResultType eval(QualifInstVal exp) {
+		if (exp.arglist !== null)
+			exp.arglist.values.forEach[eval];
 		if (exp.comp !== null || exp.arglist !== null || exp.value instanceof ValueDecl)
 			return ResultType.INSTVAL;
 		return evalRef(exp.value);
