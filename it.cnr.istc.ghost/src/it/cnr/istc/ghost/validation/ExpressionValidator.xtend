@@ -121,8 +121,7 @@ class ExpressionValidator extends AbstractExpressionValidator {
 	private def reportUnusedVars() {
 		for (v : unusedVars)
 			warning(String.format(
-			"Local variable '%s' declared but not used",v.name),v,
-			GhostValidator.UNUSED_VAR);
+			"Local variable '%s' declared but not used",v.name),v,GhostValidator.UNUSED_VAR);
 	}
 	
 	protected def error(String message, EObject source, EStructuralFeature feature, int index, String code,
