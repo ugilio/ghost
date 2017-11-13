@@ -89,6 +89,24 @@ comp c : sv (
 	}
 	
 	@Test
+	def void testUnusedVar3() {
+		val model = '''
+comp c : sv (
+	A -> var horizon = 100;
+);
+		'''.parse;
+		model.assertWarning(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.UNUSED_VAR);
+	}
+	
+	@Test
+	def void testUnusedVar4() {
+		val model = '''
+init (var horizon = 100;)
+		'''.parse;
+		model.assertNoIssues();
+	}
+	
+	@Test
 	def void testLocVarInvalidType() {
 		val model = '''
 comp C: sv(

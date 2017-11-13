@@ -61,7 +61,7 @@ class ExpressionValidator extends AbstractExpressionValidator {
 	//SyncBody or TransConstrBody
 	def checkExpressions(EObject body) {
 		determineLocVarTypes(body);
-		unusedVars.addAll(body.eContents.filter(LocVarDecl));
+		unusedVars.addAll(body.eContents.filter(LocVarDecl).filter[!isSpecialInitVariable]);
 		//now check everything with proper error messages
 		val inTC = body instanceof TransConstrBody;
 		for (exp : body.eContents)
@@ -69,11 +69,17 @@ class ExpressionValidator extends AbstractExpressionValidator {
 		reportUnusedVars();
 	}
 	
-	private def void checkSpecialInitValues(LocVarDecl varDecl, ResultType type) {
+	private def boolean isSpecialInitVariable(LocVarDecl varDecl) {
 		switch (varDecl?.name) {
 			case 'start', case 'horizon', case 'resolution': {}
-			default: return
+			default: return false
 		}
+		return (EcoreUtil2.getContainerOfType(varDecl,InitSection) !== null);
+	} 
+	
+	private def void checkSpecialInitValues(LocVarDecl varDecl, ResultType type) {
+		if (!isSpecialInitVariable(varDecl))
+			return;
 		if (EcoreUtil2.getContainerOfType(varDecl,InitSection) === null)
 			return;
 		if (type != ResultType.NUMERIC)
