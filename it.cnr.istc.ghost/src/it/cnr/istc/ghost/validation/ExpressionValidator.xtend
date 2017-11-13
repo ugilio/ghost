@@ -31,6 +31,7 @@ import it.cnr.istc.ghost.ghost.InitSection
 import it.cnr.istc.ghost.ghost.GhostPackage
 import it.cnr.istc.ghost.ghost.ConstLiteral
 import it.cnr.istc.ghost.ghost.FactGoal
+import java.util.List
 
 class ExpressionValidator extends AbstractExpressionValidator {
 
@@ -120,7 +121,8 @@ class ExpressionValidator extends AbstractExpressionValidator {
 	private def reportUnusedVars() {
 		for (v : unusedVars)
 			warning(String.format(
-			"Local variable '%s' declared but not used",v.name),v,GhostValidator.UNUSED_VAR);
+			"Local variable '%s' declared but not used",v.name),v,
+			GhostValidator.UNUSED_VAR);
 	}
 	
 	protected def error(String message, EObject source, EStructuralFeature feature, int index, String code,
@@ -135,16 +137,22 @@ class ExpressionValidator extends AbstractExpressionValidator {
 			warnMsgFunction.warning(message, source, feature, index, code, issueData);
 	}
 	
+	private def getIndex(EObject cont, EStructuralFeature feat, EObject obj) {
+		if (!feat.isMany) return -1;
+		val list = cont.eGet(feat) as List<? extends EObject>;
+		return list.indexOf(obj);
+	}
+	
 	protected def warning(String message, EObject source, String code) {
 		val cont = source.eContainer;
 		val feat = source.eContainingFeature;
-		warning(message,cont,feat,-1,code);
+		warning(message,cont,feat,getIndex(cont,feat,source),code);
 	}
 	
 	protected def error(String message, EObject source, String code) {
 		val cont = source.eContainer;
 		val feat = source.eContainingFeature;
-		error(message,cont,feat,-1,code);
+		error(message,cont,feat,getIndex(cont,feat,source),code);
 	}
 	
 	private def String formatType(ResultType type) {
