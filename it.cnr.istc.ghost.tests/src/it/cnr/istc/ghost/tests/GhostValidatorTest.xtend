@@ -1111,6 +1111,20 @@ comp c3 : T[c1];
 	}
 	
 	@Test
+	def void testBindListUnbound2() {
+		val model = '''
+type t1 = sv;
+
+type T = sv(
+variable:
+	A : t1, B : t1;
+);
+comp c : T;
+		'''.parse;
+		model.assertError(GhostPackage.Literals.COMP_SV_BODY, GhostValidator.BINDLIST_SOME_UNBOUND);
+	}
+	
+	@Test
 	def void testBindListTooMuch1() {
 		val model = '''
 type t1 = sv;

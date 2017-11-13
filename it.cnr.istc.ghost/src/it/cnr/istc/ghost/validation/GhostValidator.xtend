@@ -729,18 +729,25 @@ class GhostValidator extends AbstractGhostValidator {
 	}
 	
 	@Check
-	def void checkBindListSize(BindList bl) {
-		val cd = EcoreUtil2.getContainerOfType(bl,NamedCompDecl);
+	def void checkBindListSize(CompBody body) {
+		val bl = body.bindings;
+		val cd = EcoreUtil2.getContainerOfType(body,NamedCompDecl);
 		val varSize = if (cd !== null)
 			getVariables(cd?.type).size()
 			else 0;
-		val blSize = bl.values.size();
+		val blSize = if (bl?.values !== null) bl.values.size() else 0;
+		var EObject errObj = bl;
+		var errFeat = BIND_LIST__VALUES;
+		if (bl === null) {
+			errObj = body;
+			errFeat = COMP_BODY__BINDINGS; 
+		}
 		if (varSize > blSize)
-			error("Some component variables are left unbound",
-				BIND_LIST__VALUES,BINDLIST_SOME_UNBOUND)
+			error("Some component variables are left unbound",errObj,
+				errFeat,BINDLIST_SOME_UNBOUND)
 		else if (varSize < blSize)
-			error("Too many elements in bind list",
-				BIND_LIST__VALUES,BINDLIST_TOO_LARGE)
+			error("Too many elements in bind list",errObj,
+				errFeat,BINDLIST_TOO_LARGE)
 	}
 	
 	@Check

@@ -12,6 +12,7 @@ import it.cnr.istc.timeline.lang.ComponentReference
 import it.cnr.istc.timeline.lang.ComponentVariable
 import java.util.HashMap
 import java.util.List
+import java.util.Collections
 
 class ComponentProxy extends ProxyObject implements Component {
 	CompDecl real = null;
@@ -50,6 +51,8 @@ class ComponentProxy extends ProxyObject implements Component {
 				default: throw new IllegalArgumentException("Wrong CompDecl type: " + real)
 			}
 			bindings = getProxy(body.getBindings()) as List<ComponentReference>;
+			if (bindings === null)
+				bindings = Collections.emptyList();
 		}
 		return bindings;
 	}
