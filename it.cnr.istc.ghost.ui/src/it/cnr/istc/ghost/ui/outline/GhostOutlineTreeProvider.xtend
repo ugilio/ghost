@@ -4,6 +4,30 @@
 package it.cnr.istc.ghost.ui.outline
 
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
+import org.eclipse.xtext.ui.editor.outline.impl.DocumentRootNode
+import it.cnr.istc.ghost.ghost.Ghost
+import it.cnr.istc.ghost.ghost.DomainDecl
+import it.cnr.istc.ghost.ghost.ProblemDecl
+import it.cnr.istc.ghost.ghost.ImportDecl
+import it.cnr.istc.ghost.ghost.IntDecl
+import it.cnr.istc.ghost.ghost.ConstDecl
+import it.cnr.istc.ghost.ghost.InitSection
+import org.eclipse.xtext.ui.editor.outline.IOutlineNode
+import it.cnr.istc.ghost.ghost.SvDecl
+import org.eclipse.emf.ecore.EObject
+import it.cnr.istc.ghost.ghost.TransitionSection
+import it.cnr.istc.ghost.ghost.SynchronizeSection
+import it.cnr.istc.ghost.ghost.VariableSection
+import it.cnr.istc.ghost.ghost.TransConstraint
+import it.cnr.istc.ghost.ghost.Synchronization
+import it.cnr.istc.ghost.ghost.ObjVarDecl
+import it.cnr.istc.ghost.ghost.ResourceDecl
+import it.cnr.istc.ghost.ghost.NamedCompDecl
+import it.cnr.istc.ghost.ghost.AnonSVDecl
+import it.cnr.istc.ghost.ghost.AnonResDecl
+import it.cnr.istc.ghost.ghost.ValueDecl
+import it.cnr.istc.ghost.ghost.TriggerType
+import org.eclipse.xtext.nodemodel.util.NodeModelUtils
 
 /**
  * Customization of the default outline structure.
@@ -11,5 +35,90 @@ import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
  * See https://www.eclipse.org/Xtext/documentation/310_eclipse_support.html#outline
  */
 class GhostOutlineTreeProvider extends DefaultOutlineTreeProvider {
-
+	
+	//Hide root node
+	protected def _createChildren(DocumentRootNode parentNode, Ghost ghost) {
+		for (o : ghost.eContents)
+			createNode(parentNode,o);
+    }
+    
+	protected def _createChildren(IOutlineNode parentNode, SvDecl decl) {
+		createChildrenForBody(parentNode,decl.body);
+    }
+    
+	protected def _createChildren(IOutlineNode parentNode, ResourceDecl decl) {
+		createChildrenForBody(parentNode,decl.body);
+    }
+    
+	protected def _createChildren(IOutlineNode parentNode, NamedCompDecl decl) {
+		createChildrenForBody(parentNode,decl.body);
+    }
+    
+	protected def _createChildren(IOutlineNode parentNode, AnonSVDecl decl) {
+		createChildrenForBody(parentNode,decl.body);
+    }
+    
+	protected def _createChildren(IOutlineNode parentNode, AnonResDecl decl) {
+		createChildrenForBody(parentNode,decl.body);
+    }
+    
+    private def boolean isVisibleBodySection(EObject obj) {
+    	return
+    	switch (obj) {
+    		TransitionSection : true
+    		SynchronizeSection: true
+    		VariableSection: true
+    		default: false
+    	}
+    }
+    
+    private def getNamedElement(EObject obj) {
+    	return
+    	switch (obj) {
+    		TransConstraint: obj.head
+    		Synchronization: obj.trigger
+    		ObjVarDecl: obj
+    		default: obj  
+    	}
+    }
+    
+    private def createChildrenForBody(IOutlineNode parentNode, EObject body) {
+    	body.eContents.filter[isVisibleBodySection].
+    		map[eContents].flatten.map[getNamedElement].
+    		sortWith[o1,o2|NodeModelUtils.getNode(o1).offset-NodeModelUtils.getNode(o2).offset].
+    		forEach[o|createNode(parentNode,o)];
+    }
+    
+	def _isLeaf(DomainDecl d) {
+		return true;
+	}
+	
+	def _isLeaf(ProblemDecl d) {
+		return true;
+	}
+	
+	def _isLeaf(ImportDecl d) {
+		return true;
+	}
+	
+	def _isLeaf(IntDecl d) {
+		return true;
+	}
+	
+	def _isLeaf(ValueDecl d) {
+		return true;
+	}
+	
+	def _isLeaf(TriggerType t) {
+		return true;
+	}
+	
+	def _isLeaf(ConstDecl d) {
+		return true;
+	}
+	
+	def _isLeaf(InitSection s) {
+		return true;
+	}
+	
 }

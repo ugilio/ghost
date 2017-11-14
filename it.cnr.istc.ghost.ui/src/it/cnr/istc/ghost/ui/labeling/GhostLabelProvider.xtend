@@ -6,6 +6,15 @@ package it.cnr.istc.ghost.ui.labeling
 import com.google.inject.Inject
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
 import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider
+import it.cnr.istc.ghost.naming.GhostNameProvider
+import org.eclipse.emf.ecore.EObject
+import it.cnr.istc.ghost.ghost.InitSection
+import it.cnr.istc.ghost.ghost.SimpleInstVal
+import it.cnr.istc.ghost.ghost.ValueDecl
+import it.cnr.istc.ghost.ghost.ObjVarDecl
+import it.cnr.istc.ghost.ghost.ResSimpleInstVal
+import org.eclipse.xtext.linking.lazy.LazyLinkingResource
+import org.eclipse.emf.ecore.util.EcoreUtil
 
 /**
  * Provides labels for EObjects.
@@ -21,9 +30,49 @@ class GhostLabelProvider extends DefaultEObjectLabelProvider {
 
 	// Labels and icons can be computed like this:
 	
-//	def text(Greeting ele) {
-//		'A greeting to ' + ele.name
-//	}
+	def text(EObject obj) {
+		return GhostNameProvider.getObjName(obj);
+	}
+	
+	private def String getReferenceName(EObject context, EObject obj) {
+		if (obj === null) return "";
+		if (!obj.eIsProxy)
+			return GhostNameProvider.getObjName(obj);
+		val res = context.eResource;
+		if (res instanceof LazyLinkingResource) {
+			val enc = res.encoder;
+			val triple = enc?.decode(res,EcoreUtil.getURI(obj).fragment);
+			val node = triple?.third;
+			if (node !== null)
+				return node.getText.trim();
+		}
+		return "";
+	}
+	
+	def text(InitSection init) {
+		return "init";
+	}
+	
+	def text(ValueDecl decl) {
+		val args = if (decl.parlist === null) "()"
+			else "("+decl.parlist.values.map[p|getReferenceName(p,p.type)].join(", ")+")";
+		return decl.name+args;
+	}
+	
+	def text(SimpleInstVal v) {
+		val args = if (v.arglist === null) "()"
+			else "("+v.arglist.values.map[a|a.name].join(", ")+")";
+		return v.value?.name+args;
+	}
+	
+	def text(ResSimpleInstVal v) {
+		return v.type.toString+"("+v.arg.name+")";
+	}
+	
+	def text(ObjVarDecl d) {
+		return d.name+": "+getReferenceName(d,d.type);
+	}
+	
 //
 //	def image(Greeting ele) {
 //		'Greeting.gif'
