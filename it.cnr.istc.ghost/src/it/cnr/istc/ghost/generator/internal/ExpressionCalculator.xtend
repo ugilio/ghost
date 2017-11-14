@@ -28,15 +28,13 @@ public class ExpressionCalculator {
 	}
 	
 	private def boolean canApply(String lOp, long left, String rOp, long right) {
-		if (divisionsAllowed)
-			return true;
 		// Be careful about division.
 		// Special cases:
 		//   /x/y = /(x*y) (no worries) 
 		//   x/y and /x*y = /(x/y) be careful
 		//if divisor == 0 let it fail later
 		if ((lOp == '/' && rOp == '*') || (lOp != '/' && rOp == '/'))
-			return (right == 0) || left % right == 0;
+			return (right != 0) && (divisionsAllowed || left % right == 0);
 		return true;
 	}
 

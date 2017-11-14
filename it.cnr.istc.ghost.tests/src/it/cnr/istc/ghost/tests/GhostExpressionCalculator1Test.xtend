@@ -441,11 +441,12 @@ class GhostExpressionCalculator1Test{
 		assertThat(printExp(r),is(equalTo("x")));
 	}
 	
-	@Test(expected=ArithmeticException)
+	@Test
 	def void testDivBy0() {
 		//2/0
 		val e = exp(2L,'/',0L);
-		c.evaluate(e);
+		val r = c.evaluate(e);
+		assertThat(printExp(r),is(equalTo("2 / 0")));
 	}
 
 	@Test
