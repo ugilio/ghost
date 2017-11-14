@@ -877,6 +877,15 @@ comp r2 : r1(10,20);
 	}
 	
 	@Test
+	def void testConsRenewInheritance5() {
+		val model = '''
+type r1 = resource (10,20);
+comp r2 : r1;
+		'''.parse;
+		model.assertNoIssue(GhostPackage.Literals.COMP_DECL,GhostValidator.RENEWABLE_CONSUMABLE_MIX);
+	}
+	
+	@Test
 	def void testWrongInheritedKwd1() {
 		val model = '''
 type t = int [0,100];

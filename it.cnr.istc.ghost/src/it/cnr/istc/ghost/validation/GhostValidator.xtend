@@ -640,7 +640,8 @@ class GhostValidator extends AbstractGhostValidator {
 	
 	@Check
 	def checkRenewableConsumableHierarchy(ResourceDecl decl) {
-		doCheckRenewableConsumableHierarchy(decl,decl.body?.val2,decl.name,RESOURCE_DECL__PARENT);
+		doCheckRenewableConsumableHierarchy(decl,
+			decl.body?.val1,decl.body?.val2,decl.name,RESOURCE_DECL__PARENT);
 	}
 	
 	@Check
@@ -663,11 +664,12 @@ class GhostValidator extends AbstractGhostValidator {
 	def checkRenewableConsumableHierarchy(NamedCompDecl decl) {
 		if (decl.type instanceof ResourceDecl) {
 			val body = decl.body;
-			val val2 = switch (body) {
-				CompResBody: body.val2
-				default: null
+			var ConstExpr val1 = null; var ConstExpr val2 = null;
+			switch (body) {
+				CompResBody: {val1 = body.val1; val2 = body.val2}
 			}
-			doCheckRenewableConsumableHierarchy(decl,val2,decl.name,
+			
+			doCheckRenewableConsumableHierarchy(decl,val1,val2,decl.name,
 				NAMED_COMP_DECL__TYPE);
 		}
 	}
@@ -778,8 +780,10 @@ class GhostValidator extends AbstractGhostValidator {
 	
 	
 	
-	private def doCheckRenewableConsumableHierarchy(EObject decl, ConstExpr v2,
-		String name, EReference ref) {
+	private def doCheckRenewableConsumableHierarchy(EObject decl, ConstExpr v1,
+		ConstExpr v2, String name, EReference ref) {
+		if (v1 === null && v2 === null)
+			return;
 		val parent = getParentType(decl);
 		if (parent !== null && parent instanceof ResourceDecl) {
 			val pv2 = (parent as ResourceDecl).body?.val2;
