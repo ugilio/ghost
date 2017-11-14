@@ -1432,4 +1432,17 @@ comp C : T[C];
 		model.assertNoError(GhostValidator.BINDLIST_INCOMP_TYPES);
 	}
 	
+	@Test
+	def void testMultiErr1(){
+		val model = '''
+type n = int [0,100];
+type T = sv (A(n x)
+);
+comp C : T(
+	A(no x) -> inherited;
+);
+		'''.parse;
+		model.assertNoError(GhostValidator.INHERITANCE_INCOMPATIBLE_PARAMS);
+	}
+
 }

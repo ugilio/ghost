@@ -517,8 +517,9 @@ class GhostValidator extends AbstractGhostValidator {
 				val p = parentVal.parlist.values.get(i);
 				val t = v.parlist.values.get(i);
 				if (p.type != t.type) {
-					val pn = if (p.type?.name === null) "<error>" else p.type.name; 
-					val tn = if (t.type?.name === null) "<error>" else t.type.name; 
+					val pn = p.type.name; 
+					val tn = t.type.name;
+					if (pn !== null && tn !== null) 
 					error(String.format("Incompatible parameter: expected '%s' but got '%s'",
 						pn,tn),VALUE_DECL__PARLIST,INHERITANCE_INCOMPATIBLE_PARAMS);
 				}
