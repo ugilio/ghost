@@ -1,0 +1,58 @@
+package it.cnr.istc.ghost.ui.labeling
+
+import java.util.concurrent.ConcurrentHashMap
+import org.eclipse.emf.ecore.EClass
+import it.cnr.istc.ghost.ghost.GhostPackage
+import org.eclipse.emf.ecore.EObject
+
+class GhostImageProvider {
+	private ConcurrentHashMap<EClass,String> icons;
+	
+	def image(EObject obj) {
+		val cls = obj.eClass;
+		var icon = icons.get(cls);
+		if (icon===null)
+			icon=handleSuperType(cls);
+		if ("".equals(icon))
+			icon=null;
+		return icon;
+	}
+	
+	private def handleSuperType(EClass cls) {
+		val sup = cls.getESuperTypes();
+		for (st : sup)
+			if (icons.containsKey(st))
+			{
+				val ic = icons.get(st);
+				icons.put(cls,ic);
+				return ic;
+			}
+		//Avoid looking up superclasses each time if this icon does not exist
+		icons.put(cls,"");
+		return null;
+	}
+	
+	new() {
+		icons=new ConcurrentHashMap(30);
+		icons.put(GhostPackage.Literals.DOMAIN_DECL,"domain.png");
+		icons.put(GhostPackage.Literals.PROBLEM_DECL,"problem.png");
+		
+		icons.put(GhostPackage.Literals.IMPORT_DECL,"imp_obj.png");
+		
+		icons.put(GhostPackage.Literals.INT_DECL,"interval.png");
+		icons.put(GhostPackage.Literals.ENUM_DECL,"enum_obj.png");
+		icons.put(GhostPackage.Literals.SV_DECL,"statevariable.png");
+		icons.put(GhostPackage.Literals.RESOURCE_DECL,"resource.png");
+
+		icons.put(GhostPackage.Literals.CONST_DECL,"constant.png");
+		
+		icons.put(GhostPackage.Literals.COMP_DECL,"class_obj.png");
+		
+		icons.put(GhostPackage.Literals.ENUM_LITERAL,"enumliteral.png");
+		icons.put(GhostPackage.Literals.TRANS_CONSTRAINT,"transconstr.png");
+		icons.put(GhostPackage.Literals.SYNCHRONIZATION,"synchro.png");
+		icons.put(GhostPackage.Literals.OBJ_VAR_DECL,"compvar.png");
+		
+		icons.put(GhostPackage.Literals.INIT_SECTION,"init.png");
+	}	
+}

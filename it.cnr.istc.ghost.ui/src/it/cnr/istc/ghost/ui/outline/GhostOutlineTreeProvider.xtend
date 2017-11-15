@@ -20,13 +20,10 @@ import it.cnr.istc.ghost.ghost.SynchronizeSection
 import it.cnr.istc.ghost.ghost.VariableSection
 import it.cnr.istc.ghost.ghost.TransConstraint
 import it.cnr.istc.ghost.ghost.Synchronization
-import it.cnr.istc.ghost.ghost.ObjVarDecl
 import it.cnr.istc.ghost.ghost.ResourceDecl
 import it.cnr.istc.ghost.ghost.NamedCompDecl
 import it.cnr.istc.ghost.ghost.AnonSVDecl
 import it.cnr.istc.ghost.ghost.AnonResDecl
-import it.cnr.istc.ghost.ghost.ValueDecl
-import it.cnr.istc.ghost.ghost.TriggerType
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
 
 /**
@@ -72,19 +69,9 @@ class GhostOutlineTreeProvider extends DefaultOutlineTreeProvider {
     	}
     }
     
-    private def getNamedElement(EObject obj) {
-    	return
-    	switch (obj) {
-    		TransConstraint: obj.head
-    		Synchronization: obj.trigger
-    		ObjVarDecl: obj
-    		default: obj  
-    	}
-    }
-    
     private def createChildrenForBody(IOutlineNode parentNode, EObject body) {
     	body.eContents.filter[isVisibleBodySection].
-    		map[eContents].flatten.map[getNamedElement].
+    		map[eContents].flatten.
     		sortWith[o1,o2|NodeModelUtils.getNode(o1).offset-NodeModelUtils.getNode(o2).offset].
     		forEach[o|createNode(parentNode,o)];
     }
@@ -105,11 +92,11 @@ class GhostOutlineTreeProvider extends DefaultOutlineTreeProvider {
 		return true;
 	}
 	
-	def _isLeaf(ValueDecl d) {
+	def _isLeaf(TransConstraint c) {
 		return true;
 	}
 	
-	def _isLeaf(TriggerType t) {
+	def _isLeaf(Synchronization s) {
 		return true;
 	}
 	

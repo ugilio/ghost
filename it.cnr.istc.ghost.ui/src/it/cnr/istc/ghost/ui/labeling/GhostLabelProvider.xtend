@@ -15,6 +15,8 @@ import it.cnr.istc.ghost.ghost.ObjVarDecl
 import it.cnr.istc.ghost.ghost.ResSimpleInstVal
 import org.eclipse.xtext.linking.lazy.LazyLinkingResource
 import org.eclipse.emf.ecore.util.EcoreUtil
+import it.cnr.istc.ghost.ghost.TransConstraint
+import it.cnr.istc.ghost.ghost.Synchronization
 
 /**
  * Provides labels for EObjects.
@@ -22,6 +24,9 @@ import org.eclipse.emf.ecore.util.EcoreUtil
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#label-provider
  */
 class GhostLabelProvider extends DefaultEObjectLabelProvider {
+	
+	@Inject
+	private GhostImageProvider imageProvider;
 
 	@Inject
 	new(AdapterFactoryLabelProvider delegate) {
@@ -53,10 +58,18 @@ class GhostLabelProvider extends DefaultEObjectLabelProvider {
 		return "init";
 	}
 	
+	def text(TransConstraint c) {
+		return doGetText(c.head);
+	}
+	
 	def text(ValueDecl decl) {
 		val args = if (decl.parlist === null) "()"
 			else "("+decl.parlist.values.map[p|getReferenceName(p,p.type)].join(", ")+")";
 		return decl.name+args;
+	}
+	
+	def text(Synchronization s) {
+		return doGetText(s.trigger);
 	}
 	
 	def text(SimpleInstVal v) {
@@ -73,8 +86,8 @@ class GhostLabelProvider extends DefaultEObjectLabelProvider {
 		return d.name+": "+getReferenceName(d,d.type);
 	}
 	
-//
-//	def image(Greeting ele) {
-//		'Greeting.gif'
-//	}
+
+	def image(EObject obj) {
+		imageProvider.image(obj);
+	}
 }
