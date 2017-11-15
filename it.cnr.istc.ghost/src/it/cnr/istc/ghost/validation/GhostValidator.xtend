@@ -51,6 +51,7 @@ import it.cnr.istc.ghost.ghost.InitSection
 import it.cnr.istc.ghost.ghost.ThisKwd
 import it.cnr.istc.ghost.ghost.ConstPlaceHolder
 import it.cnr.istc.ghost.ghost.CompDecl
+import it.cnr.istc.ghost.ghost.ImportDecl
 
 /**
  * This class contains custom validation rules. 
@@ -91,6 +92,7 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val COMPARISON_DIFFERENT_TYPES = "comparisonDifferentTypes";
 	public static val UNUSED_VAR = "unusedVar";
 	public static val USELESS_EXPRESSION = "uselessExpression";
+	public static val SELF_IMPORT = "selfImport";
 
 	// Checks for type hierarchy
 
@@ -777,7 +779,13 @@ class GhostValidator extends AbstractGhostValidator {
 		}
 	}	
 	
-	
+	@Check
+	def void checkSelfImport(ImportDecl decl) {
+		val dom = EcoreUtil2.getContainerOfType(decl,Ghost)?.domain;
+		if (dom !== null && dom == decl.importedNamespace)
+			warning(String.format("Domain '%s' is importing itself",dom.name),
+				IMPORT_DECL__IMPORTED_NAMESPACE,-1,SELF_IMPORT);
+	}
 	
 	
 	private def doCheckRenewableConsumableHierarchy(EObject decl, ConstExpr v1,

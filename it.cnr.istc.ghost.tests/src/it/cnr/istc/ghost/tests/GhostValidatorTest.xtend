@@ -1453,5 +1453,14 @@ comp C : T(
 		'''.parse;
 		model.assertNoError(GhostValidator.INHERITANCE_INCOMPATIBLE_PARAMS);
 	}
+	
+	@Test
+	def void testSelfImport() {
+		val model = '''
+		domain dom;
+		import dom;
+		'''.parse;
+		model.assertWarning(GhostPackage.Literals.IMPORT_DECL,GhostValidator.SELF_IMPORT);
+	}
 
 }
