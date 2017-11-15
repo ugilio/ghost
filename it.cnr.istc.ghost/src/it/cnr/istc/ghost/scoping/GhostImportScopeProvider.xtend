@@ -7,7 +7,6 @@ import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
 import org.eclipse.xtext.scoping.IScope
 import org.eclipse.emf.ecore.EReference
-import it.cnr.istc.ghost.ghost.ImportDecl
 import org.eclipse.xtext.scoping.impl.FilteringScope
 import com.google.inject.Inject
 import org.eclipse.xtext.util.IResourceScopeCache
@@ -74,7 +73,7 @@ class GhostImportScopeProvider extends ImportedNamespaceAwareLocalScopeProvider 
 	
 	override IScope getScope(EObject context, EReference reference) {
 		val scope = super.getScope(context, reference);
-		if (context instanceof ImportDecl)
+		if (reference == GhostPackage.Literals.IMPORT_DECL__IMPORTED_NAMESPACE)
 			return scope;
 		return filterNotImported(context,reference,scope);
 	}
