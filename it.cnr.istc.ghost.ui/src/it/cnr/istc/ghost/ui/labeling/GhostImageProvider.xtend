@@ -54,5 +54,11 @@ class GhostImageProvider {
 		icons.put(GhostPackage.Literals.OBJ_VAR_DECL,"compvar.png");
 		
 		icons.put(GhostPackage.Literals.INIT_SECTION,"init.png");
+		
+		icons.put(GhostPackage.Literals.VALUE_DECL,"transconstr.png");
+		icons.put(GhostPackage.Literals.LOC_VAR_DECL,"localvariable_obj.png");
+		icons.put(GhostPackage.Literals.FORMAL_PAR,"localvariable_obj.png");
+		icons.put(GhostPackage.Literals.NAMED_PAR,"localvariable_obj.png");
+		
 	}	
 }
