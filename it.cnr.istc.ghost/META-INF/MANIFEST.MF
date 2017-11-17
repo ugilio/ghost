@@ -30,6 +30,7 @@ Export-Package: it.cnr.istc.ghost,
  it.cnr.istc.ghost.scoping,
  it.cnr.istc.ghost.serializer,
  it.cnr.istc.ghost.services,
+ it.cnr.istc.ghost.utils,
  it.cnr.istc.ghost.validation,
  it.cnr.istc.timeline.lang
 Import-Package: org.apache.log4j
