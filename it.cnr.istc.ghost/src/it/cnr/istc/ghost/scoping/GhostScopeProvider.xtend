@@ -20,6 +20,7 @@ import org.eclipse.xtext.scoping.IScope
 import org.eclipse.xtext.scoping.Scopes
 import it.cnr.istc.ghost.ghost.BindPar
 import it.cnr.istc.ghost.ghost.ResConstr
+import it.cnr.istc.ghost.utils.Utils
 
 /**
  * This class contains custom scoping description.

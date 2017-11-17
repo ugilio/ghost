@@ -36,7 +36,7 @@ import it.cnr.istc.ghost.ghost.CompBody
 import it.cnr.istc.ghost.ghost.ObjVarDecl
 import it.cnr.istc.ghost.ghost.FormalParList
 import it.cnr.istc.ghost.ghost.NameOnlyParList
-import it.cnr.istc.ghost.scoping.Utils
+import static extension it.cnr.istc.ghost.utils.Utils.*
 import it.cnr.istc.ghost.ghost.LocVarDecl
 import it.cnr.istc.ghost.ghost.ResConstr
 import it.cnr.istc.ghost.ghost.AnonResDecl
@@ -49,7 +49,6 @@ import it.cnr.istc.ghost.ghost.ComponentType
 import java.util.ArrayList
 import it.cnr.istc.ghost.ghost.InitSection
 import it.cnr.istc.ghost.ghost.ThisKwd
-import it.cnr.istc.ghost.ghost.ConstPlaceHolder
 import it.cnr.istc.ghost.ghost.CompDecl
 import it.cnr.istc.ghost.ghost.ImportDecl
 
@@ -96,17 +95,6 @@ class GhostValidator extends AbstractGhostValidator {
 
 	// Checks for type hierarchy
 
-	private def dispatch ComponentType getParent(SvDecl decl) {
-		return decl.parent;
-	}
-
-	private def dispatch ComponentType getParent(ResourceDecl decl) {
-		return decl.parent;
-	}
-	
-	private def dispatch ComponentType getParent(Object o) { null }
-	private def dispatch ComponentType getParent(Void o) { null }
-	
 	private def ComponentType getType(CompDecl decl) {
 		return
 		switch (decl) {
@@ -264,7 +252,7 @@ class GhostValidator extends AbstractGhostValidator {
 	//Unique local variables
 	@Check
 	def checkUniqueLocVars(TransConstrBody body) {
-		val syms = Utils.getSymbolsForBlock(body);
+		val syms = getSymbolsForBlock(body);
 		val vars = syms.filter[o|o instanceof LocVarDecl];
 		checkDuplicateIdentifiers(syms,vars,
 			TRANS_CONSTR_BODY__VALUES,
@@ -273,7 +261,7 @@ class GhostValidator extends AbstractGhostValidator {
 	
 	@Check
 	def checkUniqueLocVars(SyncBody body) {
-		val syms = Utils.getSymbolsForBlock(body);
+		val syms = getSymbolsForBlock(body);
 		val vars = syms.filter[o|o instanceof LocVarDecl];
 		checkDuplicateIdentifiers(syms,vars,
 			SYNC_BODY__VALUES,
@@ -333,37 +321,6 @@ class GhostValidator extends AbstractGhostValidator {
 			RES_CONSTR__RES,RESCONSTR_INCOMPATIBLE_COMP);
 	}
 
-	private def boolean isResource(Object obj) {
-		return
-		switch(obj) {
-			ResourceDecl,
-			AnonResDecl : true
-			NamedCompDecl: obj?.type instanceof ResourceDecl
-			default: false
-		}
-	}
-	
-	private def dispatch boolean isConsumable(ResourceDecl decl) {
-		if (decl?.body?.val2 !== null)
-			return true;
-		if (decl?.parent === null)
-			return false;
-		return isConsumable(decl?.parent);
-	}
-	
-	private def dispatch boolean isConsumable(AnonResDecl decl) {
-		return decl?.body?.val2 !== null;
-	}
-	
-	private def dispatch boolean isConsumable(NamedCompDecl decl) {
-		if (decl?.type instanceof ResourceDecl)
-			return isConsumable(decl.type);
-		return false;
-	}
-	
-	private def dispatch boolean isConsumable(Object decl) { false }
-	private def dispatch boolean isConsumable(Void decl) { false }
-	
 	private def checkResActionComp(ResourceAction action, EObject resource,
 		EStructuralFeature feature) {
 		if (action === null || !isResource(resource))
@@ -428,79 +385,6 @@ class GhostValidator extends AbstractGhostValidator {
 	
 	//Inheritance checks
 	
-	private def getParentType(EObject o) {
-		if (o === null)
-			return null;
-		//we are in a component with a type, find the type
-		val comp = EcoreUtil2.getContainerOfType(o,NamedCompDecl);
-		if (comp !== null && comp.type instanceof SvDecl)
-			return comp.type
-		else if (comp !== null && comp.type instanceof ResourceDecl)
-			return comp.type
-		else {
-		//we are in a type, find the parent, if any
-			val type = EcoreUtil2.getContainerOfType(o,SvDecl)?.parent;
-			if (type !== null)
-				return type;
-			return EcoreUtil2.getContainerOfType(o,ResourceDecl)?.parent;
-		}
-	}	
-	
-	
-	private def getParentValue(ValueDecl o) {
-		val name = o?.name;
-		if (name === null || o === null)
-			return null;
-		val tmp = getParentType(o);
-		if (! (tmp instanceof SvDecl))
-			return null;
-		var type = tmp as SvDecl;
-
-		while (type !== null) {
-			val parentVal = EcoreUtil2.eAllOfType(type,ValueDecl).filter[v|v.name==name].head;
-			if (parentVal !== null) {
-				//found the value we are inheriting from.
-				return parentVal;
-			}
-			type = type.parent;
-		}
-		return null;			
-	}
-	
-	private def dispatch getParentSync(SimpleInstVal o) {
-		val name = o?.value?.name;
-		if (name === null || o === null)
-			return null;
-		var type = getParentType(o) as SvDecl;
-			
-		while (type !== null) {
-			val parentSync = EcoreUtil2.eAllOfType(type,SimpleInstVal).filter[v|v?.value?.name==name].head;
-			if (parentSync !== null) {
-				//found the sync we are inheriting from.
-				return parentSync;
-			}
-			type = type.parent;
-		}
-		return null;			
-	}		
-	
-	private def dispatch getParentSync(ResSimpleInstVal o) {
-		val action = o?.type;
-		if (action === null || o === null)
-			return null;
-		var type = getParentType(o) as ResourceDecl;
-
-		while (type !== null) {
-			val parentSync = EcoreUtil2.eAllOfType(type,ResSimpleInstVal).filter[v|v?.type==action].head;
-			if (parentSync !== null) {
-				//found the sync we are inheriting from.
-				return parentSync;
-			}
-			type = type.parent;
-		}
-		return null;			
-	}	
-		
 	@Check
 	def checkInheritedValuesCompatibility(ValueDecl v) {
 		val parentVal = getParentValue(v);
@@ -582,44 +466,6 @@ class GhostValidator extends AbstractGhostValidator {
 		if ((decl.body?.val1===null) && (decl.parent === null))
 			error("Ambiguous resource declaration: use the placeholder character '_' to qualify it either as a renewable or consumable resource",
 			RESOURCE_DECL__BODY,-1,AMBIGUOUS_RESOURCE_DECL);
-	}
-	
-	private def boolean isUnspecified(Object o) {
-		return (o === null) || (o instanceof ConstPlaceHolder);
-	}
-	
-	private def Object getVal1(ResourceDecl decl) {
-		if (decl === null)
-			return null;
-		if (isUnspecified(decl.body?.val1))
-			return getVal1(decl.parent);
-		return decl.body.val1;
-	}
-	
-	private def Object getVal1(NamedCompDecl decl) {
-		if (! (decl.body instanceof CompResBody))
-			return getVal1(decl.type as ResourceDecl);
-		val body = decl.body as CompResBody;
-		if (isUnspecified(body?.val1))
-			return getVal1(decl.type as ResourceDecl);
-		return body?.val1;
-	}
-	
-	private def Object getVal2(ResourceDecl decl) {
-		if (decl === null)
-			return null;
-		if (isUnspecified(decl.body?.val2))
-			return getVal2(decl.parent);
-		return decl.body.val2;
-	}
-	
-	private def Object getVal2(NamedCompDecl decl) {
-		if (! (decl.body instanceof CompResBody))
-			return getVal2(decl.type as ResourceDecl);
-		val body = decl.body as CompResBody;
-		if (isUnspecified(body?.val2))
-			return getVal2(decl.type as ResourceDecl);
-		return body?.val2;
 	}
 	
 	@Check
