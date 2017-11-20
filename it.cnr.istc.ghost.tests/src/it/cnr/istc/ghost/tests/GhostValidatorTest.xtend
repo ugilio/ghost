@@ -609,6 +609,38 @@ synchronize:
 	}
 	
 	@Test
+	def void testResourceConstrErr7() {
+		val model = '''
+type R = resource(10);
+type T = sv(
+	A
+variable:
+	r : R;
+synchronize:
+	A -> consume r(10);
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.RES_CONSTR,
+			GhostValidator.RESACTION_WRONGRES);
+	}
+	
+	@Test
+	def void testResourceConstrErr8() {
+		val model = '''
+type R = resource(10,20);
+type T = sv(
+	A
+variable:
+	r : R;
+synchronize:
+	A -> require r(10); 
+)
+		'''.parse;
+		model.assertError(GhostPackage.Literals.RES_CONSTR,
+			GhostValidator.RESACTION_WRONGRES);
+	}
+	
+	@Test
 	def void testResInstVal1() {
 		val model = '''
 comp r : resource(10,20

@@ -8,7 +8,6 @@ import java.util.Collections
 import it.cnr.istc.ghost.ghost.LocVarDecl
 import com.google.common.collect.Iterables
 import it.cnr.istc.ghost.ghost.SyncBody
-import it.cnr.istc.ghost.ghost.TransConstrBody
 import it.cnr.istc.ghost.ghost.TransConstraint
 import it.cnr.istc.ghost.ghost.FormalPar
 import it.cnr.istc.ghost.ghost.InitSection
@@ -66,9 +65,11 @@ class Utils {
 	}
 	
 	public static def dispatch boolean isConsumable(NamedCompDecl decl) {
-		if (decl?.type instanceof ResourceDecl)
-			return isConsumable(decl.type);
-		return false;
+		return isConsumable(decl.type);
+	}
+	
+	public static def dispatch boolean isConsumable(ObjVarDecl decl) {
+		return isConsumable(decl.type);
 	}
 	
 	public static def dispatch boolean isConsumable(Object decl) { false }
@@ -80,10 +81,26 @@ class Utils {
 			ResourceDecl,
 			AnonResDecl : true
 			NamedCompDecl: obj?.type instanceof ResourceDecl
+			ObjVarDecl: obj?.type instanceof ResourceDecl
 			default: false
 		}
 	}
 	
+	private static def EObject getContainingResource(EObject obj) {
+		var EObject cont = EcoreUtil2.getContainerOfType(obj,ResourceDecl);
+		if (cont === null) cont = EcoreUtil2.getContainerOfType(obj,NamedCompDecl);
+		if (cont === null) cont = EcoreUtil2.getContainerOfType(obj,AnonResDecl);
+		return cont;
+	}
+	
+	public static def boolean isInResource(EObject obj) {
+		return isResource(getContainingResource(obj));
+	}
+	
+	public static def boolean isInConsumable(EObject obj) {
+		return isConsumable(getContainingResource(obj));
+	}
+
 	public static def dispatch ComponentType getParent(SvDecl decl) {
 		return decl.parent;
 	}
