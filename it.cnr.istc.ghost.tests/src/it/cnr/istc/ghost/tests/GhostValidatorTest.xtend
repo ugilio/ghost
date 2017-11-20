@@ -554,7 +554,7 @@ synchronize:
 	def void testResourceConstrErr3() {
 		val model = '''
 type tr = sv;
-comp c : sv(
+type T = sv(
 	A
 synchronize:
 	A -> require r(10);
