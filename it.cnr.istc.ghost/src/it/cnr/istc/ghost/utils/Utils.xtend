@@ -22,6 +22,9 @@ import it.cnr.istc.ghost.ghost.ValueDecl
 import it.cnr.istc.ghost.ghost.ConstExpr
 import it.cnr.istc.ghost.ghost.CompResBody
 import it.cnr.istc.ghost.ghost.ConstPlaceHolder
+import it.cnr.istc.ghost.ghost.ObjVarDecl
+import java.util.List
+import java.util.ArrayList
 
 class Utils {
 	
@@ -111,6 +114,43 @@ class Utils {
 	
 	public static def dispatch ComponentType getParent(Object o) { null }
 	public static def dispatch ComponentType getParent(Void o) { null }
+	
+	public static def boolean areTypesCompatible(ComponentType requestedType,
+		ComponentType actualType) {
+		//avoid errors on erroneous types 
+		if (requestedType === null || actualType === null
+			|| requestedType.eIsProxy || actualType.eIsProxy)
+			return true;
+		var t = actualType;
+		while (t !== null && t !== requestedType)
+			t = t.parent;
+		return (t === requestedType); 
+	}
+
+	private static def contains(List<ObjVarDecl> vars, String name) {
+		for (v : vars)
+			if (v.name==name)
+				return true;
+		return false;
+	}
+	
+	public static def List<ObjVarDecl> getVariables(ComponentType type) {
+		if (type === null)
+			return Collections.emptyList;
+		val fromParent = getVariables(type.parent);
+		val secs = 
+		switch (type) {
+			SvDecl: type.body?.variables
+			ResourceDecl: type.body?.variables
+			default : null
+		}
+		val fromThis = if (secs !== null) secs.map[sec|sec.values].flatten
+			else Collections.emptyList();
+		val result = new ArrayList(fromParent.size+fromThis.size);
+		result.addAll(fromParent);
+		result.addAll(fromThis.filter[v|!contains(fromParent,v.name)]);
+		return result;
+	}
 	
 	public static def getParentType(EObject o) {
 		if (o === null)

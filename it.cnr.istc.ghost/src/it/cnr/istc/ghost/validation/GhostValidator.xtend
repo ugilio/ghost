@@ -44,9 +44,7 @@ import it.cnr.istc.ghost.ghost.AnonSVDecl
 import it.cnr.istc.ghost.ghost.ConstExpr
 import it.cnr.istc.ghost.ghost.ResourceAction
 import it.cnr.istc.ghost.ghost.BindList
-import java.util.Collections
 import it.cnr.istc.ghost.ghost.ComponentType
-import java.util.ArrayList
 import it.cnr.istc.ghost.ghost.InitSection
 import it.cnr.istc.ghost.ghost.ThisKwd
 import it.cnr.istc.ghost.ghost.CompDecl
@@ -520,43 +518,6 @@ class GhostValidator extends AbstractGhostValidator {
 			doCheckRenewableConsumableHierarchy(decl,val1,val2,decl.name,
 				NAMED_COMP_DECL__TYPE);
 		}
-	}
-	
-	private def contains(List<ObjVarDecl> vars, String name) {
-		for (v : vars)
-			if (v.name==name)
-				return true;
-		return false;
-	}
-	
-	private def List<ObjVarDecl> getVariables(ComponentType type) {
-		if (type === null)
-			return Collections.emptyList;
-		val fromParent = getVariables(type.parent);
-		val secs = 
-		switch (type) {
-			SvDecl: type.body?.variables
-			ResourceDecl: type.body?.variables
-			default : null
-		}
-		val fromThis = if (secs !== null) secs.map[sec|sec.values].flatten
-			else Collections.emptyList();
-		val result = new ArrayList(fromParent.size+fromThis.size);
-		result.addAll(fromParent);
-		result.addAll(fromThis.filter[v|!contains(fromParent,v.name)]);
-		return result;
-	}
-	
-	private def boolean areTypesCompatible(ComponentType requestedType,
-		ComponentType actualType) {
-		//avoid errors on erroneous types 
-		if (requestedType === null || actualType === null
-			|| requestedType.eIsProxy || actualType.eIsProxy)
-			return true;
-		var t = actualType;
-		while (t !== null && t !== requestedType)
-			t = t.parent;
-		return (t === requestedType); 
 	}
 	
 	@Check
