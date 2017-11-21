@@ -110,35 +110,33 @@ class GhostScopeProvider extends AbstractGhostScopeProvider {
 	
 	override IScope getScope(EObject context, EReference reference) {
 		
-		if (context instanceof QualifInstVal &&
-			reference == GhostPackage.Literals.QUALIF_INST_VAL__COMP) {
+		if (reference == GhostPackage.Literals.QUALIF_INST_VAL__COMP) {
 				return new CompositeScope(
 					getScopeForBindName(context),super.getScope(context,reference));
 		}
-		if (context instanceof ResConstr &&
-			reference == GhostPackage.Literals.RES_CONSTR__RES) {
+		if (reference == GhostPackage.Literals.RES_CONSTR__RES) {
 				return new CompositeScope(
 					getScopeForBindName(context),super.getScope(context,reference));
 		}
 		if (context instanceof QualifInstVal &&
 			reference == GhostPackage.Literals.QUALIF_INST_VAL__VALUE) {
 				val comp = (context as QualifInstVal).comp;
-				if (comp === null || comp.eIsProxy()) {
-					return getScopeForBlock(context,super.getScope(context,reference));
-				}
+				if (comp !== null && !comp.eIsProxy()) {
 				//component.value: scope is the values defined in component
-				else return getScopeFor(comp);
+					return getScopeFor(comp);
+				}
+		}
+		if (reference == GhostPackage.Literals.QUALIF_INST_VAL__VALUE) {
+			return getScopeForBlock(context,super.getScope(context,reference));
 		}
 		//Synchronization triggers
-		if (context instanceof SimpleInstVal &&
-			reference == GhostPackage.Literals.SIMPLE_INST_VAL__VALUE)
+		if (reference == GhostPackage.Literals.SIMPLE_INST_VAL__VALUE)
 		{
 			val scope = getScopeForSyncTrigger(context);
 			if (scope !== IScope.NULLSCOPE)
 				return scope;
 		}
-		if (context instanceof BindPar &&
-			reference == GhostPackage.Literals.BIND_PAR__NAME)
+		if (reference == GhostPackage.Literals.BIND_PAR__NAME)
 		{
 			val scope = getScopeForBindName(context);
 			if (scope !== IScope.NULLSCOPE)

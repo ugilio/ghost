@@ -30,7 +30,13 @@ class Utils {
 	
 	public static def getSymbolsForBlock(EObject context) {
 		//Inside a synchronization body
-		val syncbody = EcoreUtil2.getContainerOfType(context,SyncBody);
+		var syncbody = EcoreUtil2.getContainerOfType(context,SyncBody);
+		if (syncbody === null) {
+			//This is for the content assist...
+			val sync = EcoreUtil2.getContainerOfType(context,Synchronization);
+			if (sync?.bodies !== null && sync.bodies.size() > 0)
+				syncbody = sync.bodies.get(0);
+		}
 		if (syncbody !== null) {
 			val trigger = (syncbody.eContainer as Synchronization).trigger;
 			val args = if (trigger !== null) EcoreUtil2.eAllOfType(trigger,NamedPar)
@@ -39,9 +45,10 @@ class Utils {
 			return Iterables.concat(args,locVars);
 		}
 		//Inside a transition constraint body
-		val tcbody = EcoreUtil2.getContainerOfType(context,TransConstrBody);
-		if (tcbody !== null) {
-			val head = (tcbody.eContainer as TransConstraint).head;
+		val tc = EcoreUtil2.getContainerOfType(context,TransConstraint);
+		if (tc !== null) {
+			val head = tc.head;
+			val tcbody = tc.body;
 			val args = if (head !== null) EcoreUtil2.eAllOfType(head,FormalPar)
 						else Collections.emptyList;
 			val locVars = EcoreUtil2.eAllOfType(tcbody,LocVarDecl);

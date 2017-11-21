@@ -98,7 +98,7 @@ class ExpressionValidator extends AbstractExpressionValidator {
 				-1,GhostValidator.INIT_VAR_NOT_CONSTANT);
 	}
 	
-	private def determineLocVarTypes(EObject body) {
+	public def determineLocVarTypes(EObject body) {
 		//quickly determine the types of local variables.
 		//do it multiple times because after each pass we might infer more types
 		val locVars = body.eContents.filter(LocVarDecl);
@@ -114,6 +114,7 @@ class ExpressionValidator extends AbstractExpressionValidator {
 				addType(locVar.name,type);
 			}
 		}
+		return locVarTypes;
 	}
 	
 	private def checkInvalidVarType(ResultType type, LocVarDecl locVar) {
