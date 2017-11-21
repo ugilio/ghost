@@ -49,6 +49,7 @@ import it.cnr.istc.ghost.ghost.InitSection
 import it.cnr.istc.ghost.ghost.ThisKwd
 import it.cnr.istc.ghost.ghost.CompDecl
 import it.cnr.istc.ghost.ghost.ImportDecl
+import it.cnr.istc.ghost.ghost.TimePointOp
 
 /**
  * This class contains custom validation rules. 
@@ -70,6 +71,10 @@ class GhostValidator extends AbstractGhostValidator {
 	public static val INHERITED_KWD_NO_ANCESTOR = "inheritedKwdNoAncestor";
 	public static val INHERITANCE_MULTIBRANCH = "inheritanceMultibranch";
 	public static val THIS_INVALID_USAGE = "thisInvalidUsage";
+	public static val RESCONSTR_IN_TC = "resconstrInTC";
+	public static val COMPREF_IN_TC = "comprefInTC";
+	public static val TIMEPOINTOP_IN_TC = "timepointopInTC";
+	public static val TEMPEXP_IN_TC = "tempexpInTC";
 	public static val RENEWABLE_CONSUMABLE_MIX = "renewableConsumableMix";
 	public static val AMBIGUOUS_RESOURCE_DECL = "ambiguousResourceDecl";
 	public static val RES_UNSPECIFIED_VALUE = "resUnspecifiedValue";
@@ -99,6 +104,12 @@ class GhostValidator extends AbstractGhostValidator {
 			NamedCompDecl: decl.type
 			default : null			
 		}
+	}
+	
+	private def getIndex(EObject cont, EStructuralFeature feat, EObject obj) {
+		if (!feat.isMany) return -1;
+		val list = cont.eGet(feat) as List<? extends EObject>;
+		return list.indexOf(obj);
 	}
 	
 	protected def checkHierarcyCycles(EObject decl, EReference feature) {
@@ -456,9 +467,47 @@ class GhostValidator extends AbstractGhostValidator {
 	def checkThisInInitSec(ThisKwd kwd) {
 		if (EcoreUtil2.getContainerOfType(kwd,InitSection) !== null)
 			error("Cannot use 'this' keyword in an initialization section",
-				kwd.eContainer,kwd.eContainingFeature,THIS_INVALID_USAGE);
+				kwd.eContainer,kwd.eContainingFeature,
+				getIndex(kwd.eContainer,kwd.eContainingFeature,kwd),
+				THIS_INVALID_USAGE);
 	}
 	
+	@Check
+	def checkThisInTransitionConstraint(ThisKwd kwd) {
+		if (EcoreUtil2.getContainerOfType(kwd,TransConstraint) !== null)
+			error("Cannot use 'this' keyword in a transition constraint",
+				kwd.eContainer,kwd.eContainingFeature,
+				getIndex(kwd.eContainer,kwd.eContainingFeature,kwd),
+				THIS_INVALID_USAGE);
+	}
+	
+	@Check
+	def checkResConstrInTransitionConstraint(ResConstr constr) {
+		if (EcoreUtil2.getContainerOfType(constr,TransConstraint) !== null)
+			error("Invalid usage of resource constraints in this context",
+				constr.eContainer,constr.eContainingFeature,
+				getIndex(constr.eContainer,constr.eContainingFeature,constr),
+				RESCONSTR_IN_TC);
+	}
+
+	@Check
+	def checkCompInTransitionConstraint(QualifInstVal qiv) {
+		if (qiv.comp!==null && EcoreUtil2.getContainerOfType(qiv,TransConstraint) !== null)
+			error("Invalid usage of component references in this context",
+				qiv.eContainer,qiv.eContainingFeature,
+				getIndex(qiv.eContainer,qiv.eContainingFeature,qiv),
+				COMPREF_IN_TC);
+	}
+
+	@Check
+	def checkTimePointInTransitionConstraint(TimePointOp op) {
+		if (EcoreUtil2.getContainerOfType(op,TransConstraint) !== null)
+			error("Invalid usage of time point operators in this context",
+				op.eContainer,op.eContainingFeature,
+				getIndex(op.eContainer,op.eContainingFeature,op),
+				TIMEPOINTOP_IN_TC);
+	}
+
 	@Check
 	def checkAmbiguousResourceType(ResourceDecl decl) {
 		if ((decl.body?.val1===null) && (decl.parent === null))

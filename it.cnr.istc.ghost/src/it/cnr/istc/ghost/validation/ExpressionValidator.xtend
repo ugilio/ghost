@@ -257,6 +257,12 @@ class ExpressionValidator extends AbstractExpressionValidator {
 	
 	protected def evalTopLevel(EObject exp, boolean inTransConstr) {
 		val result = eval(exp);
+		if (inTransConstr && result==ResultType.TEMPORALEXP) {
+			error("Invalid usage of temporal expressions in this context",exp,
+				GhostValidator.TEMPEXP_IN_TC);
+			return;
+		}
+			
 		if (! (exp instanceof LocVarDecl) ) {
 			val ok = 
 			switch (result) {

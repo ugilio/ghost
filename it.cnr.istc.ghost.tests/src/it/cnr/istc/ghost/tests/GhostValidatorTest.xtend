@@ -1495,4 +1495,60 @@ comp C : T(
 		model.assertWarning(GhostPackage.Literals.IMPORT_DECL,GhostValidator.SELF_IMPORT);
 	}
 
+	@Test
+	def void testTCThis1() {
+		val model = '''
+type T = sv(
+	A -> this;
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.THIS_INVALID_USAGE);
+	}
+	
+	@Test
+	def void testTCResConstr() {
+		val model = '''
+comp r : resource(10);
+type T = sv(
+	A -> require r(10);
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.RESCONSTR_IN_TC);
+	}
+	
+	@Test
+	def void testTCCompRef() {
+		val model = '''
+type T = sv(
+	A -> c.B;
+	B
+);
+comp c : T;
+		'''.parse;
+		model.assertError(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.COMPREF_IN_TC);
+	}
+	
+	@Test
+	def void testTCTempPoint() {
+		val model = '''
+type T = sv(
+	A -> start(A) = start(B);
+	B
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.EXPRESSION, GhostValidator.TIMEPOINTOP_IN_TC);
+	}
+	
+	@Test
+	def void testTCTempRel() {
+		val model = '''
+type T = sv(
+	A -> A > B;
+	B
+);
+		'''.parse;
+		model.assertError(GhostPackage.Literals.TRANS_CONSTR_BODY, GhostValidator.TEMPEXP_IN_TC);
+	}
+	
+
 }
