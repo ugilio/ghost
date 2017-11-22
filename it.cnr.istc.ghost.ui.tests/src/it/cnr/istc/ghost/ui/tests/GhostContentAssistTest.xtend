@@ -579,17 +579,66 @@ class GhostContentAssistTest extends AbstractContentAssistTest {
 	@Test
 	def void testApplyResAction1() {
 		val content = '''
+		comp c : resource(10);
+		type t = sv(
+			A -> require 
+		''';
+		newBuilder.append(content).
+			applyProposal("c").
+			expectContent(content+"c(amount)");
+	}
+	
+	@Test
+	def void testApplyResAction2() {
+		val content = '''
+		comp c : resource(10,20);
+		type t = sv(
+			A -> consume 
+		''';
+		newBuilder.append(content).
+			applyProposal("c").
+			expectContent(content+"c(amount)");
+	}
+	
+	@Test
+	def void testApplyResAction3() {
+		val content = '''
+		comp c : resource(10,20);
+		type t = sv(
+			A -> produce 
+		''';
+		newBuilder.append(content).
+			applyProposal("c").
+			expectContent(content+"c(amount)");
+	}
+	
+	@Test
+	def void testApplySvTrigger1() {
+		val content = '''
+		type n = int [0, 100];
+		type t = sv(A(n,n,n)
+		synchronize:
+			
+		''';
+		newBuilder.append(content).
+			applyProposal("A").
+			expectContent(content+"A(arg1, arg2, arg3) -> ");
+	}
+	
+	@Test
+	def void testApplyResActionTrigger1() {
+		val content = '''
 		type t = resource(10,
 		synchronize:
 			
 		''';
 		newBuilder.append(content).
 			applyProposal("require").
-			expectContent(content+"require(amount)");
+			expectContent(content+"require(amount) -> ");
 	}
 	
 	@Test
-	def void testApplyResAction2() {
+	def void testApplyResActionTrigger2() {
 		val content = '''
 		type t = resource(10,20,
 		synchronize:
@@ -597,11 +646,11 @@ class GhostContentAssistTest extends AbstractContentAssistTest {
 		''';
 		newBuilder.append(content).
 			applyProposal("produce").
-			expectContent(content+"produce(amount)");
+			expectContent(content+"produce(amount) -> ");
 	}
 	
 	@Test
-	def void testApplyResAction3() {
+	def void testApplyResActionTrigger3() {
 		val content = '''
 		type t = resource(10,20,
 		synchronize:
@@ -609,7 +658,7 @@ class GhostContentAssistTest extends AbstractContentAssistTest {
 		''';
 		newBuilder.append(content).
 			applyProposal("consume").
-			expectContent(content+"consume(amount)");
+			expectContent(content+"consume(amount) -> ");
 	}
 	
 	@Test

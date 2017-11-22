@@ -124,18 +124,24 @@ class GhostReferenceProposalCreator extends ReferenceProposalCreator {
 						);						
 					];
 				}
-				else if (reference == GhostPackage.Literals.QUALIF_INST_VAL__VALUE) {
+				else if (reference == GhostPackage.Literals.QUALIF_INST_VAL__VALUE
+					|| reference == GhostPackage.Literals.SIMPLE_INST_VAL__VALUE) {
 					val obj = od.EObjectOrProxy;
+					val extraArgs = if (reference == GhostPackage.Literals.SIMPLE_INST_VAL__VALUE)
+						" -> " else null;
 					if (obj instanceof ValueDecl) {
-						setProposalForValueDecl(result,obj.parlist?.values);
+						setProposalForValueDecl(result,obj.parlist?.values,extraArgs);
 					}
+				}
+				else if (reference == GhostPackage.Literals.RES_CONSTR__RES) {
+					setProposalForArgList(result,#["amount"]);
 				}
 			return result;
 		];
 	}
 	
 	private def void setProposalForValueDecl(ConfigurableCompletionProposal p,
-		List<FormalPar> values) {
+		List<FormalPar> values, String extraArgs) {
 		if (values === null || values.length == 0)
 			return;
 		var argcount = 1;
@@ -146,6 +152,18 @@ class GhostReferenceProposalCreator extends ReferenceProposalCreator {
 			else
 				names.add(v.name);
 		}
+		setProposalForArgList(p,names,extraArgs);
+	}
+	
+	private def void setProposalForArgList(ConfigurableCompletionProposal p,
+		List<String> names) {
+		setProposalForArgList(p, names, null);
+	}
+	
+	private def void setProposalForArgList(ConfigurableCompletionProposal p,
+		List<String> names, String extraArg) {
+		if (names === null || names.length == 0)
+			return;
 		p.textApplier = [doc,prop|
 			var argStr = "(";
 			var start = prop.cursorPosition + prop.replacementOffset+1;
@@ -159,7 +177,7 @@ class GhostReferenceProposalCreator extends ReferenceProposalCreator {
 				argStr+=n+", ";
 				start+=n.length+2;				
 			}
-			argStr=argStr.substring(0,argStr.length-2)+")";			
+			argStr=argStr.substring(0,argStr.length-2)+")"+if (extraArg===null) "" else extraArg;
 			
 			doc.replace(prop.getReplacementOffset(),
 				prop.getReplacementLength(),

@@ -120,9 +120,9 @@ class GhostProposalProvider extends AbstractGhostProposalProvider {
 		ContentAssistContext context) {
 		if (p instanceof ConfigurableCompletionProposal) {
 			p.textApplier = [doc,prop|
-				val toAdd= "(amount)";
+				val toAdd= "(amount) -> ";
 				val selStart = prop.replacementOffset + prop.cursorPosition +1;
-				val selLength = toAdd.length-2; 
+				val selLength = "amount".length; 
 				prop.cursorPosition=prop.cursorPosition+toAdd.length;
 				doc.replace(prop.getReplacementOffset(),
 					prop.getReplacementLength(),
