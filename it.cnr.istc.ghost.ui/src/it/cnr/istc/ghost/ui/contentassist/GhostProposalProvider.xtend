@@ -48,6 +48,7 @@ import it.cnr.istc.ghost.ghost.BindPar
 import it.cnr.istc.ghost.ghost.ObjVarDecl
 import it.cnr.istc.ghost.ghost.BindList
 import org.eclipse.xtext.nodemodel.INode
+import org.eclipse.xtext.ui.editor.contentassist.ConfigurableCompletionProposal
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -82,6 +83,8 @@ class GhostProposalProvider extends AbstractGhostProposalProvider {
 		contentAssistContext.firstSetGrammarElements.filter(RuleCall).
 			exists[r|r?.rule==grammar.triggerTypeRule];
 		
+		var ICompletionProposalAcceptor theAcceptor = acceptor;
+		
 		if (inSyncTrigger) {
 			if (keyword == grammar.resourceActionAccess.PRODUCEProduceKeyword_1_0 || 
 				keyword == grammar.resourceActionAccess.CONSUMEConsumeKeyword_2_0)
@@ -90,6 +93,13 @@ class GhostProposalProvider extends AbstractGhostProposalProvider {
 			if (keyword == grammar.resourceActionAccess.REQUIRERequireKeyword_0_0)
 				if (!Utils.isInResource(obj) || Utils.isInConsumable(obj))
 					return;
+			
+			theAcceptor = new ICompletionProposalAcceptor.Delegate(acceptor){
+				override accept(ICompletionProposal p) {
+					super.accept(p);
+					configureResSimpleInstVal_Proposal(p,contentAssistContext);
+				}
+			};
 		}
 		if (keyword == grammar.thisKwdAccess.thisKeyword_1) {
 			if (EcoreUtil2.getContainerOfType(obj,Synchronization)===null)
@@ -103,9 +113,29 @@ class GhostProposalProvider extends AbstractGhostProposalProvider {
 		if ((isArithExp(obj) || isArithExp(prevObj)) && !isArithOperator(keyword))
 			return; //no keywords in arithmetic expressions
 		
-		super.completeKeyword(keyword, contentAssistContext, acceptor);
+		super.completeKeyword(keyword, contentAssistContext, theAcceptor);
 	}
-
+	
+	private def void configureResSimpleInstVal_Proposal(ICompletionProposal p,
+		ContentAssistContext context) {
+		if (p instanceof ConfigurableCompletionProposal) {
+			p.textApplier = [doc,prop|
+				val toAdd= "(amount)";
+				val selStart = prop.replacementOffset + prop.cursorPosition +1;
+				val selLength = toAdd.length-2; 
+				prop.cursorPosition=prop.cursorPosition+toAdd.length;
+				doc.replace(prop.getReplacementOffset(),
+					prop.getReplacementLength(),
+					prop.getReplacementString()+toAdd
+				);
+				prop.selectionStart = selStart;
+				prop.selectionLength = selLength;
+				if (context !== null)
+					prop.setSimpleLinkedMode(context.viewer,"\n");
+			];
+		}
+	}
+		
 	private def boolean isTimeOpKeyword(Keyword keyword) {
 		switch (keyword) {
 			case grammar.timePointSelectorAccess.STARTStartKeyword_0_0,
@@ -326,6 +356,7 @@ class GhostProposalProvider extends AbstractGhostProposalProvider {
 	}
 	
 	override getProposalFactory(String ruleName, ContentAssistContext contentAssistContext) {
+		crossReferenceProposalCreator.setContext(contentAssistContext);
 		val qnc = getQualifiedNameConverter();
 		val delegate = new DefaultProposalCreator(contentAssistContext, ruleName, qnc);
 		return new GhostProposalCreator(contentAssistContext, ruleName, qnc, delegate); 
