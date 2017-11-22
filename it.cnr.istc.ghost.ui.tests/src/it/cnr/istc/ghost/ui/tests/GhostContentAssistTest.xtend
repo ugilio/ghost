@@ -541,6 +541,78 @@ class GhostContentAssistTest extends AbstractContentAssistTest {
 	}	
 	
 	@Test
+	def void testApplyValue1() {
+		val content = '''
+		type n = int [0, 100];
+		type t = sv(A(n x),
+			B -> 
+		''';
+		newBuilder.append(content).
+			applyProposal("A").
+			expectContent(content+"A(x)");
+	}
+	
+	@Test
+	def void testApplyValue2() {
+		val content = '''
+		type n = int [0, 100];
+		type t = sv(A(n x, n y, n z),
+			B -> 
+		''';
+		newBuilder.append(content).
+			applyProposal("A").
+			expectContent(content+"A(x, y, z)");
+	}
+	
+	@Test
+	def void testApplyValue3() {
+		val content = '''
+		type n = int [0, 100];
+		type t = sv(A(n,n,n),
+			B -> 
+		''';
+		newBuilder.append(content).
+			applyProposal("A").
+			expectContent(content+"A(arg1, arg2, arg3)");
+	}
+	
+	@Test
+	def void testApplyResAction1() {
+		val content = '''
+		type t = resource(10,
+		synchronize:
+			
+		''';
+		newBuilder.append(content).
+			applyProposal("require").
+			expectContent(content+"require(amount)");
+	}
+	
+	@Test
+	def void testApplyResAction2() {
+		val content = '''
+		type t = resource(10,20,
+		synchronize:
+			
+		''';
+		newBuilder.append(content).
+			applyProposal("produce").
+			expectContent(content+"produce(amount)");
+	}
+	
+	@Test
+	def void testApplyResAction3() {
+		val content = '''
+		type t = resource(10,20,
+		synchronize:
+			
+		''';
+		newBuilder.append(content).
+			applyProposal("consume").
+			expectContent(content+"consume(amount)");
+	}
+	
+	@Test
 	def void testComplex() {
 		newBuilder.append(
 		'''
