@@ -37,6 +37,7 @@ class GhostImageProvider {
 	
 	new() {
 		icons=new ConcurrentHashMap(30);
+		icons.put(GhostPackage.Literals.GHOST,"ghost_file.png");
 		icons.put(GhostPackage.Literals.DOMAIN_DECL,"domain.png");
 		icons.put(GhostPackage.Literals.PROBLEM_DECL,"problem.png");
 		

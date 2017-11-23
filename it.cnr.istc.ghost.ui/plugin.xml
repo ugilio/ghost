@@ -8,6 +8,7 @@
 			contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
 			default="true"
 			extensions="ghost"
+			icon="icons/ghost_file.png"
 			id="it.cnr.istc.ghost.Ghost"
 			name="Ghost Editor">
 		</editor>
