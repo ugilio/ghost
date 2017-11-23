@@ -6,6 +6,7 @@ package it.cnr.istc.ghost.ui
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 import com.google.inject.Provider
 import org.eclipse.xtext.resource.containers.IAllContainersState
+import it.cnr.istc.ghost.ui.contentassist.NullHover
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
@@ -20,4 +21,9 @@ class GhostUiModule extends AbstractGhostUiModule {
 	override Provider<IAllContainersState> provideIAllContainersState() {
 		return org.eclipse.xtext.ui.shared.Access.getWorkspaceProjectsState()
 	}
+	
+	override bindIEObjectHover() {
+		return NullHover;
+	}
+	
 }
