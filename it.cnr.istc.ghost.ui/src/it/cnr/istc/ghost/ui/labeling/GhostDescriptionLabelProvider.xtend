@@ -4,6 +4,8 @@
 package it.cnr.istc.ghost.ui.labeling
 
 import org.eclipse.xtext.ui.label.DefaultDescriptionLabelProvider
+import org.eclipse.xtext.resource.IEObjectDescription
+import com.google.inject.Inject
 
 /**
  * Provides labels for IEObjectDescriptions and IResourceDescriptions.
@@ -12,13 +14,16 @@ import org.eclipse.xtext.ui.label.DefaultDescriptionLabelProvider
  */
 class GhostDescriptionLabelProvider extends DefaultDescriptionLabelProvider {
 
+	@Inject
+	private GhostImageProvider imageProvider;
+
 	// Labels and icons can be computed like this:
 	
 //	override text(IEObjectDescription ele) {
 //		ele.name.toString
 //	}
 //	 
-//	override image(IEObjectDescription ele) {
-//		ele.EClass.name + '.gif'
-//	}
+	override image(IEObjectDescription ele) {
+		return imageProvider.image(ele.EClass);
+	}
 }

@@ -9,7 +9,10 @@ class GhostImageProvider {
 	private ConcurrentHashMap<EClass,String> icons;
 	
 	def image(EObject obj) {
-		val cls = obj.eClass;
+		return image(obj.eClass);
+	}
+	
+	def image(EClass cls) {
 		var icon = icons.get(cls);
 		if (icon===null)
 			icon=handleSuperType(cls);
