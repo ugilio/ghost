@@ -15,6 +15,10 @@ import org.eclipse.xtext.naming.IQualifiedNameConverter
 import org.eclipse.xtext.resource.IEObjectDescription
 import org.eclipse.xtext.ui.editor.contentassist.ConfigurableCompletionProposal
 import org.eclipse.xtext.ui.editor.contentassist.ContentAssistContext
+import it.cnr.istc.ghost.ghost.ObjVarDecl
+import it.cnr.istc.ghost.ghost.AnonResDecl
+import it.cnr.istc.ghost.ghost.AnonSVDecl
+import it.cnr.istc.ghost.ghost.NamedCompDecl
 
 class GhostProposalCreator implements Function<IEObjectDescription, ICompletionProposal> {
 
@@ -36,7 +40,6 @@ class GhostProposalCreator implements Function<IEObjectDescription, ICompletionP
 	}
 	
 	private def void adjustPriority(ConfigurableCompletionProposal p, EObject obj) {
-		
 		switch (obj) {
 			ValueDecl: if (EcoreUtil2.getContainerOfType(model,TransConstraint) !== null)
 				p.priority = topPriority
@@ -46,10 +49,34 @@ class GhostProposalCreator implements Function<IEObjectDescription, ICompletionP
 		}
 	}
 		
+	private def void adjustDescription(ConfigurableCompletionProposal p, EObject obj) {
+		if (obj.eIsProxy)
+			return;
+		val argStr = 
+		switch (obj) {
+			ValueDecl: if (obj.parlist?.values !== null) obj.parlist.values.join("(",", ",")",[v|v.type.name]) else null
+			default: null 
+		}
+		val String extraStr = 
+		switch (obj) {
+			ObjVarDecl: obj.type.name
+			AnonResDecl: "resource" 
+			AnonSVDecl: "sv" 
+			NamedCompDecl: obj.type.name
+			default : null 
+		}
+		if (argStr !== null)
+			p.displayString = p.replacementString+argStr;
+		if (extraStr !== null)
+			p.displayString = p.replacementString+": "+extraStr; 
+	}
+	
 	override apply(IEObjectDescription t) {
 		val result = delegate.apply(t);
-		if (result instanceof ConfigurableCompletionProposal)
+		if (result instanceof ConfigurableCompletionProposal) {
 			adjustPriority(result,t.getEObjectOrProxy());
+			adjustDescription(result,t.getEObjectOrProxy());
+		}
 		return result;
 	}
 	
