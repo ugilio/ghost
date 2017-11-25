@@ -3,7 +3,7 @@
 <plugin>
 	<extension point="org.eclipse.emf.ecore.generated_package">
 		<package 
-			uri = "http://pst.istc.cnr.it/ghost/Ghost"
+			uri = "http://ugilio.github.com/ghost/Ghost"
 			class = "com.github.ugilio.ghost.ghost.GhostPackage"
 			genModel = "model/generated/Ghost.genmodel" />
 	</extension>
