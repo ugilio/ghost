@@ -10,7 +10,6 @@ import it.cnr.istc.ghost.ghost.NamedCompDecl
 import it.cnr.istc.ghost.ghost.ObjVarDecl
 import it.cnr.istc.ghost.ghost.QualifInstVal
 import it.cnr.istc.ghost.ghost.ResourceDecl
-import it.cnr.istc.ghost.ghost.SimpleInstVal
 import it.cnr.istc.ghost.ghost.SvDecl
 import it.cnr.istc.ghost.ghost.ValueDecl
 import org.eclipse.emf.ecore.EObject
@@ -18,8 +17,6 @@ import org.eclipse.emf.ecore.EReference
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.scoping.IScope
 import org.eclipse.xtext.scoping.Scopes
-import it.cnr.istc.ghost.ghost.BindPar
-import it.cnr.istc.ghost.ghost.ResConstr
 import it.cnr.istc.ghost.utils.Utils
 
 /**
