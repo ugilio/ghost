@@ -8,6 +8,12 @@ import com.google.inject.Provider
 import org.eclipse.xtext.resource.containers.IAllContainersState
 import it.cnr.istc.ghost.ui.contentassist.NullHover
 import it.cnr.istc.ghost.ui.wizard.GhostCustomProjectCreator
+import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightingConfiguration
+import it.cnr.istc.ghost.ui.syntaxcoloring.GhostHighlightingConfiguration
+import org.eclipse.xtext.ui.editor.syntaxcoloring.AbstractAntlrTokenToAttributeIdMapper
+import it.cnr.istc.ghost.ui.syntaxcoloring.GhostTokenToAttributeIdMapper
+import org.eclipse.xtext.ide.editor.syntaxcoloring.ISemanticHighlightingCalculator
+import it.cnr.istc.ghost.ui.syntaxcoloring.GhostSemanticHighlightingCalculator
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
@@ -31,5 +37,16 @@ class GhostUiModule extends AbstractGhostUiModule {
 		return GhostCustomProjectCreator;
 	}
 	
+	def Class<? extends IHighlightingConfiguration> bindIHighlightingConfiguration() {
+		return GhostHighlightingConfiguration;
+	}
+	
+	def Class<? extends AbstractAntlrTokenToAttributeIdMapper> bindAbstractAntlrTokenToAttributeIdMapper() {
+		return GhostTokenToAttributeIdMapper;
+	}
+	
+	def Class<? extends ISemanticHighlightingCalculator> bindIdeSemanticHighlightingCalculator() {
+		return GhostSemanticHighlightingCalculator;
+	}
 	
 }
