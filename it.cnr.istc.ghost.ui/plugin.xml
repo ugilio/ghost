@@ -408,4 +408,40 @@
 			type="text">
 		</fileTypes>
 	</extension>
+	<extension
+		id="nature.GhostNature"
+		name="Ghost"
+		point="org.eclipse.core.resources.natures">
+		<runtime>
+			<run
+				class="it.cnr.istc.ghost.ui.nature.GhostNature">
+			</run>
+		</runtime>
+	</extension>
+	<extension
+		point="org.eclipse.ui.newWizards">
+		<wizard
+			category="it.cnr.istc.ghost.ui.ghostCategory"
+			class="it.cnr.istc.ghost.ui.GhostExecutableExtensionFactory:it.cnr.istc.ghost.ui.wizard.GhostCustomizedNewProjectWizard"
+			icon="icons/newproject_wizard.png"
+			id="it.cnr.istc.ghost.ui.wizard.GhostNewProjectWizard"
+			name="Ghost Project"
+			project="true">
+			<description>
+				Creates a new Ghost project
+			</description>
+		</wizard>
+		<category
+			id="it.cnr.istc.ghost.ui.ghostCategory"
+			name="Ghost">
+		</category>
+	</extension>
+	<extension
+		point="org.eclipse.ui.ide.projectNatureImages">
+		<image
+			icon="icons/proj_overlay.png"
+			id="it.cnr.istc.ghost.ui.nature.overlay"
+			natureId="it.cnr.istc.ghost.ui.nature.GhostNature">
+		</image>
+	</extension>
 </plugin>

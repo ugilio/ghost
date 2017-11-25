@@ -7,6 +7,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 import com.google.inject.Provider
 import org.eclipse.xtext.resource.containers.IAllContainersState
 import it.cnr.istc.ghost.ui.contentassist.NullHover
+import it.cnr.istc.ghost.ui.wizard.GhostCustomProjectCreator
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
@@ -25,5 +26,10 @@ class GhostUiModule extends AbstractGhostUiModule {
 	override bindIEObjectHover() {
 		return NullHover;
 	}
+	
+	override bindIProjectCreator() {
+		return GhostCustomProjectCreator;
+	}
+	
 	
 }
