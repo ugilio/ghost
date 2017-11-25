@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+	<feature url="features/com.github.ugilio.ghost.sdk_0.0.0.jar" id="com.github.ugilio.ghost.sdk" version="0.0.0">
+		<category name="com.github.ugilio.ghost"/>
+	</feature>
+	<category-def name="com.github.ugilio.ghost" label="Ghost"/>
+</site>

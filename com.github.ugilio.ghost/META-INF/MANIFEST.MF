@@ -1,0 +1,36 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: com.github.ugilio.ghost
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: com.github.ugilio.ghost; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtext.util,
+ org.eclipse.xtend.lib,
+ org.eclipse.emf.common,
+ org.antlr.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: com.github.ugilio.ghost,
+ com.github.ugilio.ghost.conversion,
+ com.github.ugilio.ghost.generator,
+ com.github.ugilio.ghost.generator.internal,
+ com.github.ugilio.ghost.ghost,
+ com.github.ugilio.ghost.ghost.impl,
+ com.github.ugilio.ghost.ghost.util,
+ com.github.ugilio.ghost.linking,
+ com.github.ugilio.ghost.naming,
+ com.github.ugilio.ghost.parser.antlr,
+ com.github.ugilio.ghost.parser.antlr.internal,
+ com.github.ugilio.ghost.preprocessor,
+ com.github.ugilio.ghost.scoping,
+ com.github.ugilio.ghost.serializer,
+ com.github.ugilio.ghost.services,
+ com.github.ugilio.ghost.utils,
+ com.github.ugilio.ghost.validation,
+ it.cnr.istc.timeline.lang
+Import-Package: org.apache.log4j

@@ -1,0 +1,210 @@
+/*
+ * Copyright (c) 2017 Giulio Bernardi (https://github.com/ugilio/).
+ * All rights reserved.   This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+
+grammar com.github.ugilio.ghost.Ghost hidden(WS, ML_COMMENT, SL_COMMENT,
+	SL_ANNOTATION, BR_ANNOTATION, DIRECTIVE)
+
+generate ghost "http://pst.istc.cnr.it/ghost/Ghost"
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+Ghost: {Ghost}
+	((domain=DomainDecl | problem=ProblemDecl) SEP+)?
+	(imports+=ImportDecl SEP+)*
+	(decls+=TopLevelDeclaration (SEP+ decls+=TopLevelDeclaration)* SEP*)?;
+	
+DomainDecl: 'domain' name=ID;
+ProblemDecl: 'problem' name=ID;
+ImportDecl: 'import' importedNamespace=[DomainDecl|ID];
+
+TopLevelDeclaration: TypeDecl | CompDecl | ConstDecl | InitSection;
+
+TypeDecl: SimpleType | ComponentType;
+
+SimpleType: IntDecl | EnumDecl;
+ComponentType : SvDecl | ResourceDecl;
+IntDecl :  (externality=ExternalityRule)? 'type'name=ID '=' 'int' value=Interval;
+EnumDecl : (externality=ExternalityRule)? 'type'name=ID '=' 'enum' '(' (values+=EnumLiteral (SEP values+=EnumLiteral)*)? ')';
+SvDecl :  (externality=ExternalityRule)? 'type'name=ID '=' 'sv' (parent=[SvDecl|QUALID])? body=SvBody;
+ResourceDecl :  (externality=ExternalityRule)? 'type'name=ID '=' 'resource' (parent=[ResourceDecl|QUALID])? body=ResourceBody;
+
+SvBody: {SvBody} ('('
+	transitions+=UnnamedTransitionSection
+	(transitions+=TransitionSection |
+		synchronizations+=SynchronizeSection |
+		variables+=VariableSection
+	)*
+')')?;
+
+TransitionSection: {TransitionSection} 'transition:' (values+=TransConstraint (SEP+ values+=TransConstraint)* SEP*)?;
+SynchronizeSection: {SynchronizeSection} 'synchronize:' (values+=Synchronization (SEP+ values+=Synchronization)* SEP*)?;
+VariableSection: {VariableSection} 'variable:' (values+=ObjVarDecl (SEP+ values+=ObjVarDecl)* SEP*)?;
+UnnamedTransitionSection returns TransitionSection: {TransitionSection} (values+=TransConstraint (SEP+ values+=TransConstraint)* SEP*)?;
+
+TransConstraint : (controllability=ControllabilityRule)? head=ValueDecl
+	(interval=IntvOrDflt)? ('->' body=TransConstrBody)?
+;
+
+InheritedKwd : {InheritedKwd}'inherited';
+ThisKwd : {ThisKwd}'this';
+
+CompRef: ObjVarDecl | CompDecl;
+
+ValueDecl : name=ID parlist=FormalParList?;
+SimpleInstVal: value=[ValueDecl|ID] arglist=NameOnlyParList?;
+//needs validator check to insure that has a comp and arglist only if it is a ValueDecl reference
+QualifInstVal: (comp=[CompRef|ID]".")? value=[SymbolReference] arglist=ArgList?;
+InstVal: ThisKwd | QualifInstVal | ResConstr;
+
+TransConstrBody: {TransConstrBody} ((=>values+=SingleTransConstr) | ('('
+	(values+=SingleTransConstr (SEP+ values+=SingleTransConstr)* SEP*)? ')'));
+SingleTransConstr: InheritedKwd | LocVarDecl | GenericExpression;
+
+Synchronization : trigger=TriggerType '->' bodies+=SyncBody ('or' bodies+=SyncBody)*;
+SyncBody: {SyncBody} ((=>values+=SingleSyncConstr) | ('('
+	(values+=SingleSyncConstr (SEP+ values+=SingleSyncConstr)* SEP*)? ')'));
+SingleSyncConstr:  InheritedKwd | TemporalExp | LocVarDecl;
+
+TriggerType : ResSimpleInstVal | SimpleInstVal;
+
+ResConstr: type=ResourceAction res=[CompRef|QUALID] '(' amount=EqExp ')';
+
+ObjVarDecl : name=ID ':' type=[ComponentType|QUALID];
+
+
+ResourceBody: {ResourceBody} ('('(val1=ConstExpr (SEP+ val2=ConstExpr)? SEP*)?
+	(synchronizations+=SynchronizeSection |
+		variables+=VariableSection
+	)*
+')')?;
+
+ResSimpleInstVal: type=ResourceAction '(' arg=NamedPar ')';
+
+//Variable: FormalPar | NamedPar | LocVarDecl;
+SymbolReference: FormalPar | NamedPar | LocVarDecl | ValueDecl | ConstLiteral;
+
+AbstractNamedPar: (NamedPar) type=[SimpleType];
+
+FormalPar: type=[SimpleType|QUALID] (name=ID_)?;
+FormalParList: {FormalParList} '(' (values+=FormalPar (SEP+ values+=FormalPar )* SEP* )? ')';
+NamedPar: name=ID_;
+NameOnlyParList: {NameOnlyParList} '(' (values+=NamedPar (SEP+ values+=NamedPar )* SEP* )? ')';
+ArgList: {ArgList} '(' (values+=GenericExpression (SEP+ values+=GenericExpression)* SEP* )? ')';
+BindPar: (name=[ObjVarDecl] '=')? value=[CompDecl|QUALID];
+BindList: '['values+=BindPar (SEP+ values+=BindPar )* SEP* ']';
+
+LocVarDecl: 'var' name=VARNAMEID '=' value=EqExp;
+
+PlaceHolder: {PlaceHolder} '_';
+BasicExp returns Expression: '(' EqExp ')' | PlaceHolder | TimePointOp | InstVal | NumAndUnit;
+Term returns Expression: BasicExp ({Expression.left=current} ops+=('*' | '/' | '%') right+=BasicExp)*;
+SumExp returns Expression: Term ({Expression.left=current} ops+=('+' | '-') right+=Term)*;
+CompExp returns Expression: SumExp ({Expression.left=current} ops+=('<' | '<=' | '>' | '>=') right+=SumExp)?;
+EqExp returns Expression: CompExp ({Expression.left=current} ops+=('=' | '!=') right+=CompExp)?;
+
+TemporalExp returns Expression: (EqExp ({Expression.left=current} op=TemporalRelation right+=SumExp)?) | (op=TemporalRelationExt right+=SumExp);
+
+TemporalRelation: 
+//	'=' | '!=' | '<' | '>'
+	name=('equals' | '|=' | 'meets' | 'starts' | 'finishes') |
+	(name=('before' | 'after') (=>'(' l=IntvOrDflt? ')')? ) |
+	( name=('contains'|'during') (=>'(' (l=IntvOrDflt (SEP r=IntvOrDflt)?)? ')')? ) 
+;
+TemporalRelationExt returns TemporalRelation: name=('=' | '!=' | '<' | '>') | TemporalRelation;
+
+GenericExpression: EqExp;
+
+
+ComputedConst returns ecore::EJavaObject: ID;
+BaseConstExpr: (ConstExpr) computed=ComputedConst;
+
+ConstFactor: {ConstSubExp} '(' value=ConstSumExp ')'
+	| {ConstLiteralUsage} value=[ConstLiteral]
+	| {ConstNumber}value=NumAndUnit
+	| {ConstIntv}(value=StrictInterval);
+ConstTerm: {ConstTerm} left=ConstFactor (ops+=('*' | '/' | '%') right+=ConstFactor)*;
+ConstSumExp: {ConstSumExp} left=ConstTerm (ops+=('+' | '-' ) right+=ConstTerm)*;
+ConstPlaceHolder: {ConstPlaceHolder} '_';
+
+ConstExpr : ConstSumExp | ConstPlaceHolder;
+
+enum TimePointSelector : START='start' | END='end';
+enum Externality : UNSPECIFIED | PLANNED='planned' | EXTERNAL='external';
+enum Controllability: UNSPECIFIED | UNKNOWN | CONTROLLABLE='contr' | UNCONTROLLABLE='uncontr';
+enum ResourceAction: REQUIRE='require' | PRODUCE='produce' | CONSUME='consume';
+enum InitConstrType: FACT='fact' | GOAL='goal';
+
+ExternalityRule returns Externality: 'planned'|'external';
+ControllabilityRule returns Controllability: 'contr'|'uncontr';
+
+CompDecl : NamedCompDecl | AnonSVDecl | AnonResDecl;
+NamedCompDecl : (externality=ExternalityRule)? 'comp' name=ID ':' type=[ComponentType|QUALID] body=CompBody;
+AnonSVDecl : (externality=ExternalityRule)? 'comp' name=ID ':' 'sv' body=CompSVBody;
+AnonResDecl : (externality=ExternalityRule)? 'comp' name=ID ':' 'resource' body=CompResBody;
+
+CompBody : (=> CompSVBody) | CompResBody;
+
+CompSVBody: {CompSVBody} (bindings=BindList)?('('
+	transitions+=UnnamedTransitionSection
+	(transitions+=TransitionSection |
+		synchronizations+=SynchronizeSection
+	)*
+')')?;
+
+CompResBody: {CompResBody} (bindings=BindList)?('(' (val1=ConstExpr (SEP+ val2=ConstExpr)? SEP*)?
+	(synchronizations+=SynchronizeSection)*
+')')?;
+
+
+InitSection: {InitSection} 'init' ((values+=InitConstr) | (->'('
+	(values+=InitConstr (SEP+ values+=InitConstr)* SEP*)? ')'));
+	
+InitConstr: LocVarDecl | FactGoal;
+
+FactGoal: type=InitConstrType value=InstVal ('at' params=AtParams)?;
+
+ConstDecl: 'const' name=ID '=' value=ConstExpr;
+
+AtParams: AtParamsNamed | (=> AtParamsPos);
+AtParamsNamed returns AtParams: {AtParams} (('start' '=' start=IntvOrDflt)? & ('duration' '=' duration=IntvOrDflt)? & ('end' '=' end=IntvOrDflt)?);
+AtParamsPos returns AtParams: {AtParams} (start=IntvOrDflt (duration=IntvOrDflt (end=IntvOrDflt)?)?)?;
+
+TimePointOp: ( selector=TimePointSelector '(' value=InstVal ')');
+
+EnumLiteral: name=ID;
+ConstLiteral: (ConstDecl | EnumLiteral);
+IntvOrDflt: ('_' | Interval);
+Interval : ( '[' lb=NumAndUnit SEP ub=NumAndUnit']') | lbub=NumAndUnit;
+StrictInterval returns Interval: '[' lb=NumAndUnit SEP ub=NumAndUnit']';
+
+ComputedNumAndUnit returns ecore::ELongObject: ID;
+BaseNumAndUnit: (NumAndUnit) value=ComputedNumAndUnit;
+
+NumAndUnit: (num=Number (unit=ID)?);
+//Number_		: '_' | Number;
+Number		: PosNumber | NegNumber;
+PosNumber returns ecore::ELong: ('+')? (INT |'INF');
+NegNumber returns ecore::ELong: '-' (INT |'INF');
+
+QUALID : ID('.'ID)*;
+ID_ : '_' | ID;
+VARNAMEID: ID | 'start' | 'end';
+
+terminal SL_ANNOTATION : '@' !('\n'|'\r')* ('\r'? '\n')?;
+terminal BR_ANNOTATION : '@(' -> ')';
+terminal DIRECTIVE : '$' !('\n'|'\r')* ('\r'? '\n')?;
+
+terminal SEP : (',' | ';');
+terminal ID  		: ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
+terminal INT returns ecore::ELong: ('0'..'9') ('0'..'9'|'_')*;
+terminal ML_COMMENT	: '/*' -> '*/';
+terminal SL_COMMENT 	: '//' !('\n'|'\r')* ('\r'? '\n')?;
+
+terminal WS			: (' '|'\t'|'\r'|'\n')+;
+
+terminal ANY_OTHER: .;
