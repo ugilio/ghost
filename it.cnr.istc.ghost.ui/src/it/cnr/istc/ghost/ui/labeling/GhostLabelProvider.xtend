@@ -90,4 +90,13 @@ class GhostLabelProvider extends DefaultEObjectLabelProvider {
 	def image(EObject obj) {
 		imageProvider.image(obj);
 	}
+	
+	override getImage(Object element) {
+		val image = convertToImage(doGetImage(element));
+		if (image !== null)
+			return image;
+		//suppress delegation
+		return convertToImage(getDefaultImage());
+	}
+	
 }
