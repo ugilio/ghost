@@ -38,7 +38,7 @@ import joptsimple.OptionException;
 
 public class Main {
 	
-	private static String GHOSTC_VERSION = "0.1.0-SNAPSHOT";
+	private static String GHOSTC_VERSION = "0.1.0";
 	
 	private static String VERSION_STR = "Ghost compiler "+GHOSTC_VERSION+". Copyright (c) 2017 Giulio Bernardi.";
 	
