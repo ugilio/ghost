@@ -1,0 +1,28 @@
+language: java
+jdk:
+- openjdk8
+git:
+  depth: 3
+cache:
+  directories:
+  - "$HOME/.m2"
+install:
+- cd com.github.ugilio.ghost.releng
+- mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+before_script:
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+- sleep 3
+script:
+- cd com.github.ugilio.ghost.releng
+- mvn verify -B
+deploy:
+  provider: releases
+  api_key:
+    secure: V8y76NjzsJY8c8Ipz0FLH6mhem+eE7djM+PdhLD63scmCFcVKzvvNRDXIILx76sa5ssFBbZpovdvYknSepQMSgVcs5l0biyJYvMabPbU+oC7Im1VN5s2Gk+PzJo3twuhOZqeRrKcjw+RDEhK7gfca/6/wEv8KWEFAPmDyc6njXhKB2T0ocuO5X5q7H5MHNMsEaitb8V9JuHg8DVC2Wdm2XHAlflJWXm1BH3PvZL1XFGE4U3edv7pzZQgt2u/uo3aoiRAUZkSvze+3VF3j6zdyx87yJ7cZK3b+UbG7Sna9S5y3Z60oynw3AlrGv1B+CQKl7lKvx0HLhKiprrjhvtKreHA+6sVU1DYNHd/kWFcbn3mh6RAeDJmrW/zphzSYj382HgOSgYMdnxKobBfmhxW2YfASXjTwxXlwJpUbVx5/7o/OhSDn88tppmHr/xY50qUpWxrEBddUq1Sze3ZcxLOUYXNMhPLoEDZu6NFixHw0fywKf/qpwLy2OCbMMvu4uq2aB4iuI3yqv3IuYMrrUmnV2WY+nbXzuRZ055mtnp8Fu0+EFpxMEfOMnjPcnw0hN/tbaAxCIWVaKLvckQgHOisMGzFoU0WxnceOdW4I4NosobOSXsH13ZPF/0sd7d2I9Qb4e34hUiBJ9ByCoVaWQPg+JWoYU6f70cOYqdhn6v2Y/o=
+  file_glob: true
+  file: com.github.ugilio.ghost.standalonecompiler/target/dist/ghostc*
+  skip_cleanup: true
+  on:
+    repo: ugilio/ghost
+    tags: true
