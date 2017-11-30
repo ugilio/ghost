@@ -8,6 +8,7 @@ cache:
   - "$HOME/.m2"
 before_install:
 - openssl aes-256-cbc -K $encrypted_45e1b5610c30_key -iv $encrypted_45e1b5610c30_iv -in scripts/deploy_key.enc -out scripts/deploy_key -d
+- chmod 0600 scripts/deploy_key
 install: true
 before_script:
 - export DISPLAY=:99.0
