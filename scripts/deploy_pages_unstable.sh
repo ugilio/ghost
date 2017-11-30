@@ -39,6 +39,6 @@ git config user.email "Travis CI"
 git add -A .
 git commit -m "Updated unstable Eclipse update site (commit $TRAVIS_COMMIT)"
 
-git push $SSH_REPO $PAGES
+git push -f $SSH_REPO $PAGES
 
 cd $TRAVIS_BUILD_DIR
