@@ -4,8 +4,20 @@ VERFILE="com.github.ugilio.ghost.standalonecompiler/src/main/java/com/github/ugi
 
 NEWVER="$1"
 OLDVER=`egrep "$PATTERN" "$VERFILE" | perl -p -e "s/^.*$PATTERN\"([^\"]+)\".*$/\1/"`
-OLDQVER=`echo $(echo $OLDVER | perl -p -e 's/-.*$//').qualifier`
-NEWQVER=`echo $(echo $NEWVER | perl -p -e 's/-.*$//').qualifier`
+
+function toBundleVer() {
+  echo "$1" | egrep '\-SNAPSHOT$' > /dev/null
+  local isSnap=$?
+  if [ $isSnap == 0 ]
+  then
+    echo $(echo $1 | perl -p -e 's/-.*$//').qualifier
+  else
+    echo $1
+  fi
+}
+
+OLDQVER=`toBundleVer $OLDVER`
+NEWQVER=`toBundleVer $NEWVER`
 
 if [ "z$NEWVER" == "z" ]
 then
