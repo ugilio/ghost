@@ -11,6 +11,9 @@ then
   exit 0;
 fi
 
+eval `ssh-agent -s`
+ssh-add `dirname $0`/deploy_key
+
 cd $TRAVIS_BUILD_DIR
 
 REPO=`git config remote.origin.url`
@@ -35,9 +38,6 @@ git config user.email "Travis CI"
 
 git add -A .
 git commit -m "Updated unstable Eclipse update site (commit $TRAVIS_COMMIT)"
-
-eval `ssh-agent -s`
-ssh-add `dirname $0`/deploy_key
 
 git push $SSH_REPO $PAGES
 
