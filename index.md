@@ -25,7 +25,8 @@ The <span class="sc">ghost</span> language was designed and implemented by Giuli
 {% endcapture %}
 
 #### Eclipse Plugin
-*TODO: add an update site*
+The Eclipse plugin requires [Eclipse](https://www.eclipse.org), version Neon.3 or better, and Java 8.
+To install the plugin, add `https://ugilio.github.io/ghost/update/latest` as an update site to your Eclipse installation, and then install the software there contained. By using this update site it will be possible to update your ghost installation when a new version is released. If, on the contrary, you prefer to stick with a certain release, the URL of the update site to use is `https://ugilio.github.io/ghost/update/v0.1.0` (replace 0.1.0 with the release you want to install).
 
 #### Command-line compiler
 **NOTE**: You don't need the command-line compiler if you plan to develop exclusively through Eclipse: the Eclipse plugin can compile sources on its own, without the need of an external compiler.
@@ -51,3 +52,7 @@ cd *.releng
 mvn package
 ```
 If you also want to run the test suite, do `mvn verify` instead of `mvn package`.
+
+### Eclipse Update Site - Unstable branch
+
+To use the bleeding edge of the plugin instead, which is updated to the latest commit on the `master` branch, use the update site `https://ugilio.github.io/ghost/update/unstable`
