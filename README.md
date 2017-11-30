@@ -7,3 +7,35 @@ This repository contains a ghost-to-ddl command-line compiler, `ghostc`, and an 
 
 The ghost language was designed and implemented by Giulio Bernardi. Currently, the compiler and the Eclipse plugin should be considered *alpha* quality software: any API is subject to change, and the language itself might undergo some (hopefully minor) changes; this also means that bugs and other problems are expected (but if you find any of them, please [report them](https://github.com/ugilio/ghost/issues)). It is Open Source software released under the [Eclipse Public License](https://www.eclipse.org/legal/epl-v10.html).
 
+### Getting Started
+
+* **Eclipse Plugin**: add the update site `https://ugilio.github.io/ghost/update/latest`. Requires Eclipse Neon.3 or better and Java 8
+  * Alternative update sites: `https://ugilio.github.io/ghost/update/v0.1.0` for a specific version (replace 0.1.0 with the desired version) or `https://ugilio.github.io/ghost/update/unstable` to use the plugin built from the latest commit made to the `master` branch.
+* **Command-line compiler**: download the most appropriate version for your operating system (.zip for Windows, tar.bz2 otherwise) from the [release page](https://github.com/ugilio/ghost/releases/latest), uncompress and run bin/ghostc
+
+Further informations on the [website](https://ugilio.github.io/ghost).
+
+### Building from Source
+
+Clone the repository:
+```
+git clone https://github.com/ugilio/ghost.git
+cd ghost
+```
+
+and then build from the `*releng` directory (requires [Maven](https://maven.apache.org/) and Java 8):
+```
+cd *.releng
+mvn package
+```
+If you also want to run the test suite, do `mvn verify` instead of `mvn package`.
+
+### More Information
+
+* [Website](https://ugilio.github.io/ghost).
+
+* [Language Manual](https://ugilio.github.io/ghost/manual).
+
+* [Introduction to Timeline-based Planning](https://ugilio.github.io/keen/intro).
+
+* [The GHOST language in EBNF form](https://ugilio.github.io/ghost/ghostebnf).
