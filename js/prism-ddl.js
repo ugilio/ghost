@@ -12,6 +12,6 @@ Prism.languages.ddl = {
 	],
 	'variable': /\?\w+/,
 	'number': /([+-]|\b)\d+/,
-	'operator': /=|<=?|>=?|!=|[+\-*]|/,
+	'operator': /=|<=?|>=?|!=|[+\-*]/,
 	'punctuation': /\(\.|\.\)|[()\[\]:;,.]/
 };
