@@ -1,15 +1,15 @@
-repository: ugilio/keen
+repository: ugilio/ghost
 
 output: web
 # this property is useful for conditional filtering of content that is separate from the PDF.
 
-topnav_title: KeeN
+topnav_title: Ghost
 # this appears on the top navigation bar next to the home button
 
-site_title: KeeN
+site_title: Ghost
 # this appears in the html browser tab for the site title (seen mostly by search engines, not users)
 
-company_name: PST
+company_name: Giulio Bernardi
 # this appears in the footer
 
 #github_editme_path: tomjohnson1492/documentation-theme-jekyll/blob/gh-pages/
@@ -33,7 +33,7 @@ exclude:
   - '*.sh'
 # these are the files and directories that jekyll will exclude from the build
 
-#feedback_subject_line: KeeN
+#feedback_subject_line: Ghost
 #feedback_email: tomjohnson1492@gmail.com
 # used as a contact email for the Feedback link in the top navigation bar
 
@@ -84,12 +84,11 @@ defaults:
 
 sidebars:
 - home_sidebar
-- userguide_sidebar
-- introguide_sidebar
+- manual_sidebar
 
 description: > # this means to ignore newlines
-  A Knowledge Engineering ENvironment for Timeline-based Planning.
+  A Language for Timeline-based Planning.
 # the description is used in the feed.xml file
 
 # needed for sitemap.xml file only
-url: http://ugilio.github.io/keen
+url: http://ugilio.github.io/ghost

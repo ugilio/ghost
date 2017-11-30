@@ -1,0 +1,279 @@
+# This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
+
+
+entries:
+- title: Sidebar
+  product: The GHOST Language
+#  version: 1.0
+  folders:
+
+  - title:
+    output: pdf
+    type: frontmatter
+    folderitems:
+    - title:
+      url: /titlepage
+      output: pdf
+      type: frontmatter
+    - title:
+      url: /tocpage
+      output: pdf
+      type: frontmatter
+
+  - title: The GHOST Language
+    output: web
+    folderitems:
+    - title: The GHOST Language
+      output: web
+      url: /manual
+  - title: An Introduction to GHOST
+    output: web
+    url: /manual#an-introduction-to-ghost
+    folderitems:
+    - title: An Introduction to GHOST
+      output: web
+      url: /manual#an-introduction-to-ghost
+  - title: The basics
+    output: web
+    url: /manual#the-basics
+    folderitems:
+    - title: The basics
+      output: web
+      url: /manual#the-basics
+    - title: Identifiers
+      output: web
+      url: /manual#identifiers
+    - title: Numbers
+      output: web
+      url: /manual#numbers
+    - title: Intervals
+      output: web
+      url: /manual#intervals
+    - title: Comments
+      output: web
+      url: /manual#comments
+    - title: Time Units
+      output: web
+      url: /manual#time-units
+    - title: Strings
+      output: web
+      url: /manual#strings
+    - title: Separators
+      output: web
+      url: /manual#separators
+    - title: Implicit and Unused Values
+      output: web
+      url: /manual#implicit-and-unused-values
+    - title: Operators
+      output: web
+      url: /manual#operators
+    - title: File Structure
+      output: web
+      url: /manual#file-structure
+  - title: Type Declarations
+    output: web
+    url: /manual#type-declarations
+    folderitems:
+    - title: Type Declarations
+      output: web
+      url: /manual#type-declarations
+    - title: Simple Types
+      output: web
+      url: /manual#simple-types
+      folderitems:
+      - title: Simple Types
+        output: web
+        url: /manual#simple-types
+      - title: Interval Types
+        output: web
+        url: /manual#interval-types
+      - title: Enumerated Types
+        output: web
+        url: /manual#enumerated-types
+    - title: Component Types
+      output: web
+      url: /manual#component-types
+      folderitems:
+      - title: Component Types
+        output: web
+        url: /manual#component-types
+      - title: Resources
+        output: web
+        url: /manual#resources
+      - title: State Variables
+        output: web
+        url: /manual#state-variables
+  - title: State Variables Types
+    output: web
+    url: /manual#state-variables-types
+    folderitems:
+    - title: State Variables Types
+      output: web
+      url: /manual#state-variables-types
+    - title: Transition Constraints
+      output: web
+      url: /manual#transition-constraints
+      folderitems:
+      - title: Transition Constraints
+        output: web
+        url: /manual#transition-constraints
+      - title: Simple Constraints
+        output: web
+        url: /manual#simple-constraints
+      - title: Parameters
+        output: web
+        url: /manual#parameters
+      - title: Local Variables
+        output: web
+        url: /manual#local-variables
+      - title: Boolean Constraints
+        output: web
+        url: /manual#boolean-constraints
+      - title: Controllability
+        output: web
+        url: /manual#controllability
+    - title: Synchronizations
+      output: web
+      url: /manual#synchronizations
+      folderitems:
+      - title: Synchronizations
+        output: web
+        url: /manual#synchronizations
+      - title: Simple Synchronizations
+        output: web
+        url: /manual#simple-synchronizations
+      - title: Temporal Constraints
+        output: web
+        url: /manual#temporal-constraints
+      - title: Parameters and Placeholders
+        output: web
+        url: /manual#parameters-and-placeholders
+      - title: Local Variables
+        output: web
+        url: /manual#local-variables
+      - title: Alternative Branches
+        output: web
+        url: /manual#alternative-branches
+      - title: Resource Constraints
+        output: web
+        url: /manual#resource-constraints
+      - title: Synchronizations in Resources
+        output: web
+        url: /manual#synchronizations-in-resources
+    - title: Variable Binding
+      output: web
+      url: /manual#variable-binding
+    - title: Type Inheritance
+      output: web
+      url: /manual#type-inheritance
+      folderitems:
+      - title: Type Inheritance
+        output: web
+        url: /manual#type-inheritance
+      - title: Overriding Definitions
+        output: web
+        url: /manual#overriding-definitions
+      - title: Overriding Controllability
+        output: web
+        url: /manual#overriding-controllability
+      - title: Inheritance in Resource Types
+        output: web
+        url: /manual#inheritance-in-resource-types
+  - title: Components
+    output: web
+    url: /manual#components
+    folderitems:
+    - title: Components
+      output: web
+      url: /manual#components
+    - title: Expressing Variable Bindings
+      output: web
+      url: /manual#expressing-variable-bindings
+    - title: Anonymous Types
+      output: web
+      url: /manual#anonymous-types
+      folderitems:
+      - title: Anonymous Types
+        output: web
+        url: /manual#anonymous-types
+      - title: Anonymous Types in Resources
+        output: web
+        url: /manual#anonymous-types-in-resources
+    - title: Inheritance and Anonymous Types
+      output: web
+      url: /manual#inheritance-and-anonymous-types
+      folderitems:
+      - title: Inheritance and Anonymous Types
+        output: web
+        url: /manual#inheritance-and-anonymous-types
+      - title: In Resources
+        output: web
+        url: /manual#in-resources
+  - title: The Initialization Section
+    output: web
+    url: /manual#the-initialization-section
+    folderitems:
+    - title: The Initialization Section
+      output: web
+      url: /manual#the-initialization-section
+    - title: Temporal Parameters
+      output: web
+      url: /manual#temporal-parameters
+    - title: Facts and Goals
+      output: web
+      url: /manual#facts-and-goals
+  - title: Expressions
+    output: web
+    url: /manual#expressions
+    folderitems:
+    - title: Expressions
+      output: web
+      url: /manual#expressions
+    - title: Arithmetic and Boolean Expressions
+      output: web
+      url: /manual#arithmetic-and-boolean-expressions
+    - title: Temporal Expressions
+      output: web
+      url: /manual#temporal-expressions
+  - title: Other Features
+    output: web
+    url: /manual#other-features
+    folderitems:
+    - title: Other Features
+      output: web
+      url: /manual#other-features
+    - title: Constants
+      output: web
+      url: /manual#constants
+    - title: Annotations
+      output: web
+      url: /manual#annotations
+    - title: Compiler Directives
+      output: web
+      url: /manual#compiler-directives
+      folderitems:
+      - title: Compiler Directives
+        output: web
+        url: /manual#compiler-directives
+      - title: Setting Default Values
+        output: web
+        url: /manual#setting-default-values
+      - title: Defining Time Units
+        output: web
+        url: /manual#defining-time-units
+  - title: Examples
+    output: web
+    url: /manual#examples
+    folderitems:
+    - title: Examples
+      output: web
+      url: /manual#examples
+    - title: The Traffic Lights Domain
+      output: web
+      url: /manual#the-traffic-lights-domain
+    - title: The Satellite Domain
+      output: web
+      url: /manual#the-satellite-domain
+    - title: The GOAC Domain
+      output: web
+      url: /manual#the-goac-domain

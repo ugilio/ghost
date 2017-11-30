@@ -5,9 +5,9 @@ entries:
   levels: one
   folders:
 
-  - title: KeeN
+  - title: Ghost
     output: web
     folderitems:
-    - title: KeeN
+    - title: Ghost
       url: /index.html
       output: web

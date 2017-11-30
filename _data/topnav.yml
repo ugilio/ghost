@@ -4,15 +4,13 @@ topnav:
 - title: Topnav
   items:
     - title: GitHub
-      external_url: https://github.com/ugilio/keen
+      external_url: https://github.com/ugilio/ghost
     - title: Report Issues
-      external_url: https://github.com/ugilio/keen/issues
-    - title: Planning
-      url: /intro
-    - title: User Guide
-      url: /userguide
-    - title: DDL
-      url: /ddl
+      external_url: https://github.com/ugilio/ghost/issues
+    - title: Manual
+      url: /manual
+    - title: Language Grammar
+      url: /ghostebnf
 
 #Topnav dropdowns
 #topnav_dropdowns:

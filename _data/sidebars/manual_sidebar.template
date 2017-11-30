@@ -3,7 +3,7 @@
 
 entries:
 - title: Sidebar
-  product: Timeline-based Planning
+  product: Manual
 #  version: 1.0
   folders:
 
@@ -20,9 +20,9 @@ entries:
       output: pdf
       type: frontmatter
 
-  - title: Introduction
+  - title: Ghost Language Manual
     output: web
     folderitems:
-    - title: Introduction
+    - title: Ghost Language Manual
       output: web
-      url: /intro
+      url: /manual
