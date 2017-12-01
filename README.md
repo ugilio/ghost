@@ -1,4 +1,5 @@
 [![Build Status](https://www.travis-ci.org/ugilio/ghost.svg?branch=master)](https://www.travis-ci.org/ugilio/ghost)
+[![Coverage Status](https://coveralls.io/repos/github/ugilio/ghost/badge.svg?branch=master)](https://coveralls.io/github/ugilio/ghost?branch=master)
 
 # Ghost
 Ghost is a language for [Timeline-based Planning](https://ugilio.github.io/keen/intro), developed to replace [DDL](https://ugilio.github.io/keen/intro#the-ddl-language). With respect to DDL it tries to be more concise and readable, while also adding new features like generic synchronizations and type inheritance.

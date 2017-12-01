@@ -16,7 +16,7 @@ before_script:
 - sleep 3
 script:
 - cd com.github.ugilio.ghost.releng
-- mvn verify -B
+- mvn verify jacoco:report coveralls:report -B
 - cd ..
 after_script:
 - "scripts/deploy_pages.sh"
