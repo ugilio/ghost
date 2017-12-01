@@ -6,9 +6,15 @@ git:
 cache:
   directories:
   - "$HOME/.m2"
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "MpHvAN/hAnsd+V+CM9kRK1P24PWLKZ2rV6/t6VORKZTGw0ZFF33sV+DKPNfi+taLqFAtubwKLHvZf1+MzUDLWW6k8scwL7kyE8IVYQCgGg8QxfNXktYgQpmtWm5LUUejy/oeqOvxgaA54eBI6sHSsjCZe3pYe680NNoN6I6M0x9AeMnH50f3h1CyjC9cUEQyi+7N1UWeUs3uwQ9jMmFsawoT+dFUqp+UUjX7bF/aHzayvwFWOWuUFjGKjSl6RMbwBS834GY3ICAfxaE04L73M3JpQqj2Bxwa43Da/pX8j+uOL7owhrNeSzIgmdPbRuYNhQG0p3NrrjIPx0rGM3yaObcSh+2RPpcF/0j0IroUkT4xBzi7YP2FxEjyWiq6pnX4hEHDOVihXz1FYjoBfSK6yBqx4x2/1lI5hVSJD7hH3koLm/liWSbxbKIi+96AURODBP6G5hjIQX4qjRhUOeaPy52jN/6PgMQGSJHLOC/iPlRRw+Tm810y/G21Ld5he3/x49BhsQ6e8jL/ujtuh8fgylXy+zg8x8pFjBYiZptRbop4stxzmU0dArYsRGxpG7U9RaZbEIaiiB2lYevrmuGX+8ZsCEwi+1g/C89HYVBKdr1BD3RY6bhJvsH+AcO5+DKYsi/YI8HJ1anseZJNVkbow/v1aFedVfXSwGCzsPAOcPE="
 before_install:
 - openssl aes-256-cbc -K $encrypted_45e1b5610c30_key -iv $encrypted_45e1b5610c30_iv -in scripts/deploy_key.enc -out scripts/deploy_key -d
 - chmod 0600 scripts/deploy_key
+- echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
 install: true
 before_script:
 - export DISPLAY=:99.0
@@ -30,3 +36,12 @@ deploy:
   on:
     repo: ugilio/ghost
     tags: true
+addons:
+  coverity_scan:
+    project:
+      name: "ugilio/ghost"
+      description: "Build submitted via Travis CI"
+    notification_email: ugilio@gmail.com
+    build_command_prepend: "mvn clean"
+    build_command:   "mvn package"
+    branch_pattern: coverity_scan
