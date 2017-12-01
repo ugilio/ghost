@@ -18,7 +18,7 @@ script:
 - cd com.github.ugilio.ghost.releng
 - mvn verify -Pjacoco coveralls:report -B
 - cd ..
-after_script:
+after_success:
 - "scripts/deploy_pages.sh"
 deploy:
   provider: releases
