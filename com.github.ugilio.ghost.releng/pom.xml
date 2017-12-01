@@ -78,7 +78,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 						<version>4.3.0</version>
 						<configuration>
 							<jacocoReports>
-								<jacocoReport>${project.basedir}/com.github.ugilio.ghost.tests.report/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
+								<jacocoReport>../com.github.ugilio.ghost.tests.report/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
 							</jacocoReports>
 						</configuration>
 					</plugin>
