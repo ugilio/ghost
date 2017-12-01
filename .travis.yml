@@ -22,5 +22,5 @@ addons:
       description: "Build submitted via Travis CI"
     notification_email: ugilio@gmail.com
     build_command_prepend: true
-    build_command:   "cd com.github.ugilio.ghost.releng && mvn package"
+    build_command:   "scripts/buildcov.sh"
     branch_pattern: coverity_scan
