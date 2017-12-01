@@ -21,6 +21,6 @@ addons:
       name: "ugilio/ghost"
       description: "Build submitted via Travis CI"
     notification_email: ugilio@gmail.com
-    build_command_prepend: "mvn clean -f com.github.ugilio.ghost.releng/pom.xml"
-    build_command:   "mvn package -f com.github.ugilio.ghost.releng/pom.xml"
+    build_command_prepend: true
+    build_command:   "cd com.github.ugilio.ghost.releng && mvn package"
     branch_pattern: coverity_scan
