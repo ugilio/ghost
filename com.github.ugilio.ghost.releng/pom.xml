@@ -20,13 +20,72 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>../com.github.ugilio.ghost.target</module>
 
 		<module>../com.github.ugilio.ghost.standalonecompiler</module>
+
+		<module>../com.github.ugilio.ghost.tests.report</module>
 	</modules>
 
 	<properties>
 		<tycho-version>0.26.0</tycho-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<xtext.version>2.12.0</xtext.version>
+		<jacoco.version>0.7.9</jacoco.version>
 	</properties>
+
+	<profiles>
+		<profile>
+			<id>jacoco</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>${jacoco.version}</version>
+						<configuration>
+							<excludes>
+								<exclude>**/com/github/ugilio/ghost/AbstractGhostRuntimeModule*</exclude>
+								<exclude>**/com/github/ugilio/ghost/GhostStandaloneSetupGenerated*</exclude>
+								<exclude>**/com/github/ugilio/ghost/services/**</exclude>
+								<exclude>**/com/github/ugilio/ghost/parser/**</exclude>
+								<exclude>**/com/github/ugilio/ghost/ghost/**</exclude>
+								<exclude>**/com/github/ugilio/ghost/validation/AbstractGhostValidator*</exclude>
+								<exclude>**/com/github/ugilio/ghost/scoping/AbstractGhostScopeProvider*</exclude>
+								<exclude>**/com/github/ugilio/ghost/serializer/**</exclude>
+
+								<exclude>**/com/github/ugilio/ghost/ui/contentassist/AbstractGhostProposalProvider*</exclude>
+								<exclude>**/com/github/ugilio/ghost/ui/wizard/GhostNewProjectWizard.class</exclude>
+								<exclude>**/com/github/ugilio/ghost/ui/wizard/GhostProjectCreator.class</exclude>
+								<exclude>**/com/github/ugilio/ghost/ui/internal/**</exclude>
+
+								<exclude>**/com/github/ugilio/ghost/ide/contentassist/antlr/**</exclude>
+								<exclude>**/com/github/ugilio/ghost/ide/AbstractGhostIdeModule*</exclude>
+							</excludes>
+						</configuration>
+						<executions>
+							<execution>
+								<id>prepare-agent</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.eluder.coveralls</groupId>
+						<artifactId>coveralls-maven-plugin</artifactId>
+						<version>4.3.0</version>
+						<configuration>
+							<jacocoReports>
+								<jacocoReport>${project.basedir}/com.github.ugilio.ghost.tests.report/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
+							</jacocoReports>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
 		<pluginManagement>
@@ -50,7 +109,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 						</execution>
 					</executions>
 					<configuration>
+						<xtendAsPrimaryDebugSource>true</xtendAsPrimaryDebugSource>
 						<outputDirectory>xtend-gen</outputDirectory>
+						<writeTraceFiles>true</writeTraceFiles>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -117,24 +178,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 						</environment>
 					</environments>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.9</version>
-				<executions>
-					<execution>
-						<id>prepare-agent</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.eluder.coveralls</groupId>
-				<artifactId>coveralls-maven-plugin</artifactId>
-				<version>4.3.0</version>
 			</plugin>
 		</plugins>
 	</build>
