@@ -25,6 +25,16 @@ import com.github.ugilio.ghost.conversion.NumberValueConverter
 import com.github.ugilio.ghost.ghost.ResourceDecl
 import com.github.ugilio.ghost.ghost.Externality
 import com.github.ugilio.ghost.ghost.SvDecl
+import it.cnr.istc.timeline.lang.SVSyncTrigger
+import it.cnr.istc.timeline.lang.ResSyncTrigger
+import it.cnr.istc.timeline.lang.SyncTrigger
+import it.cnr.istc.timeline.lang.SVType
+import it.cnr.istc.timeline.lang.TransitionConstraint
+import org.eclipse.emf.ecore.EObject
+import com.github.ugilio.ghost.ghost.ComponentType
+import org.eclipse.xtext.EcoreUtil2
+import it.cnr.istc.timeline.lang.Component
+import it.cnr.istc.timeline.lang.Synchronization
 
 public class Utils {
 	public static def <T> List<T> toRegularList(Iterable<T> it) {
@@ -49,6 +59,15 @@ public class Utils {
 			}
 		]
 		return newList;
+	}
+	
+	protected static def <T> List<T> merge(List<T> parent, List<T> child,
+		Function<T,String> getName
+	) {
+		val l = new ArrayList(parent.size + child.size);
+		l.addAll(parent);
+		l.addAll(child);
+		return retainRedef(l,getName);
 	}
 
 	protected static def boolean isUnnamed(Object name) {
@@ -139,4 +158,51 @@ public class Utils {
 	public static final Interval ZeroInterval = new IntervalImpl(0,0);
 	public static final Interval ZeroInfInterval = new IntervalImpl(0,NumberValueConverter.MAX_VALUE);
 	public static final Interval OneInfInterval = new IntervalImpl(1,NumberValueConverter.MAX_VALUE);
+	
+	private static def Synchronization getParentSVSync(CompType parentType, SVSyncTrigger t) {
+		val name = t.value.name;
+		for (s : parentType.declaredSynchronizations) {
+			val trigger = s.trigger;
+			switch (trigger) {
+				SVSyncTrigger: if(name == trigger.value.name) return s
+			}
+		}
+		return null;
+	}
+
+	private static def Synchronization getParentResSync(CompType parentType, ResSyncTrigger t) {
+		val action = t.action;
+		for (s : parentType.declaredSynchronizations) {
+			val trigger = s.trigger;
+			switch (trigger) {
+				ResSyncTrigger: if(action == trigger.action) return s
+			}
+		}
+		return null;
+	}
+
+	protected static def Synchronization getParentSync(CompType parentType, SyncTrigger t) {
+		return switch (t) {
+			SVSyncTrigger: getParentSVSync(parentType, t)
+			ResSyncTrigger: getParentResSync(parentType, t)
+			default: null
+		}
+	}
+
+	protected static def TransitionConstraint getParentTC(SVType parentType, TransitionConstraint cont) {
+		val name = cont.head.name;
+		for (tc : parentType.declaredTransitionConstraints)
+			if(name == tc.head.name) return tc
+		return null;
+	}
+	
+	protected static def CompType getType(Register register, EObject real) {
+		val ct = EcoreUtil2.getContainerOfType(real,ComponentType);
+		if (ct !== null)
+			return register.getProxy(ct) as CompType;
+		val c = EcoreUtil2.getContainerOfType(real,CompDecl);
+		if (c !== null)
+			return (register.getProxy(c) as Component).type;
+		return null;
+	}
 }

@@ -180,41 +180,12 @@ class BlockImpl extends ProxyObject implements StatementBlock, InitStatementBloc
 		throw new IllegalArgumentException("Block not contained in a component or type: " + block);
 	}
 
-	private def StatementBlock getParentSVSync(CompType parentType, Synchronization cont) {
-		val name = (cont.trigger as SVSyncTrigger).value.name;
-		for (s : parentType.declaredSynchronizations) {
-			val trigger = s.trigger;
-			switch (trigger) {
-				SVSyncTrigger: if(name == trigger.value.name) return s.bodies.get(0)
-			}
-		}
-		return null;
-	}
-
-	private def StatementBlock getParentResSync(CompType parentType, Synchronization cont) {
-		val action = (cont.trigger as ResSyncTrigger).action;
-		for (s : parentType.declaredSynchronizations) {
-			val trigger = s.trigger;
-			switch (trigger) {
-				ResSyncTrigger: if(action == trigger.action) return s.bodies.get(0)
-			}
-		}
-		return null;
-	}
-
 	private def StatementBlock getParentSync(CompType parentType, Synchronization cont) {
-		return switch (cont.trigger) {
-			SVSyncTrigger: getParentSVSync(parentType, cont)
-			ResSyncTrigger: getParentResSync(parentType, cont)
-			default: null
-		}
+		return Utils.getParentSync(parentType,cont.trigger)?.bodies?.get(0);
 	}
 
 	private def StatementBlock getParentTC(SVType parentType, TransitionConstraint cont) {
-		val name = cont.head.name;
-		for (tc : parentType.declaredTransitionConstraints)
-			if(name == tc.head.name) return tc.body;
-		return null;
+		return Utils.getParentTC(parentType, cont)?.body;
 	}
 
 	private def StatementBlock getParentBlock() {
