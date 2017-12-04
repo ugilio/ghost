@@ -195,8 +195,8 @@ QUALID : ID('.'ID)*;
 ID_ : '_' | ID;
 VARNAMEID: ID | 'start' | 'end';
 
-terminal SL_ANNOTATION : '@' !('\n'|'\r')* ('\r'? '\n')?;
 terminal BR_ANNOTATION : '@(' -> ')';
+terminal SL_ANNOTATION : '@'(!'(') !('\n'|'\r')* ('\r'? '\n')?;
 terminal DIRECTIVE : '$' !('\n'|'\r')* ('\r'? '\n')?;
 
 terminal SEP : (',' | ';');

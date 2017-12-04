@@ -15,6 +15,7 @@ import it.cnr.istc.timeline.lang.Value
 import java.util.ArrayList
 import java.util.Collections
 import java.util.List
+import org.eclipse.emf.ecore.EObject
 
 class SVSyncTriggerProxy extends AbstractSyncTriggerProxy implements SVSyncTrigger {
 	SimpleInstVal real = null;
@@ -63,4 +64,7 @@ class SVSyncTriggerProxy extends AbstractSyncTriggerProxy implements SVSyncTrigg
 		return arguments;
 	}
 
+	override EObject getReal(){
+		return real;
+	}	
 }

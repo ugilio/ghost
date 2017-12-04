@@ -12,6 +12,7 @@ import com.github.ugilio.ghost.ghost.ResSimpleInstVal
 import it.cnr.istc.timeline.lang.Parameter
 import it.cnr.istc.timeline.lang.ResSyncTrigger
 import it.cnr.istc.timeline.lang.ResourceAction
+import org.eclipse.emf.ecore.EObject
 
 class ResSyncTriggerProxy extends AbstractSyncTriggerProxy implements ResSyncTrigger {
 	ResSimpleInstVal real = null;
@@ -45,5 +46,8 @@ class ResSyncTriggerProxy extends AbstractSyncTriggerProxy implements ResSyncTri
 			getArgument();
 		return scope;
 	}
-
+	
+	override EObject getReal(){
+		return real;
+	}	
 }

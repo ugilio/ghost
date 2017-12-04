@@ -21,11 +21,11 @@ import it.cnr.istc.timeline.lang.SVSyncTrigger
 import it.cnr.istc.timeline.lang.Synchronization
 import it.cnr.istc.timeline.lang.TransitionConstraint
 import it.cnr.istc.timeline.lang.Value
-import java.util.ArrayList
 import java.util.Collections
 import java.util.List
+import it.cnr.istc.timeline.lang.AnnotatedObject
 
-abstract class AbstractCompTypeProxy extends ProxyObject implements CompType {
+abstract class AbstractCompTypeProxy extends ProxyObject implements CompType, AnnotatedObject {
 	protected CompTypeAdapter real;
 	String name = null;
 	Boolean externality = null;	
@@ -101,10 +101,7 @@ abstract class AbstractCompTypeProxy extends ProxyObject implements CompType {
 	
 
 	def <T> List<T> merge(List<T> parent, List<T> child) {
-		val l = new ArrayList(parent.size + child.size);
-		l.addAll(parent);
-		l.addAll(child);
-		return Utils.retainRedef(l,[e|getChildName(e)]);
+		return Utils.merge(parent, child, [e|getChildName(e)]);
 	}
 
 	override getDeclaredSynchronizations() {
@@ -151,5 +148,16 @@ abstract class AbstractCompTypeProxy extends ProxyObject implements CompType {
 	
 	public def void setName(String name) {
 		this.name = name;
+	}
+	
+	private def List<String> getDirectAnnotations() {
+		register.getAnnotationsFor(real.real);
+	}
+	
+	override List<String> getAnnotations() {
+		var p = getParent();
+		if (p instanceof AbstractCompTypeProxy)
+			return merge(p.getAnnotations(), getDirectAnnotations());
+		return getDirectAnnotations();
 	}
 }

@@ -41,7 +41,7 @@ class ComponentProxy extends ProxyObject implements Component {
 
 	override getType() {
 		if (type === null) {
-			type = if (needsSyntheticType(real))
+			type = if (needsSyntheticType(real,register.annotationProvider))
 				createSyntheticType(real,register)
 			else if (real instanceof NamedCompDecl)
 				getProxy(real.type) as CompType;

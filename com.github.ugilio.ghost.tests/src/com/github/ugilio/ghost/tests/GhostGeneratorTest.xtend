@@ -2922,6 +2922,278 @@ VALUE A()
 		);
 	}
 	
+	//Annotations tests
+	
+	@Test
+	def void testAnnotationComp1() {
+		'''
+@ann
+comp c: sv(A,B);
+		'''.assertCompiledContains(
+'''
+COMPONENT c {FLEXIBLE timeline(ann)} : cType;
+'''			
+		);
+	}	
+	
+	@Test
+	def void testAnnotationType1() {
+		'''
+@ann
+type t = sv(A,B);
+comp c: t;
+		'''.assertCompiledContains(
+'''
+COMPONENT c {FLEXIBLE timeline(ann)} : t;
+'''			
+		);
+	}	
+	
+	@Test
+	def void testAnnotationTypeInherit1() {
+		'''
+@ann1
+type t = sv(A,B);
+@ann2
+comp c: t;
+		'''.assertCompiledContains(
+'''
+COMPONENT c {FLEXIBLE timeline(ann1,ann2)} : cType;
+'''			
+		);
+	}
+	
+	@Test
+	def void testAnnotationTypeInherit2() {
+		'''
+external type T = sv(A);
+@ann
+comp C : T;
+		'''.assertCompiledContains(
+'''
+COMPONENT C {FLEXIBLE timeline(external,ann)} : CType;
+'''			
+		);
+	}
+	
+	@Test
+	def void testAnnotationTcHead1() {
+		'''
+type t = sv(
+	@(ann) A -> B,B
+);
+		'''.
+		assertCompiledContains(
+'''
+VALUE <ann> A() [0, +INF]
+'''			
+		);
+	}	
+	
+	@Test
+	def void testAnnotationTcHead2() {
+		'''
+type t = sv(
+	@(ann) contr A -> B,B
+);
+		'''.
+		assertCompiledContains(
+'''
+VALUE <c,ann> A() [0, +INF]
+'''			
+		);
+	}	
+	
+	@Test
+	def void testAnnotationTcHeadInherit1() {
+		'''
+type t = sv(
+	@(ann1) A -> B,B
+);
+
+type t2 = sv t(
+	@(ann2) A -> inherited
+);
+		'''.
+		assertCompiledContains(
+'''
+VALUE <ann1,ann2> A() [0, +INF]
+'''			
+		);
+	}	
+	
+	@Test
+	def void testAnnotationSync1() {
+		'''
+comp c : sv(
+	A -> B,B;
+synchronize:
+	@(ann) A -> 10 > 0;
+);
+		'''.
+		assertCompiledContains(
+'''
+	SYNCHRONIZE c.timeline
+	{
+		VALUE <ann> A()
+'''			
+		);
+	}	
+	
+	@Test
+	def void testAnnotationSync2() {
+		'''
+comp c : resource(10
+synchronize:
+	@(ann) require(x) -> x > 0;
+);
+		'''.
+		assertCompiledContains(
+'''
+	SYNCHRONIZE c.timeline
+	{
+		VALUE <ann> REQUIREMENT(?x)
+'''			
+		);
+	}
+	
+	@Test
+	def void testAnnotationSyncInherit1() {
+		'''
+type t = sv(
+	A -> B,B;
+synchronize:
+	@(ann1) A -> 10 > 0;
+);
+comp c : t(
+synchronize:
+	@(ann2) A -> inherited;
+);
+		'''.
+		assertCompiledContains(
+'''
+	SYNCHRONIZE c.timeline
+	{
+		VALUE <ann1,ann2> A()
+'''			
+		);
+	}
+	
+	@Test
+	def void testAnnotationSyncInherit2() {
+		'''
+type t = resource(10
+synchronize:
+	@(ann1) require(x) -> x > 0;
+);
+comp c : t(
+synchronize:
+	@(ann2) require(x) -> x > 0;
+);
+		'''.
+		assertCompiledContains(
+'''
+	SYNCHRONIZE c.timeline
+	{
+		VALUE <ann1,ann2> REQUIREMENT(?x)
+'''			
+		);
+	}
+	
+	@Test
+	def void testAnnotationIcd1() {
+		'''
+comp c : sv(
+	A -> B, B;
+synchronize:
+	A -> before @(ann) c.B;
+);
+		'''.
+		assertCompiledContains(
+'''
+			BEFORE [1, +INF] instval1;
+			instval1 <ann> c.timeline.B();
+'''			
+		);
+	}	
+	
+	@Test
+	def void testAnnotationIcd2() {
+		'''
+comp c : sv(
+	A -> B, B;
+synchronize:
+	A -> @(ann) before c.B;
+);
+		'''.
+		assertCompiledContains(
+'''
+			BEFORE [1, +INF] instval1;
+			instval1 <ann> c.timeline.B();
+'''			
+		);
+	}	
+	
+	@Test
+	def void testAnnotationVar1() {
+		'''
+comp c : sv(
+	A -> B, B;
+synchronize:
+	A -> (
+		@(ann) var cd1 = c.B;
+		before cd1;
+	);
+);
+		'''.
+		assertCompiledContains(
+'''
+			BEFORE [1, +INF] cd1;
+			cd1 <ann> c.timeline.B();
+'''			
+		);
+	}	
+	
+	@Test
+	def void testAnnotationVar2() {
+		'''
+comp c : sv(
+	A -> B, B;
+synchronize:
+	A -> (
+		var cd1 = @(ann) c.B;
+		before cd1;
+	);
+);
+		'''.
+		assertCompiledContains(
+'''
+			BEFORE [1, +INF] cd1;
+			cd1 <ann> c.timeline.B();
+'''			
+		);
+	}	
+	
+	@Test
+	def void testAnnotationVar3() {
+		'''
+comp c : sv(
+	A -> B, B;
+synchronize:
+	A -> (
+		var cd1 = c.B;
+		before @(ann) cd1;
+	);
+);
+		'''.
+		assertCompiledContains(
+'''
+			BEFORE [1, +INF] cd1;
+			cd1 <ann> c.timeline.B();
+'''			
+		);
+	}	
+	
 	@Test
 	def void testImports1() {
 		val d1 = 'd1.ghost' -> '''

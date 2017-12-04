@@ -44,6 +44,7 @@ import com.github.ugilio.ghost.ghost.ValueDecl
 import com.github.ugilio.ghost.ghost.ResourceDecl
 import com.github.ugilio.ghost.ghost.Controllability
 import com.github.ugilio.ghost.ghost.TransConstraint
+import com.github.ugilio.ghost.preprocessor.AnnotationProcessor
 
 class GhostLinker extends LazyLinker {
 	
@@ -56,6 +57,9 @@ class GhostLinker extends LazyLinker {
 	@Inject
 	NumAndUnitHelper numHelper;
 	
+	@Inject
+	AnnotationProcessor annProcessor;
+
 	public static val PREPROCESSOR_ERROR = 'preprocError';
 	public static val NUMERIC_CONV_ERROR = 'numConvError';
 	public static val CONST_EVAL_ERROR = 'constEvalError';
@@ -71,6 +75,7 @@ class GhostLinker extends LazyLinker {
 				resolveAllNumbers(model,p);
 				resolveAllConstants(model,p);
 				linkNamedPars(model,p);
+				annProcessor.processAnnotations(model,p);
 		}});
 	}
 	

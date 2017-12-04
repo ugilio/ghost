@@ -665,7 +665,10 @@ type aType = sv(
 	@Test
 	def void test47() {
 		val result = parseHelper.parse('''
+comp PointingMode : sv(Comm,
+synchronize: Comm ->
 @(!) before PointingMode.Comm;
+)
 		''')
 		assertNotNull(result)
 		result.assertNoParsingErrors();

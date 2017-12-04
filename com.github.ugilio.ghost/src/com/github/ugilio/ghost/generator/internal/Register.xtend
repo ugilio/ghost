@@ -65,6 +65,7 @@ import java.util.Map
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
+import com.github.ugilio.ghost.preprocessor.AnnotationProvider
 
 class Register {
 	Map<Object,Object> proxies = new HashMap<Object,Object>();
@@ -73,7 +74,19 @@ class Register {
 	
 	@Inject
 	DefaultsProvider defProvider;
-
+	
+	@Inject
+	AnnotationProvider annProvider;
+	
+	//Inject an empty one by default, but set it if needed
+	public def void setAnnotationProvider(AnnotationProvider provider) {
+		annProvider = provider;
+	}
+	
+	public def AnnotationProvider getAnnotationProvider() {
+		return annProvider;
+	} 
+	
 	public def getProxy(Object real) {
 		if (real === null)
 			return null;
@@ -81,6 +94,9 @@ class Register {
 		if (proxy === null) {
 			proxy = createProxy(real);
 			proxies.put(real,proxy);
+			val anns = annProvider.getAnnotations(real);
+			if (anns !== null)
+				annProvider.setAnnotations(proxy,anns);
 		}
 		return proxy;
 	}
@@ -312,5 +328,12 @@ class Register {
 	
 	public def LexicalScope getGlobalScope() {
 		return globalScope;
+	}
+	
+	public def List<String> getAnnotationsFor(Object real) {
+		val result = annotationProvider.getAnnotations(real);
+		if (result === null)
+			return #[];
+		return result;
 	}	
 }

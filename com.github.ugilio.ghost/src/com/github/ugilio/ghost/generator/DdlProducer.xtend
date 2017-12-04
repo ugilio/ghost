@@ -22,7 +22,6 @@ import com.github.ugilio.ghost.preprocessor.DefaultsProvider
 import it.cnr.istc.timeline.lang.CompType
 import it.cnr.istc.timeline.lang.Component
 import it.cnr.istc.timeline.lang.ConsumableResourceType
-import it.cnr.istc.timeline.lang.Controllability
 import it.cnr.istc.timeline.lang.EnumType
 import it.cnr.istc.timeline.lang.InstantiatedValue
 import it.cnr.istc.timeline.lang.IntType
@@ -59,6 +58,13 @@ import com.google.common.collect.Iterables
 import it.cnr.istc.timeline.lang.EnumLiteral
 import com.github.ugilio.ghost.generator.internal.EnumLiteralProxy
 import com.github.ugilio.ghost.ghost.EnumDecl
+import com.github.ugilio.ghost.preprocessor.AnnotationProvider
+import it.cnr.istc.timeline.lang.AnnotatedObject
+import com.google.common.collect.Lists
+import it.cnr.istc.timeline.lang.TransitionConstraint
+import com.github.ugilio.ghost.services.GhostGrammarAccess
+import org.eclipse.xtext.nodemodel.util.NodeModelUtils
+import com.github.ugilio.ghost.preprocessor.AnnotationProvider.AnnotationProviderException
 
 class DdlProducer {
 	@Inject
@@ -70,6 +76,10 @@ class DdlProducer {
 	DdlExpressionFormatter expFormatter;
 	@Inject
 	DdlEnumScanner enumScanner;
+	@Inject
+	AnnotationProvider annProvider;
+	@Inject
+	GhostGrammarAccess grammarAccess;
 	
 	List<Component> components;
 	List<InitSection> inits;
@@ -104,7 +114,9 @@ class DdlProducer {
 	}
 	
 	private def formatParListWithNames(SyncTrigger trigger) {
-		return
+		val ann = getFormattedAnnotationsFor(trigger);
+		val extra = if (ann.isNullOrEmpty) "" else "<"+ann+"> ";
+		return extra+
 		switch (trigger) {
 			SVSyncTrigger: trigger.value.name+"("+
 						trigger.arguments.map["?"+name].join(", ")+
@@ -123,7 +135,7 @@ class DdlProducer {
 		return
 		switch(obj) {
 			TimePointOperation : true
-			Variable: (obj.value instanceof TimePointOperation)
+			Variable: isTimeOp(obj.value)
 			default : false
 		}
 	}
@@ -299,26 +311,51 @@ class DdlProducer {
 			if (isInstCompVariable(v)) {
 				if (v.value instanceof Variable)
 					"%s EQUALS %s" //icd1 EQUALS icd0
-				else
-					"%s %s" //icd1 comp.timeline.A()
+				else {
+					val tmp = getFormattedAnnotationsFor(v);
+					val extra = if (tmp.isNullOrEmpty) "" else "<"+tmp+"> ";
+					"%s "+extra+"%s"  //icd1 comp.timeline.A()
+				}
 			}
 			else
 				"?%s = %s" //?x = ...
 		return String.format(fmtString,v.name,formatExpression(v.value,comp))
 	}
 	
-	private def String formatControllability(Controllability contr) {
-		return
-		switch (contr) {
-			case CONTROLLABLE: '<c> '
-			case UNCONTROLLABLE: '<u> '
-			default: ''
-		}		
+	private def String formatTransitionConstraintTags(TransitionConstraint tc) {
+		val extra = 
+		switch (tc.controllability) {
+			case CONTROLLABLE: 'c'
+			case UNCONTROLLABLE: 'u'
+			default: null
+		}
+		val str = getFormattedAnnotationsFor(tc,extra);
+		if (str != "")
+			return "<"+str+"> ";
+		return "";
 	}
 	
 	private def boolean isEmpty(StatementBlock b) {
 		return b.expressions.isEmpty() && b.variables.isEmpty()
 			&& b.temporalExpressions.isEmpty();
+	}
+	
+	private def List<String> getAnnotationsForVariable(Variable v) {
+		var anns = annProvider.getAnnotations(v);
+		if (anns === null)
+			anns = annProvider.getAnnotations(v.value);
+		if (anns === null)
+			return #[];
+		return anns;
+	}
+	
+	private def String getFormattedAnnotationsFor(Object obj, String... extra) {
+		val l = Lists.newArrayList(extra.filter[e|e!==null]);
+		switch (obj) {
+			AnnotatedObject: l.addAll(obj.annotations)
+			Variable: l.addAll(getAnnotationsForVariable(obj))
+		}
+		return l.join(",");
 	}
 
 	private def dispatch String doTypeDecl(SVType type) {
@@ -332,7 +369,7 @@ class DdlProducer {
 			{
 				«FOR c : constraints SEPARATOR '\n'»
 				«val intv = c.interval»
-				«val cont = formatControllability(c.controllability)»
+				«val cont = formatTransitionConstraintTags(c)»
 				«val b = c.body»
 				VALUE «cont»«formatParListWithNames(c.head)» «formatInterval(intv)»
 				MEETS
@@ -379,8 +416,10 @@ class DdlProducer {
 	}
 	
 	private def String doComponentDefinition(Component comp) {
-		val tmlTag = if (comp.type.isExternal()) "external" else "";
 		val CompType type = comp.type;
+		val tmlTag = if (type.isExternal())
+			getFormattedAnnotationsFor(type,"external")
+			else getFormattedAnnotationsFor(type)
 		return
 		'''COMPONENT «comp.name» {FLEXIBLE timeline(«tmlTag»)} : «type.name»;'''
 	}
@@ -572,7 +611,23 @@ class DdlProducer {
 			}
 	}
 	
+	def void initAnnotationProvider(Ghost ghost) {
+		annProvider.clear();
+
+		val annRules = Sets.newHashSet(grammarAccess.SL_ANNOTATIONRule,(grammarAccess.BR_ANNOTATIONRule));
+		val root = NodeModelUtils.getNode(ghost);
+		try {
+			root.asTreeIterable.
+				filter[annRules.contains(grammarElement)].
+				forEach(n | annProvider.addAnnotation(n));
+		}
+		catch (AnnotationProviderException e) {} //If we are here, there were no errors
+
+		register.annotationProvider =  annProvider;
+	}
+
 	def String doGenerate(Ghost ghost, String baseName) {
+		initAnnotationProvider(ghost);
 		val gScope = register.getGlobalScope();
 		inits = new ArrayList();
 		initData = new InitData();
@@ -598,7 +653,7 @@ class DdlProducer {
 		//Add also local synthetic types (added to the global scope on their own)
 		types.addAll(
 		ghost.decls.filter(CompDecl).
-			filter[cd|Utils.needsSyntheticType(cd)].
+			filter[cd|Utils.needsSyntheticType(cd,annProvider)].
 			map[c|register.getProxy(c) as Component].map[c|c.type].toList);
 			
 		//Collect all components and init sections everywhere 

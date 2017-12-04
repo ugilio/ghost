@@ -25,6 +25,7 @@ import com.github.ugilio.ghost.conversion.NumberValueConverter
 import com.github.ugilio.ghost.ghost.ResourceDecl
 import com.github.ugilio.ghost.ghost.Externality
 import com.github.ugilio.ghost.ghost.SvDecl
+import com.github.ugilio.ghost.preprocessor.AnnotationProvider
 import it.cnr.istc.timeline.lang.SVSyncTrigger
 import it.cnr.istc.timeline.lang.ResSyncTrigger
 import it.cnr.istc.timeline.lang.SyncTrigger
@@ -88,7 +89,7 @@ public class Utils {
 		return false;
 	}
 	
-	public static def boolean needsSyntheticType(CompDecl decl) {
+	public static def boolean needsSyntheticType(CompDecl decl, AnnotationProvider annProv) {
 		return switch (decl) {
 			AnonSVDecl:
 				true
@@ -96,6 +97,8 @@ public class Utils {
 				true
 			NamedCompDecl: {
 				if (decl.externality != Externality.UNSPECIFIED)
+					return true;
+				if (annProv.getAnnotations(decl) !== null)
 					return true;
 				val body = decl?.body;
 				if (body?.synchronizations !== null && body.synchronizations.size() > 0)

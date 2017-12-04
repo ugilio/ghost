@@ -8,11 +8,26 @@
 package com.github.ugilio.ghost.generator.internal
 
 import it.cnr.istc.timeline.lang.SyncTrigger
+import it.cnr.istc.timeline.lang.AnnotatedObject
+import org.eclipse.emf.ecore.EObject
 
-abstract class AbstractSyncTriggerProxy extends ProxyObject implements SyncTrigger {
+abstract class AbstractSyncTriggerProxy extends ProxyObject implements SyncTrigger, AnnotatedObject {
 	protected abstract def LexicalScope getScope();
 	
 	new(Register register) {
 		super(register);
 	}
+	
+	protected def abstract EObject getReal();
+	
+	override getAnnotations() {
+		val p = Utils.getType(register,real)?.parent;
+		if (p !== null) {
+			val pt = Utils.getParentSync(p,this)?.trigger;
+			if (pt instanceof AnnotatedObject)
+				return Utils.merge(pt.getAnnotations(),register.getAnnotationsFor(real),[s|s]);
+		}
+		return register.getAnnotationsFor(real);
+	}
+	
 }

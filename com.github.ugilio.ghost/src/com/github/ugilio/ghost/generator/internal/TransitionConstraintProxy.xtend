@@ -13,8 +13,10 @@ import it.cnr.istc.timeline.lang.Interval
 import it.cnr.istc.timeline.lang.StatementBlock
 import it.cnr.istc.timeline.lang.TransitionConstraint
 import it.cnr.istc.timeline.lang.Value
+import it.cnr.istc.timeline.lang.AnnotatedObject
+import it.cnr.istc.timeline.lang.SVType
 
-class TransitionConstraintProxy extends ProxyObject implements TransitionConstraint {
+class TransitionConstraintProxy extends ProxyObject implements TransitionConstraint, AnnotatedObject {
 	TransConstraint real = null;
 	Interval interval = null;
 	Controllability controllability = null;
@@ -55,6 +57,17 @@ class TransitionConstraintProxy extends ProxyObject implements TransitionConstra
 			body = new BlockImpl(new BlockAdapterImpl(real.body), scope, register);
 		}
 		return body;
+	}
+	
+	override getAnnotations() {
+		val p = Utils.getType(register,real)?.parent as SVType;
+		if (p !== null) {
+			val ptc = Utils.getParentTC(p,this);
+			if (ptc instanceof AnnotatedObject)
+				return Utils.merge(ptc.getAnnotations(),register.getAnnotationsFor(real),[s|s]);
+		}
+		
+		return register.getAnnotationsFor(real);
 	}
 
 }
