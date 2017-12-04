@@ -2901,7 +2901,26 @@ VALUE A(?x)
 }
 '''			
 		);
-	}	
+	}
+	
+	@Test
+	def void testInstVarChain() {
+		'''
+comp C: sv(A
+synchronize:
+	A -> (var x = C.A; var y = x; equals y)
+);
+		'''.assertCompiledContains(
+'''
+VALUE A()
+{
+	EQUALS y;
+	x C.timeline.A();
+	y EQUALS x;
+}
+'''			
+		);
+	}
 	
 	@Test
 	def void testImports1() {

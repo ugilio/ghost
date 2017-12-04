@@ -296,10 +296,14 @@ class DdlProducer {
 	
 	private def String formatVariableDecl(Variable v, Component comp) {
 		val fmtString = 
-			if (isInstCompVariable(v))
-				"%s %s"
+			if (isInstCompVariable(v)) {
+				if (v.value instanceof Variable)
+					"%s EQUALS %s" //icd1 EQUALS icd0
+				else
+					"%s %s" //icd1 comp.timeline.A()
+			}
 			else
-				"?%s = %s"
+				"?%s = %s" //?x = ...
 		return String.format(fmtString,v.name,formatExpression(v.value,comp))
 	}
 	

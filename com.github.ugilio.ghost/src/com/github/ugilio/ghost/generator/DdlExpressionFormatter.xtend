@@ -22,6 +22,8 @@ import it.cnr.istc.timeline.lang.Variable
 import com.google.inject.Inject
 import com.github.ugilio.ghost.conversion.NumberValueConverter
 import com.github.ugilio.ghost.generator.internal.Utils
+import java.util.HashSet;
+import com.google.common.collect.Sets;
 
 class DdlExpressionFormatter {
 	
@@ -46,7 +48,25 @@ class DdlExpressionFormatter {
 	}
 	
 	protected def boolean isInstCompVariable(Variable v) {
-		return (v.getValue instanceof InstantiatedValue) || (v.getValue instanceof TimePointOperation);
+		val value = v.getValue;
+		return
+		switch (value) {
+			InstantiatedValue, TimePointOperation: true
+			Variable: isInstCompVariable(value,Sets.newHashSet(v,value))
+			default : false
+		}
+	}
+	
+	private def boolean isInstCompVariable(Variable v, HashSet<Variable> inProgress) {
+		val value = v.getValue;
+		if (inProgress.contains(value))
+			return false;
+		return
+		switch (value) {
+			InstantiatedValue, TimePointOperation: true
+			Variable: {inProgress.add(value); isInstCompVariable(value,inProgress)}
+			default : false
+		}
 	}
 	
 	private def int getOpDegree(String op) {
