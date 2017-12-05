@@ -12,11 +12,11 @@ The <span class="sc">ghost</span> language was designed and implemented by Giuli
 
 ### Documentation
 
-* The complete language documentation is available in [The <span class="sc">ghost</span> Language Manual](/manual), which is accompanied by many examples.
+* The complete language documentation is available in [The <span class="sc">ghost</span> Language Manual](manual), which is accompanied by many examples.
 
 * An introduction to Timeline-based Planning can be found [here](https://ugilio.github.io/keen/intro).
 
-* There is also a [grammar of the <span class="sc">ghost</span> language in EBNF form](/ghostebnf).
+* There is also a [grammar of the <span class="sc">ghost</span> language in EBNF form](ghostebnf).
 
 ### Getting Started
 
