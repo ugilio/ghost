@@ -6,7 +6,7 @@
     <relativePath>../com.github.ugilio.ghost.releng/pom.xml</relativePath>
     <groupId>com.github.ugilio.ghost</groupId>
     <artifactId>parent</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>com.github.ugilio.ghost.target</artifactId>
