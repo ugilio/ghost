@@ -32,6 +32,16 @@ mvn package
 ```
 If you also want to run the test suite, do `mvn verify` instead of `mvn package`.
 
+### Developing in Eclipse
+
+- Install Xtext (e.g. via the update site).
+- File => Import => Existing Projects into Workspace. Select all projects in the git checkout.
+- Eclipse will start spitting out thousands of errors.
+- Wait for building to finish, then open Ghost.xtext (.ghost project => src folder => .ghost package).
+- Right click somewhere in the file and choose "Run => Generate Xtext Artifacts": tell Eclipse that it's ok to proceed even if the project has errors.
+- When building is over, errors should have been resolved.
+- If there are still errors related to missing plugin lifecycle mappings, use Quick fix to discover missing m2e connectors, and install the suggested Tycho Project Configurators.
+
 ### More Information
 
 * [Website](https://ugilio.github.io/ghost).
